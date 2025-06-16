@@ -14,7 +14,7 @@ jobs:
       - run: echo yamllint > requirements.txt
       - python/install-packages:
           pkg-manager: pip
-      - run: yamllint Exercises/
+      - run: yamllint $(pwd)
 
   ansible-lint:
     executor:
