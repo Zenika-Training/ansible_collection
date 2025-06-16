@@ -1,0 +1,43 @@
+---
+- name: Update APT cache
+  become: true
+  ansible.builtin.package:
+    update_cache: true
+- name: Create SSH key for controller
+  community.crypto.openssh_keypair:
+    mode: "0600"
+    path: "{{ ssh_key }}"
+    type: "ecdsa"
+- name: Get ssh key
+  ansible.builtin.slurp:
+    src: "{{ ssh_key }}.pub"
+  register: ssh_pub_key
+- name: Push controller SSH key
+  become: true
+  ansible.posix.authorized_key:
+    user: vagrant
+    state: present
+    key: "{{ ssh_pub_key['content'] | b64decode }}"
+- name: Generate variables environment
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/etc/profile.d/01_strigo_context_others.sh"
+    regexp: "^export PRIVATE_IP"
+    line: "export PRIVATE_IP={{ ansible_default_ipv4.address }}"
+    mode: "0644"
+    backup: false
+    create: true
+- name: Gather facts from nodes
+  ansible.builtin.setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ vagrant_ansible_controller_nodes }}"
+- name: Update variables environment
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/etc/profile.d/01_strigo_context_others.sh"
+    regexp: "^export {{ item | upper }}_PRIVATE_IP"
+    line: "export {{ item | upper }}_PRIVATE_IP={{ hostvars[item].ansible_default_ipv4.address }}"
+    mode: "0644"
+    backup: false
+  loop: "{{ vagrant_ansible_controller_nodes | sort }}"
