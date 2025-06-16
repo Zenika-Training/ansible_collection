@@ -1,0 +1,6 @@
+---
+profile: production
+# Offline mode disables installation of requirements.yml and schema refreshing
+offline: true
+skip_list:
+  - var-naming[no-role-prefix]
