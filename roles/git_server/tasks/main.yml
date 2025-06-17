@@ -20,7 +20,7 @@
   loop: "{{ git_server_repos }}"
 - name: Ensure that .ssh directory exist
   ansible.builtin.file:
-    path: "/home/{{ ansible_user_id }}/.ssh"
+    path: "{{ ansible_user_dir }}/.ssh"
     state: directory
     mode: "0700"
 - name: Create SSH key for client
