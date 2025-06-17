@@ -1,0 +1,65 @@
+---
+- name: Git server - create git group
+  become: true
+  ansible.builtin.group:
+    name: "{{ git_server_group }}"
+    state: present
+- name: Git server - create git user
+  become: true
+  ansible.builtin.user:
+    name: "{{ git_server_user }}"
+    group: "{{ git_server_group }}"
+    state: present
+    shell: /bin/bash
+    create_home: true
+- name: Git server - create git repos server
+  become: true
+  ansible.builtin.command: "su - {{ git_server_user }} -c 'git init --bare -b {{ git_server_branch }} {{ git_server_path }}/{{ item }}'"
+  args:
+    creates: "{{ git_server_path }}/{{ item }}/HEAD"
+  loop: "{{ git_server_repos }}"
+- name: Ensure that .ssh directory exist
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.ssh"
+    state: directory
+    mode: "0700"
+- name: Create SSH key for client
+  community.crypto.openssh_keypair:
+    mode: "0600"
+    path: "{{ git_server_ssh_key }}"
+    type: "ecdsa"
+- name: Get ssh key
+  ansible.builtin.slurp:
+    src: "{{ git_server_ssh_key }}.pub"
+  register: ssh_pub_key
+- name: Git client - push SSH key on Git server
+  become: true
+  ansible.posix.authorized_key:
+    user: "{{ git_server_user }}"
+    state: present
+    key: "{{ ssh_pub_key['content'] | b64decode }}"
+- name: Git client - define URL for git
+  ansible.builtin.set_fact:
+    git_url: "ssh://{{ git_server_user }}@{{ ansible_default_ipv4.address }}:{{ git_server_path }}"
+- name: Ensure that SSH is started
+  become: true
+  ansible.builtin.service:
+    name: ssh
+    state: started
+    enabled: true
+- name: Ensure that SSH is ready
+  ansible.builtin.wait_for:
+    port: 22
+    host: "{{ ansible_default_ipv4.address }}"
+    search_regex: OpenSSH
+    delay: 10
+    timeout: 300
+# Utilisation de la commande git a la place du module car le depot est vide au depart
+- name: Git client - clone empty repos # noqa command-instead-of-module
+  ansible.builtin.command: "git clone {{ git_url }}/{{ item }} ~/{{ item | splitext | first }}"
+  args:
+    creates: "~/{{ item | splitext | first }}"
+  loop: "{{ git_server_repos }}"
+  environment:
+    GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+  notify: Git cloned repos
