@@ -6,11 +6,11 @@
 - name: Create SSH key for controller
   community.crypto.openssh_keypair:
     mode: "0600"
-    path: "{{ ssh_key }}"
+    path: "{{ vagrant_ansible_controller_ssh_key }}"
     type: "ecdsa"
 - name: Get ssh key
   ansible.builtin.slurp:
-    src: "{{ ssh_key }}.pub"
+    src: "{{ vagrant_ansible_controller_ssh_key }}.pub"
   register: ssh_pub_key
 - name: Push controller SSH key
   become: true
