@@ -3,6 +3,11 @@
   become: true
   ansible.builtin.package:
     update_cache: true
+- name: Ensure that .ssh directory exist
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.ssh"
+    state: directory
+    mode: "0700"
 - name: Create SSH key for controller
   community.crypto.openssh_keypair:
     mode: "0600"
@@ -15,7 +20,7 @@
 - name: Push controller SSH key
   become: true
   ansible.posix.authorized_key:
-    user: vagrant
+    user: "{{ vagrant_ansible_controller_user }}"
     state: present
     key: "{{ ssh_pub_key['content'] | b64decode }}"
 - name: Generate variables environment
