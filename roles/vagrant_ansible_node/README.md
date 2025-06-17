@@ -6,6 +6,7 @@ Configuration d'un noeud Ansible sous Vagrant
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
+  - [vagrant_ansible_node_controller](#vagrant_ansible_node_controller)
   - [vagrant_ansible_node_lab_group](#vagrant_ansible_node_lab_group)
   - [vagrant_ansible_node_lab_user](#vagrant_ansible_node_lab_user)
   - [vagrant_ansible_node_ssh_key](#vagrant_ansible_node_ssh_key)
@@ -20,6 +21,14 @@ Configuration d'un noeud Ansible sous Vagrant
 - Minimum Ansible version: `2.1`
 
 ## Default Variables
+
+### vagrant_ansible_node_controller
+
+#### Default value
+
+```YAML
+vagrant_ansible_node_controller: localhost
+```
 
 ### vagrant_ansible_node_lab_group
 
