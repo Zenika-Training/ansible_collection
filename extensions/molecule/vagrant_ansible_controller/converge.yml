@@ -6,4 +6,4 @@
       ansible.builtin.include_role:
         name: "zenika.training.vagrant_ansible_controller"
       vars:
-        vagrant_ansible_controller_user: "{{ ansible_user }}"
+        vagrant_ansible_controller_user: "{{ ansible_user_id }}"

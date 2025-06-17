@@ -5,7 +5,7 @@
     update_cache: true
 - name: Ensure that .ssh directory exist
   ansible.builtin.file:
-    path: "/home/{{ ansible_user }}/.ssh"
+    path: "/home/{{ ansible_user_id }}/.ssh"
     state: directory
     mode: "0700"
 - name: Create SSH key for controller
