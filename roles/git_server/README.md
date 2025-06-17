@@ -1,38 +1,85 @@
-Role Name
-=========
+# git_server
 
-A brief description of the role goes here.
+Configuration d'un serveur Git
 
-Requirements
-------------
+## Table of content
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- [Requirements](#requirements)
+- [Default Variables](#default-variables)
+  - [git_server_branch](#git_server_branch)
+  - [git_server_group](#git_server_group)
+  - [git_server_path](#git_server_path)
+  - [git_server_repos](#git_server_repos)
+  - [git_server_ssh_key](#git_server_ssh_key)
+  - [git_server_user](#git_server_user)
+- [Dependencies](#dependencies)
+- [License](#license)
+- [Author](#author)
 
-Role Variables
---------------
+---
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## Requirements
 
-Dependencies
-------------
+- Minimum Ansible version: `2.1`
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Default Variables
 
-Example Playbook
-----------------
+### git_server_branch
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+#### Default value
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```YAML
+git_server_branch: main
+```
 
-License
--------
+### git_server_group
 
-BSD
+#### Default value
 
-Author Information
-------------------
+```YAML
+git_server_group: git
+```
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+### git_server_path
+
+#### Default value
+
+```YAML
+git_server_path: /home/{{ git_server_user }}
+```
+
+### git_server_repos
+
+#### Default value
+
+```YAML
+git_server_repos: []
+```
+
+### git_server_ssh_key
+
+#### Default value
+
+```YAML
+git_server_ssh_key: ~/.ssh/id_ecdsa
+```
+
+### git_server_user
+
+#### Default value
+
+```YAML
+git_server_user: git
+```
+
+## Dependencies
+
+None.
+
+## License
+
+GPL-3.0-only
+
+## Author
+
+Yannick Sébastia
