@@ -1,0 +1,4 @@
+---
+vagrant_ansible_node_ssh_key: ~/.ssh/id_ecdsa
+vagrant_ansible_node_lab_group: ubuntu
+vagrant_ansible_node_lab_user: ubuntu
