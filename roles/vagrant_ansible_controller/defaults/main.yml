@@ -1,3 +1,4 @@
 ---
 vagrant_ansible_controller_nodes: []
 vagrant_ansible_controller_ssh_key: ~/.ssh/id_ecdsa
+vagrant_ansible_controller_user: vagrant
