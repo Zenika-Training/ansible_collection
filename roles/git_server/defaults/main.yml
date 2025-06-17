@@ -1,0 +1,7 @@
+---
+git_server_branch: "main"
+git_server_group: git
+git_server_path: "/home/{{ git_server_user }}"
+git_server_repos: []
+git_server_ssh_key: ~/.ssh/id_ecdsa
+git_server_user: git

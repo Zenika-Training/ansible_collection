@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include git_server"
+      ansible.builtin.include_role:
+        name: "zenika.training.git_server"
+      vars:
+        git_server_repos: ["molecule"]

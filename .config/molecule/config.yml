@@ -36,6 +36,7 @@ platforms:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     cgroupns_mode: host
+    network: molecule
 scenario:
   test_sequence:
     - dependency
