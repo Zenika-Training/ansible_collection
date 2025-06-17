@@ -7,6 +7,7 @@ Configuration d'un controleur Ansible sous Vagrant
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [vagrant_ansible_controller_nodes](#vagrant_ansible_controller_nodes)
+  - [vagrant_ansible_controller_ssh_key](#vagrant_ansible_controller_ssh_key)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -25,6 +26,14 @@ Configuration d'un controleur Ansible sous Vagrant
 
 ```YAML
 vagrant_ansible_controller_nodes: []
+```
+
+### vagrant_ansible_controller_ssh_key
+
+#### Default value
+
+```YAML
+vagrant_ansible_controller_ssh_key: ~/.ssh/id_ecdsa
 ```
 
 ## Dependencies
