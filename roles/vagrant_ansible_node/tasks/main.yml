@@ -5,7 +5,7 @@
     src: "{{ vagrant_ansible_node_ssh_key }}.pub"
   register: ssh_pub_key
   run_once: true
-  delegate_to: controller
+  delegate_to: "{{ vagrant_ansible_node_controller }}"
 - name: Nodes - create remote group
   become: true
   ansible.builtin.group:
@@ -32,5 +32,4 @@
     state: present
     key: "{{ ssh_pub_key['content'] | b64decode }}"
   loop:
-    - vagrant
     - "{{ vagrant_ansible_node_lab_user }}"
