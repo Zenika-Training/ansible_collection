@@ -16,8 +16,8 @@ provisioner:
 driver:
   name: podman
 platforms:
-  - name: "debian${CI_COMMIT_SHORT_SHA}"
-    image: docker.io/ysebastia/molecule:debian-12.11
+  - name: "ubuntu${CI_COMMIT_SHORT_SHA}"
+    image: docker.io/ysebastia/molecule:jammy
     pre_build_image: true
     env:
       HTTPS_PROXY: "${HTTPS_PROXY}"
