@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Yannick Sébastia
   description: Configuration d'un noeud Ansible sous Vagrant
