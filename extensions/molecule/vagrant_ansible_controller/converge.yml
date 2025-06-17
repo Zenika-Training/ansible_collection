@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include vagrant_ansible_controller"
+      ansible.builtin.include_role:
+        name: "zenika.training.vagrant_ansible_controller"
