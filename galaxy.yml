@@ -15,6 +15,7 @@ tags:
   - linux
 dependencies:
   "ansible.posix": ">=2.0.0"
+  "ansible.utils": ">=2.9.0"
   "community.crypto": ">=2.26.3"
 repository: https://github.com/Zenika-Training/ansible_collection
 homepage: https://github.com/Zenika-Training/ansible_collection
