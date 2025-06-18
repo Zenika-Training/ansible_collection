@@ -1,0 +1,30 @@
+---
+- name: Controller - ansible directory
+  become: true
+  ansible.builtin.file:
+    path: "/etc/ansible"
+    state: directory
+    mode: "0755"
+- name: Controller - default inventory
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/etc/ansible/hosts"
+    regexp: "^{{ item }} "
+    line: "{{ item }} ansible_host={{ setup_ipv4 }} ansible_user={{ ansible_global_configuration_user }}"
+    create: true
+    mode: "0644"
+  when: setup_ipv4 is ansible.utils.ipv4
+  vars:
+    setup_var: "{{ item | upper }}_PRIVATE_IP"
+    setup_ipv4: "{{ lookup('ansible.builtin.env', setup_var) }}"
+  loop: "{{ ansible_global_configuration_nodes }}"
+- name: Controller - default configuration
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/ansible/ansible.cfg
+    mode: "0644"
+    content: |
+      [defaults]
+      host_key_checking = False
+      interpreter_python = auto_silent
+      callbacks_enabled = ansible.posix.timer,ansible.posix.profile_tasks

@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include ansible_global_configuration"
+      ansible.builtin.include_role:
+        name: "zenika.training.ansible_global_configuration"
+      vars:
+        ansible_global_configuration_nodes: ["localhost"]
