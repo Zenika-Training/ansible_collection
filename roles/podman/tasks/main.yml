@@ -6,6 +6,7 @@
       - containers-storage
       - fuse-overlayfs
       - podman
+      - skopeo
       - slirp4netns
       - tree
       - uidmap
