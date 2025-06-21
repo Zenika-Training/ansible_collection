@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2204"  # Nom de la box vagrant à utiliser
+  config.vm.box_check_update = false
+
+  config.nfs.functional = false
+
+  # https://vagrant-libvirt.github.io/vagrant-libvirt/configuration.html
+  config.vm.provider "libvirt" do |guest|
+    guest.default_prefix = "collection_"
+    guest.cpus = "1"
+    guest.memory = "2048"
+  end
+
+  config.vm.define "controller" do |guest|
+    guest.vm.hostname = "controller"  # Nom d'hôte du serveur
+    guest.vm.provider :libvirt do |domain|
+      domain.memory = 8128
+      domain.cpus = 4
+    end
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.compatibility_mode = "2.0"
+    ansible.playbook = "ping.yml"
+  end
+
+end
