@@ -4,6 +4,13 @@
   ansible.builtin.package:
     update_cache: true
     name: "{{ ansible_virtualenv_packages }}"
+
+- name: Gather effective user ID
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - effective_user_id
+
 - name: Create venv directory
   ansible.builtin.file:
     state: directory

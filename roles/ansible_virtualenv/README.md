@@ -24,7 +24,7 @@ Configuration en VirtualEnv de Ansible
 #### Default value
 
 ```YAML
-ansible_virtualenv_directory: ~/.venv/ansible/
+ansible_virtualenv_directory: '{{ ansible_user_dir }}/.venv/ansible/'
 ```
 
 ## Dependencies
