@@ -1,0 +1,2 @@
+---
+ansible_virtualenv_directory: ~/.venv/ansible/

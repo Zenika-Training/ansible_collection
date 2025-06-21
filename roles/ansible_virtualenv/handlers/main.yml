@@ -1,0 +1,6 @@
+---
+# handlers file for ansible_virtualenv
+- name: Update python virtual environment
+  ansible.builtin.command:
+    cmd: "{{ ansible_virtualenv_python_bin }} -m venv --upgrade '{{ ansible_virtualenv_directory }}'"
+    creates: "{{ ansible_virtualenv_directory }}/bin/{{ ansible_virtualenv_python_bin }}"

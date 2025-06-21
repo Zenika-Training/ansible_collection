@@ -1,0 +1,8 @@
+---
+- name: Configure ansible on controller
+  hosts: "{{ ansible_limit | default('controller') }}"
+  gather_facts: false
+  tasks:
+    - name: Call ansible_virtualenv role
+      ansible.builtin.include_role:
+        name: zenika.training.ansible_virtualenv
