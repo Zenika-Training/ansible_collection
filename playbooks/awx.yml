@@ -1,0 +1,10 @@
+---
+- name: Configure AWX on controller
+  hosts: "{{ ansible_limit | default('controller') }}"
+  gather_facts: false
+  tasks:
+    - name: Call awx role
+      ansible.builtin.include_role:
+        name: zenika.training.awx
+      vars:
+        awx_enable_dependencies: "{{ enable_dependencies | default(true) }}"

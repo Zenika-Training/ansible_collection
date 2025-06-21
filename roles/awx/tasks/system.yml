@@ -1,0 +1,70 @@
+---
+- name: Collect needed facts
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - effective_user_id
+      - network
+- name: Install packages dependencies
+  become: true
+  ansible.builtin.package:
+    name: "{{ awx_package }}"
+    state: present
+- name: Install pip python dependencies
+  ansible.builtin.pip:
+    name: "{{ awx_pip }}"
+    virtualenv: "{{ awx_virtualenv_directory }}"
+- name: Create workdir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ awx_workdir }}"
+    mode: "0755"
+- name: Download kind
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ awx_kind_repo }}"
+    dest: /usr/local/bin/kind
+    owner: root
+    group: root
+    mode: "0755"
+- name: Download kubectl
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ awx_kubectl_repo }}"
+    dest: /usr/local/bin/kubectl
+    owner: root
+    group: root
+    mode: "0755"
+- name: Bash completion for kubectl
+  become: true
+  ansible.builtin.shell:
+    cmd: (/usr/local/bin/kubectl completion bash) > /etc/profile.d/kubectl.sh
+    creates: /etc/profile.d/kubectl.sh
+- name: Download k9s
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ awx_k9s_repo }}"
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+- name: Download helm
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ awx_helm_repo }}"
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+- name: Bash completion for helm
+  become: true
+  ansible.builtin.shell:
+    cmd: "(/usr/local/bin/helm completion bash) > /etc/profile.d/helm.sh"
+    creates: /etc/profile.d/helm.sh
+- name: Install Helm diff plugin
+  kubernetes.core.helm_plugin:
+    plugin_path: https://github.com/databus23/helm-diff
+    state: present

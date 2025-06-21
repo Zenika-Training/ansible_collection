@@ -1,0 +1,33 @@
+---
+- name: Get admin password
+  kubernetes.core.k8s_info:
+    kind: secret
+    name: "{{ awx_name }}-admin-password"
+    namespace: "{{ awx_ns }}"
+  register: secret
+  vars:
+    ansible_python_interpreter: "{{ awx_virtualenv_directory }}/bin/python"
+- name: Register admin password
+  ansible.builtin.set_fact:
+    awx_password: "{{ secret.resources[0].data.password | b64decode }}"
+- name: Generate controller config file
+  ansible.builtin.template:
+    src: .tower_cli.cfg.j2
+    dest: "{{ awx_config }}"
+    mode: "0644"
+- name: Wait for AWX to be ready
+  ansible.builtin.uri:
+    url: "http://localhost:{{ awx_controller_port }}/api/v2/ping/"
+    return_content: true
+  register: uri_configure
+  until: uri_configure.json.instances | length > 0
+  retries: 10
+  delay: 10
+- name: Configure AWX
+  awx.awx.settings:
+    controller_config_file: "{{ awx_config }}"
+    name: CSRF_TRUSTED_ORIGINS
+    value:
+      - "https://*.rp.strigo.io/"
+      - "http://{{ lookup('ansible.builtin.env', 'PUBLIC_IP') }}:{{ awx_controller_port }}"
+      - "http://{{ ansible_default_ipv4.address }}:{{ awx_controller_port }}"

@@ -1,0 +1,15 @@
+---
+awx_admin: admin
+awx_chart_version: 3.1.0
+awx_config: "{{ ansible_user_dir }}/.tower_cli.cfg"
+awx_controller_port: 32000
+awx_helm_repo: https://get.helm.sh/helm-v3.18.0-linux-amd64.tar.gz
+awx_k9s_repo: https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Linux_amd64.tar.gz
+awx_kind_repo: https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+awx_kube_config: "{{ ansible_user_dir }}/.kube/config"
+awx_kubectl_repo: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
+awx_name: awx
+awx_ns: awx
+awx_package: [tar, unzip]
+awx_pip: [kubernetes==33.1.0]
+awx_workdir: "/tmp/awx"
