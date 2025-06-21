@@ -18,6 +18,7 @@
 - name: Awx authentification and information
   ansible.builtin.debug:
     msg:
-      - "(0) login: {{ awx_admin }}"
-      - "(1) password: {{ awx_password }}"
-      - "(2) url: http://{{ ansible_default_ipv4.address }}:{{ awx_controller_port }}"
+      - "(0) AWX login: {{ awx_admin }}"
+      - "(1) AWX password: {{ awx_password }}"
+      - "(2) AWX url : http://{{ ansible_default_ipv4.address }}:{{ awx_controller_port }}"
+      - "(3) Registry url: http://{{ ansible_default_ipv4.address }}:{{ awx_registry_local_port }}"
