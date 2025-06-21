@@ -7,6 +7,7 @@ Configuration d'un controleur AWX
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [awx_enable_dependencies](#awx_enable_dependencies)
+  - [awx_enable_private_registry](#awx_enable_private_registry)
   - [awx_registry_local_port](#awx_registry_local_port)
   - [awx_virtualenv_directory](#awx_virtualenv_directory)
 - [Dependencies](#dependencies)
@@ -27,6 +28,14 @@ Configuration d'un controleur AWX
 
 ```YAML
 awx_enable_dependencies: true
+```
+
+### awx_enable_private_registry
+
+#### Default value
+
+```YAML
+awx_enable_private_registry: true
 ```
 
 ### awx_registry_local_port

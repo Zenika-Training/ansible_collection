@@ -5,6 +5,10 @@
 - name: Configure kind
   ansible.builtin.include_tasks: kind.yml
 
+- name: Configure private registry
+  ansible.builtin.include_tasks: registry.yml
+  when: awx_enable_private_registry | bool
+
 - name: Install AWX
   ansible.builtin.include_tasks: install.yml
 
