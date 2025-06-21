@@ -1,0 +1,10 @@
+---
+ansible_virtualenv_packages:
+  - python3-pip
+  - python3-venv
+  - virtualenv
+ansible_virtualenv_python_bin: "python3"
+ansible_virtualenv_pip:
+  - "ansible-core==2.17.12"
+  - "ansible-lint==25.6.1"
+  - yamllint==1.37.1
