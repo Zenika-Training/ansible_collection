@@ -2,13 +2,13 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@2.1.1
+  python: circleci/python@3.1.0
 
 jobs:
   yamllint:
     executor:
       name: python/default
-      tag: "3.10"
+      tag: "3.12"
     steps:
       - checkout
       - run: echo yamllint > requirements.txt
@@ -19,7 +19,7 @@ jobs:
   ansible-lint:
     executor:
       name: python/default
-      tag: "3.10"
+      tag: "3.12"
     steps:
       - checkout
       - run: echo ansible-lint > requirements.txt
