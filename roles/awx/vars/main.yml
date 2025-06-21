@@ -12,4 +12,5 @@ awx_name: awx
 awx_ns: awx
 awx_package: [tar, unzip]
 awx_pip: [kubernetes==33.1.0]
+awx_private_registry: local-registry
 awx_workdir: "/tmp/awx"
