@@ -1,0 +1,18 @@
+---
+- name: Configure controller on Vagrant
+  hosts: controller
+  tasks:
+    - name: Configure Ansible controller
+      ansible.builtin.include_role:
+        name: zenika.training.vagrant_ansible_controller
+      vars:
+        vagrant_ansible_controller_nodes: "{{ groups['nodes'] }}"
+- name: Configure nodes on Vagrant
+  hosts: nodes
+  strategy: linear
+  tasks:
+    - name: Configure Ansible controller
+      ansible.builtin.include_role:
+        name: zenika.training.vagrant_ansible_node
+      vars:
+        vagrant_ansible_node_controller: "controller"
