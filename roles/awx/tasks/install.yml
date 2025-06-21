@@ -1,0 +1,38 @@
+---
+- name: Add a helm repository
+  kubernetes.core.helm_repository:
+    name: awx-operator
+    repo_url: https://ansible-community.github.io/awx-operator-helm/
+- name: Deploy Awx operator
+  kubernetes.core.helm:
+    chart_ref: awx-operator/awx-operator
+    chart_version: "{{ awx_chart_version }}"
+    context: kind-kind
+    create_namespace: true
+    name: awx-operator
+    release_namespace: "{{ awx_ns }}"
+  vars:
+    ansible_python_interpreter: "{{ awx_virtualenv_directory }}/bin/python"
+- name: Generate node port
+  ansible.builtin.template:
+    src: awx-cr.yaml.j2
+    dest: "{{ awx_workdir }}/awx-cr.yaml"
+    mode: "0644"
+- name: Add node port
+  kubernetes.core.k8s:
+    context: kind-kind
+    state: present
+    namespace: "{{ awx_ns }}"
+    src: "{{ awx_workdir }}/awx-cr.yaml"
+  vars:
+    ansible_python_interpreter: "{{ awx_virtualenv_directory }}/bin/python"
+- name: Wait install of AWX
+  ansible.builtin.uri:
+    url: "http://localhost:{{ awx_controller_port }}"
+    return_content: true
+    status_code: 200
+    follow_redirects: "none"
+  register: uri_output
+  until: uri_output.status == 200
+  retries: 120
+  delay: 10

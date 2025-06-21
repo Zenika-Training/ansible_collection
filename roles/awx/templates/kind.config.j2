@@ -1,0 +1,16 @@
+---
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+nodes:
+  - role: control-plane
+    extraPortMappings:
+    - containerPort: {{ awx_controller_port }}
+      hostPort: {{ awx_controller_port }}
+      listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
+      protocol: tcp # Optional, defaults to tcp
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ ansible_default_ipv4.address }}:{{ awx_registry_local_port }}"]
+      endpoint = ["http://{{ ansible_default_ipv4.address }}:{{ awx_registry_local_port }}"]
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ ansible_default_ipv4.address }}:{{ awx_registry_local_port }}".tls]
+      insecure_skip_verify = true

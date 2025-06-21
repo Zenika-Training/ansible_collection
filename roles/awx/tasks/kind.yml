@@ -1,0 +1,23 @@
+---
+- name: Configure Kind
+  ansible.builtin.template:
+    src: kind.config.j2
+    dest: "{{ awx_workdir }}/kind.config"
+    mode: "0644"
+- name: Create podman network
+  containers.podman.podman_network:
+    name: kind
+# https://bugs.launchpad.net/ubuntu/+source/libpod/+bug/2024394
+- name: Fix CNI version (bug libpod 2024394)
+  ansible.builtin.lineinfile:
+    state: present
+    path: "{{ ansible_user_dir }}/.config/cni/net.d/kind.conflist"
+    line: '   "cniVersion": "0.4.0",'
+    regexp: '^   "cniVersion": "1.0.0",$'
+    mode: "0644"
+- name: Create cluster
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/kind create cluster --config {{ awx_workdir }}/kind.config --wait 5m"
+    creates: "{{ awx_kube_config }}"
+  environment:
+    KIND_EXPERIMENTAL_PROVIDER: podman

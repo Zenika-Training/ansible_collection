@@ -1,0 +1,19 @@
+---
+- name: Configure system
+  ansible.builtin.include_tasks: system.yml
+
+- name: Configure kind
+  ansible.builtin.include_tasks: kind.yml
+
+- name: Install AWX
+  ansible.builtin.include_tasks: install.yml
+
+- name: Configure AWX
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Awx authentification and information
+  ansible.builtin.debug:
+    msg:
+      - "(0) login: {{ awx_admin }}"
+      - "(1) password: {{ awx_password }}"
+      - "(2) url: http://{{ ansible_default_ipv4.address }}:{{ awx_controller_port }}"
