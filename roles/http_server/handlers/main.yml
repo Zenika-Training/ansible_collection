@@ -1,0 +1,10 @@
+---
+# handlers file for http_server
+- name: Create, enable and start http server service
+  become: true
+  ansible.builtin.service:
+    name: "http-server@{{ http_server_user }}"
+    enabled: true
+    state: started
+  listen:
+    - http-server
