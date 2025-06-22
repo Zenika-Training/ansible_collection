@@ -15,8 +15,8 @@
   ansible.builtin.file:
     state: directory
     path: "{{ ansible_virtualenv_directory }}"
-    owner: "{{ ansible_user | default('root') }}"
-    group: "{{ ansible_user | default('root') }}"
+    owner: "{{ ansible_user_id | default('root') }}"
+    group: "{{ ansible_user_id | default('root') }}"
     mode: "0775"
   notify:
     - Update python virtual environment
