@@ -1,0 +1,5 @@
+---
+# defaults file for http_server
+http_server_user: "{{ ansible_user_id }}"
+http_server_public: "{{ ansible_user_dir }}/public"
+http_server_port: 9997

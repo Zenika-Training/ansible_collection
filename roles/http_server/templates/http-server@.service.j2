@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple static public web server
+After=network.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/python3 -m http.server {{ http_server_port }} --directory {{ http_server_public }}
+Restart=always
+User=%i
+
+[Install]
+WantedBy=default.target
