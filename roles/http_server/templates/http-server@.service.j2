@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=exec
-ExecStart=/usr/bin/python3 -m http.server {{ http_server_port }} --directory {{ http_server_public }}
+ExecStart=/usr/bin/python3 -m http.server {{ http_server_port }} --directory /home/%i/public/
 Restart=always
 User=%i
 
