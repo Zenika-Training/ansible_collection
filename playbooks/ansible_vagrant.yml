@@ -1,6 +1,6 @@
 ---
 - name: Configure controller on Vagrant
-  hosts: controller
+  hosts: "{{ ansible_limit | default('controller') }}"
   tasks:
     - name: Configure Ansible controller
       ansible.builtin.include_role:
