@@ -1,11 +1,18 @@
 ---
-- name: Controller - ansible directory
+- name: Install needed packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - jq
+      - tree
+    state: present
+- name: Ensure thaht ansible directory exist
   become: true
   ansible.builtin.file:
     path: "/etc/ansible"
     state: directory
     mode: "0755"
-- name: Controller - default inventory
+- name: Create default directory for Ansible
   become: true
   ansible.builtin.lineinfile:
     path: "/etc/ansible/hosts"
@@ -15,10 +22,9 @@
     mode: "0644"
   when: setup_ipv4 is ansible.utils.ipv4
   vars:
-    setup_var: "{{ item | upper }}_PRIVATE_IP"
-    setup_ipv4: "{{ lookup('ansible.builtin.env', setup_var) }}"
+    setup_ipv4: "{{ lookup('ansible.builtin.env', item | upper + '_PRIVATE_IP') }}"
   loop: "{{ ansible_global_configuration_nodes }}"
-- name: Controller - default configuration
+- name: Create default configuration for Ansible
   become: true
   ansible.builtin.copy:
     dest: /etc/ansible/ansible.cfg
@@ -28,3 +34,13 @@
       host_key_checking = False
       interpreter_python = auto_silent
       callbacks_enabled = ansible.posix.timer,ansible.posix.profile_tasks
+- name: Ensure that public directory exist
+  ansible.builtin.file:
+    path: "{{ ansible_global_configuration_public }}"
+    state: directory
+    mode: "0755"
+- name: Populate fake dynamic inventory
+  ansible.builtin.template:
+    src: inventory.json.j2
+    dest: "{{ ansible_global_configuration_public }}/inventory.json"
+    mode: "0644"

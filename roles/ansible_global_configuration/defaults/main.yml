@@ -1,3 +1,4 @@
 ---
 ansible_global_configuration_nodes: []
 ansible_global_configuration_user: "{{ ansible_user_id }}"
+ansible_global_configuration_public: "{{ ansible_user_dir }}/public"

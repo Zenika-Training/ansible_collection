@@ -1,0 +1,25 @@
+{
+    "_meta": {
+        "hostvars": {
+          "{{ ansible_hostname }}": {
+                "ansible_host": "{{ ansible_default_ipv4.address }}",
+                "ansible_user": "{{ ansible_global_configuration_user }}"
+          {{ "}," if ansible_global_configuration_nodes | length > 0 else "}" }}
+          {% for node in ansible_global_configuration_nodes -%}
+          "{{ node }}": {
+                "ansible_host": "{{ lookup('env', node | upper + '_PRIVATE_IP') }}",
+                "ansible_user": "{{ ansible_global_configuration_user }}"
+          {{ "}," if not loop.last else "}" }}
+          {% endfor %}
+        }
+    },
+    "nodes": {
+        "hosts": [
+          {% for node in ansible_global_configuration_nodes %}"{{ node }}"{{ "," if not loop.last else "" }}
+          {% endfor %}
+        ]
+    },
+    "controllers": [
+        "{{ ansible_hostname }}"
+    ]
+}
