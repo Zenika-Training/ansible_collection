@@ -7,6 +7,9 @@
         name: zenika.training.vagrant_ansible_controller
       vars:
         vagrant_ansible_controller_nodes: "{{ groups['nodes'] }}"
+    - name: Configure http server
+      ansible.builtin.include_role:
+        name: zenika.training.http_server
 - name: Configure nodes on Vagrant
   hosts: nodes
   strategy: linear
