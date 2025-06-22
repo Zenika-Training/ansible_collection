@@ -8,7 +8,6 @@
       - podman
       - skopeo
       - slirp4netns
-      - tree
       - uidmap
     state: present
 - name: Container - allow insecure registry
