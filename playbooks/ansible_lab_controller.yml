@@ -1,0 +1,13 @@
+---
+- name: Configure ansible on lab controller
+  hosts: "{{ ansible_limit | default('localhost') }}"
+  tasks:
+    - name: Ansible global configuration
+      ansible.builtin.include_role:
+        name: zenika.training.ansible_global_configuration
+    - name: Configure Git server
+      ansible.builtin.include_role:
+        name: zenika.training.git_server
+    - name: Configure podman
+      ansible.builtin.include_role:
+        name: zenika.training.podman
