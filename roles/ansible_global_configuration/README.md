@@ -7,6 +7,7 @@ Configuration globale Ansible
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [ansible_global_configuration_nodes](#ansible_global_configuration_nodes)
+  - [ansible_global_configuration_public](#ansible_global_configuration_public)
   - [ansible_global_configuration_user](#ansible_global_configuration_user)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -26,6 +27,14 @@ Configuration globale Ansible
 
 ```YAML
 ansible_global_configuration_nodes: []
+```
+
+### ansible_global_configuration_public
+
+#### Default value
+
+```YAML
+ansible_global_configuration_public: '{{ ansible_user_dir }}/public'
 ```
 
 ### ansible_global_configuration_user
