@@ -1,0 +1,5 @@
+---
+irc_service: ngircd.service
+irc_packages:
+  - ngircd
+  - irssi
