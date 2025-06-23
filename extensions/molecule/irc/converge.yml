@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include irc"
+      ansible.builtin.include_role:
+        name: "zenika.training.irc"
