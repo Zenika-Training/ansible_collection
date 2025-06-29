@@ -35,6 +35,15 @@
     controller_config_file: "{{ awx_provisioning_config }}"
   loop: "{{ team_roles.inventories }}"
   when: team_roles.inventories is defined
+- name: "Manage jobs of {{ team_roles.team }}"
+  awx.awx.role:
+    teams: "{{ team_roles.team }}"
+    job_templates: "{{ item.name }}"
+    role: "{{ item.role }}"
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+  loop: "{{ team_roles.job_templates }}"
+  when: team_roles.job_templates is defined
 - name: "Manage Workflows of {{ team_roles.team }}"
   awx.awx.role:
     teams: "{{ team_roles.team }}"
