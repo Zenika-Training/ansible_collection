@@ -56,6 +56,8 @@
     inputs:
       username: "{{ item.username | default(omit) }}"
       ssh_key_data: "{{ lookup('file', item.ssh_key) if item.ssh_key is defined else omit }}"
+      vault_password: "{{ item.vault_password | default(omit) }}"
+      vault_id: "{{ item.vault_id | default(omit) }}"
   loop: "{{ awx_item.credentials }}"
   when:
     - awx_item.credentials is defined
@@ -64,7 +66,7 @@
     controller_config_file: "{{ awx_provisioning_config }}"
     credential: "{{ item.credential }}"
     default_environment: "{{ item.default_environment }}"
-    description: "{{ item.description }}"
+    description: "{{ item.description | default(omit) }}"
     name: "{{ item.name }}"
     organization: "{{ awx_item.org }}"
     scm_type: "{{ item.scm_type }}"
@@ -77,6 +79,7 @@
 - name: Inventories
   awx.awx.inventory:
     controller_config_file: "{{ awx_provisioning_config }}"
+    description: "{{ item.description | default(omit) }}"
     host_filter: "{{ item.host_filter | default(omit) }}"
     kind: "{{ item.kind | default(omit) }}"
     name: "{{ item.name }}"
@@ -99,6 +102,7 @@
     become_enabled: "{{ item.become_enabled | default(omit) }}"
     controller_config_file: "{{ awx_provisioning_config }}"
     credentials: "{{ item.credentials }}"
+    description: "{{ item.description | default(omit) }}"
     extra_vars: "{{ item.extra_vars | default(omit) }}"
     inventory: "{{ item.inventory | default(omit) }}"
     job_tags: "{{ item.job_tags | default(omit) }}"
