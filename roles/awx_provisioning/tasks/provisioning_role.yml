@@ -1,0 +1,46 @@
+---
+- name: "Manage members of {{ team_roles.team }}"
+  awx.awx.role:
+    users: "{{ item }}"
+    target_teams: "{{ team_roles.team }}"
+    role: member
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+  loop: "{{ team_roles.members }}"
+  when: team_roles.members is defined
+- name: "Manage credentials of {{ team_roles.team }}"
+  awx.awx.role:
+    teams: "{{ team_roles.team }}"
+    credentials: "{{ item }}"
+    role: use
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+  loop: "{{ team_roles.credentials }}"
+  when: team_roles.credentials is defined
+- name: "Manage projects of {{ team_roles.team }}"
+  awx.awx.role:
+    teams: "{{ team_roles.team }}"
+    projects: "{{ item }}"
+    role: use
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+  loop: "{{ team_roles.projects }}"
+  when: team_roles.projects is defined
+- name: "Manage inventories of {{ team_roles.team }}"
+  awx.awx.role:
+    teams: "{{ team_roles.team }}"
+    inventories: "{{ item }}"
+    role: use
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+  loop: "{{ team_roles.inventories }}"
+  when: team_roles.inventories is defined
+- name: "Manage Workflows of {{ team_roles.team }}"
+  awx.awx.role:
+    teams: "{{ team_roles.team }}"
+    workflows: "{{ item }}"
+    role: execute
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+  loop: "{{ team_roles.workflows }}"
+  when: team_roles.workflows is defined

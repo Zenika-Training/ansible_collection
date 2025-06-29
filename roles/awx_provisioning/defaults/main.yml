@@ -1,0 +1,4 @@
+---
+awx_provisioning_config: "{{ ansible_user_dir }}/.tower_cli.cfg"
+awx_provisioning_iac: []
+awx_provisioning_settings: []

@@ -1,0 +1,137 @@
+---
+- name: Organization
+  awx.awx.organization:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    name: "{{ awx_item.org }}"
+    state: present
+  when: awx_item.org is defined
+- name: Teams
+  awx.awx.team:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    description: "{{ item.description }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+    state: present
+  loop: "{{ awx_item.teams }}"
+  when:
+    - awx_item.teams is defined
+    - awx_item.org is defined
+- name: Roles teams
+  ansible.builtin.include_tasks: provisioning_role_team_assignment.yml
+  loop: "{{ awx_item.team_assignment }}"
+  loop_control:
+    loop_var: team_assignment
+  when:
+    - awx_item.team_assignment is defined
+- name: Users
+  awx.awx.user:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    organization: "{{ awx_item.org }}"
+    password: "{{ item.password | default(item.username) }}"
+    state: present
+    update_secrets: false
+    username: "{{ item.username }}"
+  loop: "{{ awx_item.users }}"
+  when:
+    - awx_item.users is defined
+    - awx_item.org is defined
+- name: Execution Environments
+  awx.awx.execution_environment:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    image: "{{ item.image }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+  loop: "{{ awx_item.execution_environment }}"
+  when:
+    - awx_item.execution_environment is defined
+- name: Credentials
+  awx.awx.credential:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    credential_type: "{{ item.credential_type }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+    state: present
+    update_secrets: false
+    inputs:
+      username: "{{ item.username | default(omit) }}"
+      ssh_key_data: "{{ lookup('file', item.ssh_key) if item.ssh_key is defined else omit }}"
+  loop: "{{ awx_item.credentials }}"
+  when:
+    - awx_item.credentials is defined
+- name: Projects
+  awx.awx.project:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    credential: "{{ item.credential }}"
+    default_environment: "{{ item.default_environment }}"
+    description: "{{ item.description }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+    scm_type: "{{ item.scm_type }}"
+    scm_update_on_launch: "{{ item.scm_update_on_launch }}"
+    scm_url: "{{ item.scm_url }}"
+    state: present
+  loop: "{{ awx_item.projects }}"
+  when:
+    - awx_item.projects is defined
+- name: Inventories
+  awx.awx.inventory:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    host_filter: "{{ item.host_filter | default(omit) }}"
+    kind: "{{ item.kind | default(omit) }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+    state: present
+  loop: "{{ awx_item.inventories }}"
+  when:
+    - awx_item.inventories is defined
+- name: Sources inventories
+  ansible.builtin.include_tasks: provisioning_inventory_source.yml
+  loop: "{{ awx_item.inventories }}"
+  loop_control:
+    loop_var: inventories
+  when:
+    - awx_item.inventories is defined
+
+- name: Jobs templates
+  awx.awx.job_template:
+    ask_inventory_on_launch: "{{ item.ask_inventory_on_launch | default(omit) }}"
+    become_enabled: "{{ item.become_enabled | default(omit) }}"
+    controller_config_file: "{{ awx_provisioning_config }}"
+    credentials: "{{ item.credentials }}"
+    extra_vars: "{{ item.extra_vars | default(omit) }}"
+    inventory: "{{ item.inventory | default(omit) }}"
+    job_tags: "{{ item.job_tags | default(omit) }}"
+    job_type: run
+    limit: "{{ item.limit | default(omit) }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+    playbook: "{{ item.playbook }}"
+    project: "{{ item.project }}"
+    state: present
+    survey_enabled: "{{ item.survey_enabled | default(omit) }}"
+    survey_spec: "{{ item.survey_spec | default(omit) }}"
+    use_fact_cache: "{{ item.use_fact_cache | default(omit) }}"
+  loop: "{{ awx_item.job_templates }}"
+  when:
+    - awx_item.job_templates is defined
+
+- name: Workflows jobs templates
+  awx.awx.workflow_job_template:
+    controller_config_file: "{{ awx_provisioning_config }}"
+    name: "{{ item.name }}"
+    organization: "{{ awx_item.org }}"
+    state: present
+    survey_enabled: "{{ item.survey_enabled | default(omit) }}"
+    survey_spec: "{{ item.survey_spec | default(omit) }}"
+    workflow_nodes: "{{ item.workflow_nodes | default(omit) }}"
+  loop: "{{ awx_item.workflows }}"
+  when:
+    - awx_item.workflows is defined
+
+- name: Manage roles
+  ansible.builtin.include_tasks: provisioning_role.yml
+  loop: "{{ awx_item.team_roles }}"
+  loop_control:
+    loop_var: team_roles
+  when:
+    - awx_item.team_roles is defined

@@ -1,0 +1,16 @@
+---
+- name: "Manage sources for {{ inventories.name }}"
+  awx.awx.inventory_source:
+    name: "{{ item.name }}"
+    inventory: "{{ inventories.name }}"
+    source: "scm"
+    source_path: "{{ item.source_path }}"
+    source_project: "{{ item.source_project }}"
+    organization: "{{ awx_item.org }}"
+    state: present
+    controller_config_file: "{{ awx_provisioning_config }}"
+    update_on_launch: "{{ item.update_on_launch | default(true) }}"
+    host_filter: "{{ item.host_filter | default(omit) }}"
+  loop: "{{ inventories.sources }}"
+  when:
+    - inventories.sources is defined
