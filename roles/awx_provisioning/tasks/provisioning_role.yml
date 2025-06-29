@@ -1,9 +1,9 @@
 ---
 - name: "Manage members of {{ team_roles.team }}"
   awx.awx.role:
-    users: "{{ item }}"
+    users: "{{ item.name }}"
     target_teams: "{{ team_roles.team }}"
-    role: member
+    role: "{{ item.role }}"
     state: present
     controller_config_file: "{{ awx_provisioning_config }}"
   loop: "{{ team_roles.members }}"
@@ -11,8 +11,8 @@
 - name: "Manage credentials of {{ team_roles.team }}"
   awx.awx.role:
     teams: "{{ team_roles.team }}"
-    credentials: "{{ item }}"
-    role: use
+    credentials: "{{ item.name }}"
+    role: "{{ item.role }}"
     state: present
     controller_config_file: "{{ awx_provisioning_config }}"
   loop: "{{ team_roles.credentials }}"
@@ -20,8 +20,8 @@
 - name: "Manage projects of {{ team_roles.team }}"
   awx.awx.role:
     teams: "{{ team_roles.team }}"
-    projects: "{{ item }}"
-    role: use
+    projects: "{{ item.name }}"
+    role: "{{ item.role }}"
     state: present
     controller_config_file: "{{ awx_provisioning_config }}"
   loop: "{{ team_roles.projects }}"
@@ -29,8 +29,8 @@
 - name: "Manage inventories of {{ team_roles.team }}"
   awx.awx.role:
     teams: "{{ team_roles.team }}"
-    inventories: "{{ item }}"
-    role: use
+    inventories: "{{ item.name }}"
+    role: "{{ item.role }}"
     state: present
     controller_config_file: "{{ awx_provisioning_config }}"
   loop: "{{ team_roles.inventories }}"
@@ -38,8 +38,8 @@
 - name: "Manage Workflows of {{ team_roles.team }}"
   awx.awx.role:
     teams: "{{ team_roles.team }}"
-    workflows: "{{ item }}"
-    role: execute
+    workflows: "{{ item.name }}"
+    role: "{{ item.role }}"
     state: present
     controller_config_file: "{{ awx_provisioning_config }}"
   loop: "{{ team_roles.workflows }}"
