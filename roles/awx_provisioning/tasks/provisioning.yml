@@ -18,9 +18,9 @@
     - awx_item.org is defined
 - name: Roles teams
   ansible.builtin.include_tasks: provisioning_role_team_assignment.yml
-  loop: "{{ awx_item.team_assignment }}"
+  loop: "{{ awx_item.teams }}"
   loop_control:
-    loop_var: team_assignment
+    loop_var: teams
   when:
     - awx_item.teams is defined
     - awx_item.org is defined
