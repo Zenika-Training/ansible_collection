@@ -49,6 +49,7 @@
     group: root
     mode: "0755"
     remote_src: true
+    creates: /usr/local/bin/k9s
 - name: Download helm
   become: true
   ansible.builtin.unarchive:
@@ -59,6 +60,7 @@
     mode: "0755"
     remote_src: true
     extra_opts: [--strip-components=1]
+    creates: /usr/local/bin/helm
 - name: Bash completion for helm
   become: true
   ansible.builtin.shell:
