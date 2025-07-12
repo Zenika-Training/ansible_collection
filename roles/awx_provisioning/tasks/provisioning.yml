@@ -50,9 +50,10 @@
   awx.awx.credential:
     controller_config_file: "{{ awx_provisioning_config }}"
     credential_type: "{{ item.credential_type }}"
+    description: "{{ item.description | default(omit) }}"
     name: "{{ item.name }}"
     organization: "{{ awx_item.org }}"
-    state: present
+    state: exists
     update_secrets: false
     inputs:
       username: "{{ item.username | default(omit) }}"
@@ -75,6 +76,7 @@
     scm_update_on_launch: "{{ item.scm_update_on_launch }}"
     scm_url: "{{ item.scm_url }}"
     state: present
+    update_project: "{{ item.update_project | default(false) }}"
   loop: "{{ awx_item.projects }}"
   when:
     - awx_item.projects is defined
@@ -83,7 +85,7 @@
     controller_config_file: "{{ awx_provisioning_config }}"
     description: "{{ item.description | default(omit) }}"
     host_filter: "{{ item.host_filter | default(omit) }}"
-    kind: "{{ item.kind | default(omit) }}"
+    kind: "{{ item.kind | default('') }}"
     name: "{{ item.name }}"
     organization: "{{ awx_item.org }}"
     state: present
