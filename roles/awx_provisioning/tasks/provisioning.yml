@@ -5,6 +5,7 @@
     name: "{{ awx_item.org }}"
     state: present
   when: awx_item.org is defined
+  register: organization
 - name: Teams
   awx.awx.team:
     controller_config_file: "{{ awx_provisioning_config }}"
