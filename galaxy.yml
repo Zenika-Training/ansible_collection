@@ -14,7 +14,7 @@ tags:
   # tags are all lower-case, no spaces, no dashes.
   - linux
 dependencies:
-  "ansible.posix": "2.0.0"
+  "ansible.posix": "2.1.0"
   "ansible.utils": "2.9.0"
   "awx.awx": "24.6.1"
   "community.crypto": "3.0.1"
