@@ -16,13 +16,13 @@
 - name: Get ssh key
   ansible.builtin.slurp:
     src: "{{ vagrant_ansible_controller_ssh_key }}.pub"
-  register: ssh_pub_key
+  register: vagrant_ansible_controller_ssh_pub_key
 - name: Push controller SSH key
   become: true
   ansible.posix.authorized_key:
     user: "{{ vagrant_ansible_controller_user }}"
     state: present
-    key: "{{ ssh_pub_key['content'] | b64decode }}"
+    key: "{{ vagrant_ansible_controller_ssh_pub_key['content'] | b64decode }}"
 - name: Generate variables environment
   become: true
   ansible.builtin.lineinfile:
