@@ -4,12 +4,12 @@
     kind: secret
     name: "{{ awx_name }}-admin-password"
     namespace: "{{ awx_ns }}"
-  register: secret
+  register: awx_secret
   vars:
     ansible_python_interpreter: "{{ awx_virtualenv_directory }}/bin/python"
 - name: Register admin password
   ansible.builtin.set_fact:
-    awx_password: "{{ secret.resources[0].data.password | b64decode }}"
+    awx_password: "{{ awx_secret.resources[0].data.password | b64decode }}"
 - name: Generate controller config file
   ansible.builtin.template:
     src: .tower_cli.cfg.j2
@@ -19,8 +19,8 @@
   ansible.builtin.uri:
     url: "http://localhost:{{ awx_controller_port }}/api/v2/ping/"
     return_content: true
-  register: uri_configure
-  until: uri_configure.json.instances | length > 0
+  register: awx_uri_configure
+  until: awx_uri_configure.json.instances | length > 0
   retries: 10
   delay: 10
 - name: Configure AWX
