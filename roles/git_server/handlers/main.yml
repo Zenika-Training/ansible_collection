@@ -1,5 +1,5 @@
 ---
 - name: Git cloned repos
   ansible.builtin.debug:
-    msg: "{{ git_url }}/{{ item }}"
+    msg: "{{ git_server_url }}/{{ item }}"
   loop: "{{ git_server_repos }}"

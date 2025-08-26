@@ -31,16 +31,16 @@
 - name: Get ssh key
   ansible.builtin.slurp:
     src: "{{ git_server_ssh_key }}.pub"
-  register: ssh_pub_key
+  register: git_server_ssh_pub_key
 - name: Git client - push SSH key on Git server
   become: true
   ansible.posix.authorized_key:
     user: "{{ git_server_user }}"
     state: present
-    key: "{{ ssh_pub_key['content'] | b64decode }}"
+    key: "{{ git_server_ssh_pub_key['content'] | b64decode }}"
 - name: Git client - define URL for git
   ansible.builtin.set_fact:
-    git_url: "ssh://{{ git_server_user }}@{{ ansible_default_ipv4.address }}:{{ git_server_path }}"
+    git_server_url: "ssh://{{ git_server_user }}@{{ ansible_default_ipv4.address }}:{{ git_server_path }}"
 - name: Ensure that SSH is started
   become: true
   ansible.builtin.service:
@@ -56,7 +56,7 @@
     timeout: 300
 # Utilisation de la commande git a la place du module car le depot est vide au depart
 - name: Git client - clone empty repos # noqa command-instead-of-module
-  ansible.builtin.command: "git clone {{ git_url }}/{{ item }} ~/{{ item | splitext | first }}"
+  ansible.builtin.command: "git clone {{ git_server_url }}/{{ item }} ~/{{ item | splitext | first }}"
   args:
     creates: "~/{{ item | splitext | first }}"
   loop: "{{ git_server_repos }}"

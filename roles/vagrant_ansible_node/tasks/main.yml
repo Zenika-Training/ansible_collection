@@ -3,7 +3,7 @@
 - name: Controller - get ssh key # noqa: run-once[task]
   ansible.builtin.slurp:
     src: "{{ vagrant_ansible_node_ssh_key }}.pub"
-  register: ssh_pub_key
+  register: vagrant_ansible_node_ssh_pub_key
   run_once: true
   delegate_to: "{{ vagrant_ansible_node_controller }}"
 - name: Nodes - create remote group
@@ -30,6 +30,6 @@
   ansible.posix.authorized_key:
     user: "{{ item }}"
     state: present
-    key: "{{ ssh_pub_key['content'] | b64decode }}"
+    key: "{{ vagrant_ansible_node_ssh_pub_key['content'] | b64decode }}"
   loop:
     - "{{ vagrant_ansible_node_lab_user }}"

@@ -32,7 +32,7 @@
     return_content: true
     status_code: 200
     follow_redirects: "none"
-  register: uri_output
-  until: uri_output.status == 200
+  register: awx_uri_output
+  until: awx_uri_output.status == 200
   retries: 120
   delay: 10
