@@ -17,7 +17,7 @@ dependencies:
   "ansible.posix": "2.1.0"
   "ansible.utils": "2.9.0"
   "awx.awx": "24.6.1"
-  "community.crypto": "3.0.1"
+  "community.crypto": "3.0.3"
   "containers.podman": "1.16.4"
   "kubernetes.core": "6.0.0"
 repository: https://github.com/Zenika-Training/ansible_collection
