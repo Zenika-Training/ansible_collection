@@ -5,6 +5,9 @@ Configuration IRC
 ## Table of content
 
 - [Requirements](#requirements)
+- [Default Variables](#default-variables)
+  - [irc_packages](#irc_packages)
+  - [irc_service](#irc_service)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -15,6 +18,25 @@ Configuration IRC
 
 - Minimum Ansible version: `2.1`
 
+## Default Variables
+
+### irc_packages
+
+#### Default value
+
+```YAML
+irc_packages:
+  - ngircd
+  - irssi
+```
+
+### irc_service
+
+#### Default value
+
+```YAML
+irc_service: ngircd.service
+```
 
 ## Dependencies
 
