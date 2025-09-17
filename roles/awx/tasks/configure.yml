@@ -21,7 +21,7 @@
     return_content: true
   register: awx_uri_configure
   until: awx_uri_configure.json.instances | length > 0
-  retries: 10
+  retries: 15
   delay: 10
 - name: Configure AWX
   awx.awx.settings:
