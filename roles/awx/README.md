@@ -155,7 +155,7 @@ awx_package: [tar, unzip]
 #### Default value
 
 ```YAML
-awx_pip: [kubernetes==33.1.0]
+awx_pip: [kubernetes==34.1.0]
 ```
 
 ### awx_private_registry

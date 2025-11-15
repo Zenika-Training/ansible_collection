@@ -11,6 +11,6 @@ awx_kubectl_repo: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
 awx_name: awx
 awx_ns: awx
 awx_package: [tar, unzip]
-awx_pip: [kubernetes==33.1.0]
+awx_pip: [kubernetes==34.1.0]
 awx_private_registry: local-registry
 awx_workdir: "/tmp/awx"
