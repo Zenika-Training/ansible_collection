@@ -90,7 +90,7 @@ awx_enable_private_registry: true
 #### Default value
 
 ```YAML
-awx_helm_repo: https://get.helm.sh/helm-v3.19.0-linux-amd64.tar.gz
+awx_helm_repo: https://get.helm.sh/helm-v3.19.1-linux-amd64.tar.gz
 ```
 
 ### awx_k9s_repo
