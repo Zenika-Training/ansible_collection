@@ -99,7 +99,7 @@ awx_helm_repo: https://get.helm.sh/helm-v3.19.1-linux-amd64.tar.gz
 
 ```YAML
 awx_k9s_repo: 
-  https://github.com/derailed/k9s/releases/download/v0.50.9/k9s_Linux_amd64.tar.gz
+  https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_Linux_amd64.tar.gz
 ```
 
 ### awx_kind_repo
