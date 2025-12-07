@@ -58,7 +58,7 @@ awx_chart_version: 3.2.0
 #### Default value
 
 ```YAML
-awx_config: '{{ ansible_user_dir }}/.tower_cli.cfg'
+awx_config: '{{ ansible_facts.user_dir }}/.tower_cli.cfg'
 ```
 
 ### awx_controller_port
@@ -115,7 +115,7 @@ awx_kind_repo: https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
 #### Default value
 
 ```YAML
-awx_kube_config: '{{ ansible_user_dir }}/.kube/config'
+awx_kube_config: '{{ ansible_facts.user_dir }}/.kube/config'
 ```
 
 ### awx_kubectl_repo
@@ -179,7 +179,7 @@ awx_registry_local_port: 5000
 #### Default value
 
 ```YAML
-awx_virtualenv_directory: '{{ ansible_user_dir }}/.venv/ansible'
+awx_virtualenv_directory: '{{ ansible_facts.user_dir }}/.venv/ansible'
 ```
 
 ### awx_workdir
