@@ -48,7 +48,7 @@ ansible_virtualenv_packages:
 ```YAML
 ansible_virtualenv_pip:
   - ansible-core==2.17.14
-  - ansible-lint==25.11.0
+  - ansible-lint==25.12.0
   - yamllint==1.37.1
 ```
 
