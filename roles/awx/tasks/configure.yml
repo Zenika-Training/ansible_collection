@@ -30,4 +30,4 @@
     value:
       - "https://*.rp.strigo.io/"
       - "http://{{ lookup('ansible.builtin.env', 'PUBLIC_IP') }}:{{ awx_controller_port }}"
-      - "http://{{ ansible_default_ipv4.address }}:{{ awx_controller_port }}"
+      - "http://{{ ansible_facts.default_ipv4.address }}:{{ awx_controller_port }}"

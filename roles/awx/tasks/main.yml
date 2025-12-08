@@ -20,5 +20,5 @@
     msg:
       - "(0) AWX login: {{ awx_admin }}"
       - "(1) AWX password: {{ awx_password }}"
-      - "(2) AWX url : http://{{ ansible_default_ipv4.address }}:{{ awx_controller_port }}"
-      - "(3) Registry url: http://{{ ansible_default_ipv4.address }}:{{ awx_registry_local_port }}"
+      - "(2) AWX url : http://{{ ansible_facts.default_ipv4.address }}:{{ awx_controller_port }}"
+      - "(3) Registry url: http://{{ ansible_facts.default_ipv4.address }}:{{ awx_registry_local_port }}"
