@@ -3,7 +3,7 @@
 
 namespace: zenika
 name: training
-version: 0.1.1
+version: 0.1.2
 readme: README.md
 authors:
   - Yannick Sébastia (github.com/ysebastia)
