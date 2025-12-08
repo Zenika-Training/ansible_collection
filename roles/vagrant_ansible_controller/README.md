@@ -2,7 +2,7 @@
 
 Configuration d'un controleur Ansible sous Vagrant
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
