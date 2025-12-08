@@ -2,7 +2,7 @@
 
 Reprise du script http-server.sh de strigo-init-script-libs en Ansible
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
