@@ -46,3 +46,11 @@
     mode: "0644"
     backup: false
   loop: "{{ vagrant_ansible_controller_nodes | sort }}"
+- name: Update Path
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/etc/profile.d/01_strigo_context_others.sh"
+    regexp: "^export PATH=$PATH:$HOME/.local/bin:$HOME/bin"
+    line: "export PATH=$PATH:$HOME/.local/bin:$HOME/bin"
+    mode: "0644"
+    backup: false
