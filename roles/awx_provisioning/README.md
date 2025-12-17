@@ -2,7 +2,7 @@
 
 Provisionnement d'un controleur AWX
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
@@ -26,7 +26,7 @@ Provisionnement d'un controleur AWX
 #### Default value
 
 ```YAML
-awx_provisioning_config: '{{ ansible_user_dir }}/.tower_cli.cfg'
+awx_provisioning_config: '{{ ansible_facts.user_dir }}/.tower_cli.cfg'
 ```
 
 ### awx_provisioning_iac

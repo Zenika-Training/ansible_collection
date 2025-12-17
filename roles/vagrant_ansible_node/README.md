@@ -2,7 +2,7 @@
 
 Configuration d'un noeud Ansible sous Vagrant
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
