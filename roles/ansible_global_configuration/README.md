@@ -2,7 +2,7 @@
 
 Configuration globale Ansible
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
@@ -34,7 +34,7 @@ ansible_global_configuration_nodes: []
 #### Default value
 
 ```YAML
-ansible_global_configuration_public: '{{ ansible_user_dir }}/public'
+ansible_global_configuration_public: '{{ ansible_facts.user_dir }}/public'
 ```
 
 ### ansible_global_configuration_user
@@ -42,7 +42,7 @@ ansible_global_configuration_public: '{{ ansible_user_dir }}/public'
 #### Default value
 
 ```YAML
-ansible_global_configuration_user: '{{ ansible_user_id }}'
+ansible_global_configuration_user: '{{ ansible_facts.user_id }}'
 ```
 
 ## Dependencies

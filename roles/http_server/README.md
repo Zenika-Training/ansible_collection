@@ -2,7 +2,7 @@
 
 Reprise du script http-server.sh de strigo-init-script-libs en Ansible
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
@@ -34,7 +34,7 @@ http_server_port: 9997
 #### Default value
 
 ```YAML
-http_server_public: '{{ ansible_user_dir }}/public'
+http_server_public: '{{ ansible_facts.user_dir }}/public'
 ```
 
 ### http_server_user
@@ -42,7 +42,7 @@ http_server_public: '{{ ansible_user_dir }}/public'
 #### Default value
 
 ```YAML
-http_server_user: '{{ ansible_user_id }}'
+http_server_user: '{{ ansible_facts.user_id }}'
 ```
 
 ## Dependencies

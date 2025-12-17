@@ -1,8 +1,8 @@
 {
     "_meta": {
         "hostvars": {
-          "{{ ansible_hostname }}": {
-                "ansible_host": "{{ ansible_default_ipv4.address }}",
+          "{{ ansible_facts.hostname }}": {
+                "ansible_host": "{{ ansible_facts.default_ipv4.address }}",
                 "ansible_user": "{{ ansible_global_configuration_user }}"
           {{ "}," if ansible_global_configuration_nodes | length > 0 else "}" }}
           {% for node in ansible_global_configuration_nodes -%}
@@ -20,6 +20,6 @@
         ]
     },
     "controllers": [
-        "{{ ansible_hostname }}"
+        "{{ ansible_facts.hostname }}"
     ]
 }

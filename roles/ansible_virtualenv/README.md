@@ -2,7 +2,7 @@
 
 Configuration en VirtualEnv de Ansible
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
@@ -27,7 +27,7 @@ Configuration en VirtualEnv de Ansible
 #### Default value
 
 ```YAML
-ansible_virtualenv_directory: '{{ ansible_user_dir }}/.venv/ansible/'
+ansible_virtualenv_directory: '{{ ansible_facts.user_dir }}/.venv/ansible/'
 ```
 
 ### ansible_virtualenv_packages
@@ -48,7 +48,7 @@ ansible_virtualenv_packages:
 ```YAML
 ansible_virtualenv_pip:
   - ansible-core==2.17.14
-  - ansible-lint==25.8.2
+  - ansible-lint==25.12.1
   - yamllint==1.37.1
 ```
 
