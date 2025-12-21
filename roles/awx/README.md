@@ -22,7 +22,6 @@ Configuration d'un controleur AWX
   - [awx_package](#awx_package)
   - [awx_private_registry](#awx_private_registry)
   - [awx_registry_local_port](#awx_registry_local_port)
-  - [awx_virtualenv_directory](#awx_virtualenv_directory)
   - [awx_workdir](#awx_workdir)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -163,14 +162,6 @@ awx_private_registry: local-registry
 
 ```YAML
 awx_registry_local_port: 5000
-```
-
-### awx_virtualenv_directory
-
-#### Default value
-
-```YAML
-awx_virtualenv_directory: '{{ ansible_facts.user_dir }}/.venv/ansible'
 ```
 
 ### awx_workdir
