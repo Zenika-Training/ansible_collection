@@ -32,8 +32,6 @@ galaxy_info:
 
 dependencies:
   - role: zenika.training.ansible_virtualenv
-    vars:
-      ansible_virtualenv_directory: "{{ awx_virtualenv_directory }}"
     when:
       - awx_enable_dependencies | default(true)
   - role: zenika.training.podman
