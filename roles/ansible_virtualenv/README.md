@@ -6,10 +6,8 @@ Configuration en VirtualEnv de Ansible
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
-  - [ansible_virtualenv_directory](#ansible_virtualenv_directory)
   - [ansible_virtualenv_packages](#ansible_virtualenv_packages)
   - [ansible_virtualenv_pip](#ansible_virtualenv_pip)
-  - [ansible_virtualenv_python_bin](#ansible_virtualenv_python_bin)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -22,23 +20,13 @@ Configuration en VirtualEnv de Ansible
 
 ## Default Variables
 
-### ansible_virtualenv_directory
-
-#### Default value
-
-```YAML
-ansible_virtualenv_directory: '{{ ansible_facts.user_dir }}/.venv/ansible/'
-```
-
 ### ansible_virtualenv_packages
 
 #### Default value
 
 ```YAML
 ansible_virtualenv_packages:
-  - python3-pip
-  - python3-venv
-  - virtualenv
+  - pipx
 ```
 
 ### ansible_virtualenv_pip
@@ -50,14 +38,6 @@ ansible_virtualenv_pip:
   - ansible-core==2.17.14
   - ansible-lint==25.12.1
   - yamllint==1.37.1
-```
-
-### ansible_virtualenv_python_bin
-
-#### Default value
-
-```YAML
-ansible_virtualenv_python_bin: python3
 ```
 
 ## Dependencies

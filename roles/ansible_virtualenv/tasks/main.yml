@@ -5,26 +5,7 @@
     update_cache: true
     name: "{{ ansible_virtualenv_packages }}"
 
-- name: Gather effective user ID
-  ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - effective_user_id
-
-- name: Create venv directory
-  ansible.builtin.file:
-    state: directory
-    path: "{{ ansible_virtualenv_directory }}"
-    owner: "{{ ansible_facts.user_id | default('root') }}"
-    group: "{{ ansible_facts.user_id | default('root') }}"
-    mode: "0775"
-  notify:
-    - Update python virtual environment
-
-- name: Flush handlers
-  ansible.builtin.meta: flush_handlers
-
 - name: Ensure that Ansible is installed
-  ansible.builtin.pip:
-    name: "{{ ansible_virtualenv_pip }}"
-    virtualenv: "{{ ansible_virtualenv_directory }}"
+  community.general.pipx:
+    name: "{{ list }}"
+  loop: "{{ ansible_virtualenv_pip }}"
