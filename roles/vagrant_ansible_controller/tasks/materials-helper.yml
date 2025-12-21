@@ -1,3 +1,4 @@
+---
 - name: Update Path
   become: true
   ansible.builtin.lineinfile:
