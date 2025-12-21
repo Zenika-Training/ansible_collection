@@ -10,10 +10,6 @@
   ansible.builtin.package:
     name: "{{ awx_package }}"
     state: present
-- name: Install pip python dependencies
-  ansible.builtin.pip:
-    name: "{{ awx_pip }}"
-    virtualenv: "{{ awx_virtualenv_directory }}"
 - name: Create workdir
   ansible.builtin.file:
     state: directory

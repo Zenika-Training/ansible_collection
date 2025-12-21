@@ -20,7 +20,6 @@ Configuration d'un controleur AWX
   - [awx_name](#awx_name)
   - [awx_ns](#awx_ns)
   - [awx_package](#awx_package)
-  - [awx_pip](#awx_pip)
   - [awx_private_registry](#awx_private_registry)
   - [awx_registry_local_port](#awx_registry_local_port)
   - [awx_virtualenv_directory](#awx_virtualenv_directory)
@@ -150,14 +149,6 @@ awx_ns: awx
 awx_package: [tar, unzip]
 ```
 
-### awx_pip
-
-#### Default value
-
-```YAML
-awx_pip: [kubernetes==34.1.0]
-```
-
 ### awx_private_registry
 
 #### Default value
@@ -192,7 +183,6 @@ awx_workdir: /tmp/awx
 
 ## Dependencies
 
-- zenika.training.ansible_virtualenv
 - zenika.training.podman
 
 ## License
