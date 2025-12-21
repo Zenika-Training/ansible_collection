@@ -42,4 +42,3 @@
     mode: "0644"
     backup: false
   loop: "{{ vagrant_ansible_controller_nodes | sort }}"
-
