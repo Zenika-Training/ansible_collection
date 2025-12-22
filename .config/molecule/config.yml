@@ -16,7 +16,7 @@ provisioner:
 driver:
   name: podman
 platforms:
-  - name: "ubuntu${CI_COMMIT_SHORT_SHA}"
+  - name: "ubuntu22.04${CI_COMMIT_SHORT_SHA}"
     image: docker.io/ysebastia/molecule:jammy
     pre_build_image: true
     env:
