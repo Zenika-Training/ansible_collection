@@ -145,7 +145,7 @@ awx_ns: awx
 #### Default value
 
 ```YAML
-awx_package: [tar, unzip]
+awx_package: [ca-certificates, git, python3-yaml, tar, unzip]
 ```
 
 ### awx_private_registry

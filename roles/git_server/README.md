@@ -6,6 +6,7 @@ Configuration d'un serveur Git
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
+  - [git_server_ansible_action](#git_server_ansible_action)
   - [git_server_branch](#git_server_branch)
   - [git_server_group](#git_server_group)
   - [git_server_path](#git_server_path)
@@ -23,6 +24,14 @@ Configuration d'un serveur Git
 - Minimum Ansible version: `2.1`
 
 ## Default Variables
+
+### git_server_ansible_action
+
+#### Default value
+
+```YAML
+git_server_ansible_action: converge
+```
 
 ### git_server_branch
 
