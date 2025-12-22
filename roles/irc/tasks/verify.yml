@@ -1,0 +1,10 @@
+---
+- name: Service facts
+  become: true
+  ansible.builtin.service_facts:
+- name: Assert IRC running
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.services[irc_service].state == "running"
+    success_msg: "IRC is running"
+    fail_msg: "IRC is not running"

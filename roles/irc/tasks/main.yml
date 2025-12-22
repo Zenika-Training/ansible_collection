@@ -1,7 +1,7 @@
 ---
 - name: IRC
   when:
-    - irc_ansible_action in ['converge']
+    - irc_ansible_action in ['converge', 'verify']
   block:
     - name: Include tasks
       ansible.builtin.include_tasks: "{{ irc_ansible_action }}.yml"
