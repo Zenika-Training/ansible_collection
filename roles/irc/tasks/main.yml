@@ -1,11 +1,7 @@
 ---
-- name: Install needed packages
-  become: true
-  ansible.builtin.package:
-    name: "{{ irc_packages }}"
-- name: Enable and start service
-  become: true
-  ansible.builtin.service:
-    name: "{{ irc_service }}"
-    enabled: true
-    state: started
+- name: IRC
+  when:
+    - irc_ansible_action in ['converge']
+  block:
+    - name: Include tasks
+      ansible.builtin.include_tasks: "{{ irc_ansible_action }}.yml"
