@@ -1,46 +1,7 @@
 ---
-- name: Install needed packages
-  become: true
-  ansible.builtin.package:
-    name:
-      - jq
-      - tree
-    state: present
-- name: Ensure thaht ansible directory exist
-  become: true
-  ansible.builtin.file:
-    path: "/etc/ansible"
-    state: directory
-    mode: "0755"
-- name: Create default directory for Ansible
-  become: true
-  ansible.builtin.lineinfile:
-    path: "/etc/ansible/hosts"
-    regexp: "^{{ item }} "
-    line: "{{ item }} ansible_host={{ setup_ipv4 }} ansible_user={{ ansible_global_configuration_user }}"
-    create: true
-    mode: "0644"
-  when: setup_ipv4 is ansible.utils.ipv4
-  vars:
-    setup_ipv4: "{{ lookup('ansible.builtin.env', item | upper + '_PRIVATE_IP') }}"
-  loop: "{{ ansible_global_configuration_nodes }}"
-- name: Create default configuration for Ansible
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/ansible/ansible.cfg
-    mode: "0644"
-    content: |
-      [defaults]
-      host_key_checking = False
-      interpreter_python = auto_silent
-      callbacks_enabled = ansible.posix.timer,ansible.posix.profile_tasks
-- name: Ensure that public directory exist
-  ansible.builtin.file:
-    path: "{{ ansible_global_configuration_public }}"
-    state: directory
-    mode: "0755"
-- name: Populate fake dynamic inventory
-  ansible.builtin.template:
-    src: inventory.json.j2
-    dest: "{{ ansible_global_configuration_public }}/inventory.json"
-    mode: "0644"
+- name: Ansible global configuration
+  when:
+    - ansible_global_configuration_ansible_action in ['converge']
+  block:
+    - name: Include tasks
+      ansible.builtin.include_tasks: "{{ ansible_global_configuration_ansible_action }}.yml"

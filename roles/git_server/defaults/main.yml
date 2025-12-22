@@ -1,4 +1,5 @@
 ---
+git_server_ansible_action: "converge"
 git_server_branch: "main"
 git_server_group: git
 git_server_path: "/home/{{ git_server_user }}"
