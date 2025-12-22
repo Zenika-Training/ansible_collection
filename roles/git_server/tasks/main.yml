@@ -1,4 +1,10 @@
 ---
+- name: Git server - Ensure packages are installed
+  become: true
+  ansible.builtin.package:
+    name:
+      - git
+    state: present
 - name: Git server - create git group
   become: true
   ansible.builtin.group:
