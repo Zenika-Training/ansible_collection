@@ -1,0 +1,9 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: "Include http_server"
+      ansible.builtin.include_role:
+        name: "zenika.training.http_server"
+      vars:
+        http_server_ansible_action: "verify"

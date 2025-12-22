@@ -1,0 +1,13 @@
+- name: Get HTTP content
+  ansible.builtin.uri:
+    url: http://127.0.0.1:{{ http_server_port }}
+  register: content
+  environment:
+    no_proxy: 127.0.0.1
+- name: Show content status
+  ansible.builtin.debug:
+    msg: "{{ content }}"
+- name: Assert HTTP status
+  ansible.builtin.assert:
+    that:
+      - content.status == 200
