@@ -4,9 +4,6 @@
   register: content
   environment:
     no_proxy: 127.0.0.1
-- name: Show content status
-  ansible.builtin.debug:
-    msg: "{{ content }}"
 - name: Assert HTTP status
   ansible.builtin.assert:
     that:
