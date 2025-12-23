@@ -11,4 +11,4 @@ collections:
   - name: containers.podman
     version: 1.18.0
   - name: kubernetes.core
-    version: 6.0.0
+    version: 6.2.0
