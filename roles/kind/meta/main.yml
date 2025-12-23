@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Yannick Sébastia
-  description: Configuration d'un controleur AWX
+  description: Installation kind
   company: Zenika
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -31,18 +31,8 @@ galaxy_info:
     #       Maximum 20 tags per role.
 
 dependencies:
-  - role: zenika.training.kubectl
-    when:
-      - awx_enable_dependencies | default(true)
-  - role: zenika.training.k9s
-    when:
-      - awx_enable_dependencies | default(true)
-  - role: zenika.training.helm
-    when:
-      - awx_enable_dependencies | default(true)
-  - role: zenika.training.kind
+  - role: zenika.training.podman
     vars:
-      kind_exposed_port: "{{ awx_controller_port }}"
-      kind_registry_local_port: "{{ awx_registry_local_port }}"
+      podman_registry_local_port: "{{ kind_registry_local_port }}"
     when:
-      - awx_enable_dependencies | default(true)
+      - kind_enable_dependencies | default(true)

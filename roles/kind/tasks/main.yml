@@ -1,0 +1,7 @@
+---
+- name: Install Kind
+  ansible.builtin.include_tasks: install.yml
+
+- name: Configure private registry
+  ansible.builtin.include_tasks: registry.yml
+  when: kind_enable_private_registry | bool

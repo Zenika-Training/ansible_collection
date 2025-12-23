@@ -11,8 +11,7 @@ Configuration d'un controleur AWX
   - [awx_config](#awx_config)
   - [awx_controller_port](#awx_controller_port)
   - [awx_enable_dependencies](#awx_enable_dependencies)
-  - [awx_enable_private_registry](#awx_enable_private_registry)
-  - [awx_kind_repo](#awx_kind_repo)
+  - [awx_helm](#awx_helm)
   - [awx_kube_config](#awx_kube_config)
   - [awx_name](#awx_name)
   - [awx_ns](#awx_ns)
@@ -73,20 +72,12 @@ awx_controller_port: 32000
 awx_enable_dependencies: true
 ```
 
-### awx_enable_private_registry
+### awx_helm
 
 #### Default value
 
 ```YAML
-awx_enable_private_registry: true
-```
-
-### awx_kind_repo
-
-#### Default value
-
-```YAML
-awx_kind_repo: https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+awx_helm: /usr/local/bin/helm
 ```
 
 ### awx_kube_config
@@ -155,10 +146,10 @@ awx_workdir: /tmp/awx
 
 ## Dependencies
 
-- zenika.training.podman
 - zenika.training.kubectl
 - zenika.training.k9s
 - zenika.training.helm
+- zenika.training.kind
 
 ## License
 
