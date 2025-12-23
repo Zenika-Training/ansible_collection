@@ -5,11 +5,6 @@
       - "!all"
       - effective_user_id
       - network
-- name: Install packages dependencies
-  become: true
-  ansible.builtin.package:
-    name: "{{ awx_package }}"
-    state: present
 - name: Create workdir
   ansible.builtin.file:
     state: directory
