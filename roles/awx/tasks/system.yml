@@ -23,19 +23,6 @@
     owner: root
     group: root
     mode: "0755"
-- name: Download kubectl
-  become: true
-  ansible.builtin.get_url:
-    url: "{{ awx_kubectl_repo }}"
-    dest: /usr/local/bin/kubectl
-    owner: root
-    group: root
-    mode: "0755"
-- name: Bash completion for kubectl
-  become: true
-  ansible.builtin.shell:
-    cmd: (/usr/local/bin/kubectl completion bash) > /etc/profile.d/kubectl.sh
-    creates: /etc/profile.d/kubectl.sh
 - name: Download k9s
   become: true
   ansible.builtin.unarchive:

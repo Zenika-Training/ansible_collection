@@ -16,12 +16,12 @@ Configuration d'un controleur AWX
   - [awx_k9s_repo](#awx_k9s_repo)
   - [awx_kind_repo](#awx_kind_repo)
   - [awx_kube_config](#awx_kube_config)
-  - [awx_kubectl_repo](#awx_kubectl_repo)
   - [awx_name](#awx_name)
   - [awx_ns](#awx_ns)
   - [awx_package](#awx_package)
   - [awx_private_registry](#awx_private_registry)
   - [awx_registry_local_port](#awx_registry_local_port)
+  - [awx_venv_path](#awx_venv_path)
   - [awx_workdir](#awx_workdir)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -116,14 +116,6 @@ awx_kind_repo: https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
 awx_kube_config: '{{ ansible_facts.user_dir }}/.kube/config'
 ```
 
-### awx_kubectl_repo
-
-#### Default value
-
-```YAML
-awx_kubectl_repo: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
-```
-
 ### awx_name
 
 #### Default value
@@ -162,6 +154,14 @@ awx_private_registry: local-registry
 
 ```YAML
 awx_registry_local_port: 5000
+```
+
+### awx_venv_path
+
+#### Default value
+
+```YAML
+awx_venv_path: '{{ ansible_facts.user_dir }}/.local/pipx/venvs'
 ```
 
 ### awx_workdir
