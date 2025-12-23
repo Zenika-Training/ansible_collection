@@ -6,7 +6,7 @@
       ansible.builtin.include_role:
         name: zenika.training.vagrant_ansible_controller
       vars:
-        vagrant_ansible_controller_nodes: "{{ groups['nodes'] }}"
+        vagrant_ansible_controller_nodes: "{{ groups['nodes'] | default([]) }}"
     - name: Configure http server
       ansible.builtin.include_role:
         name: zenika.training.http_server
