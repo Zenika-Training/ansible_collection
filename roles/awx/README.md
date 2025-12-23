@@ -12,7 +12,6 @@ Configuration d'un controleur AWX
   - [awx_controller_port](#awx_controller_port)
   - [awx_enable_dependencies](#awx_enable_dependencies)
   - [awx_enable_private_registry](#awx_enable_private_registry)
-  - [awx_helm_repo](#awx_helm_repo)
   - [awx_kind_repo](#awx_kind_repo)
   - [awx_kube_config](#awx_kube_config)
   - [awx_name](#awx_name)
@@ -80,14 +79,6 @@ awx_enable_dependencies: true
 
 ```YAML
 awx_enable_private_registry: true
-```
-
-### awx_helm_repo
-
-#### Default value
-
-```YAML
-awx_helm_repo: https://get.helm.sh/helm-v3.19.1-linux-amd64.tar.gz
 ```
 
 ### awx_kind_repo
@@ -167,6 +158,7 @@ awx_workdir: /tmp/awx
 - zenika.training.podman
 - zenika.training.kubectl
 - zenika.training.k9s
+- zenika.training.helm
 
 ## License
 
