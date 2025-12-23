@@ -1,7 +1,7 @@
 ---
 - name: Add a helm repository
   kubernetes.core.helm_repository:
-    binary_path: {{ awx_helm }}
+    binary_path: "{{ awx_helm }}"
     kubeconfig: "{{ awx_kube_config }}"
     name: awx-operator
     repo_url: https://ansible-community.github.io/awx-operator-helm/
@@ -9,7 +9,7 @@
     ansible_python_interpreter: "{{ awx_venv_path }}/ansible-core/bin/python"
 - name: Install Helm diff plugin
   kubernetes.core.helm_plugin:
-    binary_path: {{ awx_helm }}
+    binary_path: "{{ awx_helm }}"
     kubeconfig: "{{ awx_kube_config }}"
     plugin_path: https://github.com/databus23/helm-diff
     state: present
@@ -17,7 +17,7 @@
     ansible_python_interpreter: "{{ awx_venv_path }}/ansible-core/bin/python"
 - name: Deploy Awx operator
   kubernetes.core.helm:
-    binary_path: {{ awx_helm }}
+    binary_path: "{{ awx_helm }}"
     chart_ref: awx-operator/awx-operator
     chart_version: "{{ awx_chart_version }}"
     context: kind-kind
