@@ -1,0 +1,9 @@
+---
+- name: Install Ansible-core
+  ansible.builtin.command:
+    cmd: "pipx install ansible-core"
+    creates: "{{ ansible_facts.user_dir }}/.local/pipx/venvs/ansible-core/bin/ansible"
+- name: Install kubernetes
+  ansible.builtin.command:
+    cmd: "pipx inject ansible-core kubernetes"
+    creates: "{{ ansible_facts.user_dir }}/.local/pipx/venvs/ansible-core/lib/python*/site-packages/kubernetes/"
