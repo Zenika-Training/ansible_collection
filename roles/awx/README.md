@@ -15,7 +15,6 @@ Configuration d'un controleur AWX
   - [awx_kube_config](#awx_kube_config)
   - [awx_name](#awx_name)
   - [awx_ns](#awx_ns)
-  - [awx_package](#awx_package)
   - [awx_private_registry](#awx_private_registry)
   - [awx_registry_local_port](#awx_registry_local_port)
   - [awx_venv_path](#awx_venv_path)
@@ -102,14 +101,6 @@ awx_name: awx
 
 ```YAML
 awx_ns: awx
-```
-
-### awx_package
-
-#### Default value
-
-```YAML
-awx_package: [git, python3-yaml, tar, unzip]
 ```
 
 ### awx_private_registry
