@@ -1,4 +1,12 @@
 ---
+- name: Download kind
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ awx_kind_repo }}"
+    dest: /usr/local/bin/kind
+    owner: root
+    group: root
+    mode: "0755"
 - name: Configure Kind
   ansible.builtin.template:
     src: kind.config.j2

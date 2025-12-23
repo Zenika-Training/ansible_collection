@@ -15,14 +15,6 @@
     state: directory
     path: "{{ awx_workdir }}"
     mode: "0755"
-- name: Download kind
-  become: true
-  ansible.builtin.get_url:
-    url: "{{ awx_kind_repo }}"
-    dest: /usr/local/bin/kind
-    owner: root
-    group: root
-    mode: "0755"
 - name: Install Helm diff plugin
   kubernetes.core.helm_plugin:
     plugin_path: https://github.com/databus23/helm-diff
