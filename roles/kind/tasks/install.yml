@@ -1,4 +1,10 @@
 ---
+- name: Collect needed facts
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - effective_user_id
+      - network
 - name: Create workdir
   ansible.builtin.file:
     state: directory

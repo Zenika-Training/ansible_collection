@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  become: true  # Run with privileges
+  tasks:
+    - name: "Include kind"
+      ansible.builtin.include_role:
+        name: "zenika.training.kind"
