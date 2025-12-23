@@ -1,8 +1,13 @@
 ---
+- name: Create workdir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ kind_workdir }}"
+    mode: "0755"
 - name: Download kind
   become: true
   ansible.builtin.get_url:
-    url: "{{ awx_kind_repo }}"
+    url: "{{ kind_repo }}"
     dest: /usr/local/bin/kind
     owner: root
     group: root
@@ -10,7 +15,7 @@
 - name: Configure Kind
   ansible.builtin.template:
     src: kind.config.j2
-    dest: "{{ awx_workdir }}/kind.config"
+    dest: "{{ kind_workdir }}/kind.config"
     mode: "0644"
 - name: Create podman network
   containers.podman.podman_network:
@@ -25,7 +30,7 @@
     mode: "0644"
 - name: Create cluster
   ansible.builtin.command:
-    cmd: "/usr/local/bin/kind create cluster --config {{ awx_workdir }}/kind.config --wait 5m"
-    creates: "{{ awx_kube_config }}"
+    cmd: "/usr/local/bin/kind create cluster --config {{ kind_workdir }}/kind.config --wait 5m"
+    creates: "{{ kind_kube_config }}"
   environment:
     KIND_EXPERIMENTAL_PROVIDER: podman

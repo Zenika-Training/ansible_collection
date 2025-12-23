@@ -3,7 +3,6 @@ awx_admin: admin
 awx_chart_version: 3.2.0
 awx_config: "{{ ansible_facts.user_dir }}/.tower_cli.cfg"
 awx_controller_port: 32000
-awx_kind_repo: https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
 awx_kube_config: "{{ ansible_facts.user_dir }}/.kube/config"
 awx_helm: /usr/local/bin/helm
 awx_name: awx
