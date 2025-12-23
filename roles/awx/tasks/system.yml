@@ -15,9 +15,3 @@
     state: directory
     path: "{{ awx_workdir }}"
     mode: "0755"
-- name: Install Helm diff plugin
-  kubernetes.core.helm_plugin:
-    plugin_path: https://github.com/databus23/helm-diff
-    state: present
-    binary_path: /usr/local/bin/helm
-    kubeconfig: "{{ ansible_facts.user_dir }}/.kube/config"
