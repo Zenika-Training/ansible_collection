@@ -1,14 +1,28 @@
 ---
 - name: Add a helm repository
   kubernetes.core.helm_repository:
+    binary_path: {{ awx_helm }}
+    kubeconfig: "{{ awx_kube_config }}"
     name: awx-operator
     repo_url: https://ansible-community.github.io/awx-operator-helm/
+  vars:
+    ansible_python_interpreter: "{{ awx_venv_path }}/ansible-core/bin/python"
+- name: Install Helm diff plugin
+  kubernetes.core.helm_plugin:
+    binary_path: {{ awx_helm }}
+    kubeconfig: "{{ awx_kube_config }}"
+    plugin_path: https://github.com/databus23/helm-diff
+    state: present
+  vars:
+    ansible_python_interpreter: "{{ awx_venv_path }}/ansible-core/bin/python"
 - name: Deploy Awx operator
   kubernetes.core.helm:
+    binary_path: {{ awx_helm }}
     chart_ref: awx-operator/awx-operator
     chart_version: "{{ awx_chart_version }}"
     context: kind-kind
     create_namespace: true
+    kubeconfig: "{{ awx_kube_config }}"
     name: awx-operator
     release_namespace: "{{ awx_ns }}"
   vars:
@@ -23,9 +37,10 @@
 - name: Add node port
   kubernetes.core.k8s:
     context: kind-kind
-    state: present
+    kubeconfig: "{{ awx_kube_config }}"
     namespace: "{{ awx_ns }}"
     src: "{{ awx_workdir }}/awx-cr.yaml"
+    state: present
   vars:
     ansible_python_interpreter: "{{ awx_venv_path }}/ansible-core/bin/python"
 - name: Wait install of AWX
