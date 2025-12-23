@@ -23,22 +23,6 @@
     owner: root
     group: root
     mode: "0755"
-- name: Download helm
-  become: true
-  ansible.builtin.unarchive:
-    src: "{{ awx_helm_repo }}"
-    dest: /usr/local/bin/
-    owner: root
-    group: root
-    mode: "0755"
-    remote_src: true
-    extra_opts: [--strip-components=1]
-    creates: /usr/local/bin/helm
-- name: Bash completion for helm
-  become: true
-  ansible.builtin.shell:
-    cmd: "(/usr/local/bin/helm completion bash) > /etc/profile.d/helm.sh"
-    creates: /etc/profile.d/helm.sh
 - name: Install Helm diff plugin
   kubernetes.core.helm_plugin:
     plugin_path: https://github.com/databus23/helm-diff
