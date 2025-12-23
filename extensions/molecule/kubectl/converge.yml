@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include kubectl"
+      ansible.builtin.include_role:
+        name: "zenika.training.kubectl"
