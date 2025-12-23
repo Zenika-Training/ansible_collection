@@ -2,7 +2,7 @@
 - name: Download k9s
   become: true
   ansible.builtin.unarchive:
-    src: "{{ awx_k9s_repo }}"
+    src: "{{ k9s_repo }}"
     dest: /usr/local/bin/
     owner: root
     group: root
