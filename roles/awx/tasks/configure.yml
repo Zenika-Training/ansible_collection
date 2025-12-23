@@ -5,6 +5,8 @@
     name: "{{ awx_name }}-admin-password"
     namespace: "{{ awx_ns }}"
   register: awx_secret
+  vars:
+    ansible_python_interpreter: "{{ awx_venv_path }}/ansible-core/bin/python"  
 - name: Register admin password
   ansible.builtin.set_fact:
     awx_password: "{{ awx_secret.resources[0].data.password | b64decode }}"

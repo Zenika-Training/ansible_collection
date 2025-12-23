@@ -12,4 +12,5 @@ awx_name: awx
 awx_ns: awx
 awx_package: [ca-certificates, git, python3-yaml, tar, unzip]
 awx_private_registry: local-registry
+awx_venv_path: "{{ ansible_facts.user_dir }}/.local/pipx/venvs"
 awx_workdir: "/tmp/awx"
