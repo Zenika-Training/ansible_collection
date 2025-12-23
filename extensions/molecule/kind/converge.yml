@@ -1,8 +1,10 @@
 ---
 - name: Converge
   hosts: all
-  become: true  # Run with privileges
+  become: true
   tasks:
     - name: "Include kind"
       ansible.builtin.include_role:
         name: "zenika.training.kind"
+      vars:
+        kind_cni_configfile: "/etc/cni/net.d/kind.conflist"

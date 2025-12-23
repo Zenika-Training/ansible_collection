@@ -30,7 +30,7 @@
 - name: Fix CNI version (bug libpod 2024394)
   ansible.builtin.lineinfile:
     state: present
-    path: "{{ ansible_facts.user_dir }}/.config/cni/net.d/kind.conflist"
+    path: "{{ kind_cni_configfile }}"
     line: '   "cniVersion": "0.4.0",'
     regexp: '^   "cniVersion": "1.0.0",$'
     mode: "0644"
