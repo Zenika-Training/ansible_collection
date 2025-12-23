@@ -6,6 +6,8 @@ Installation kind
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
+  - [kind_api_server_port](#kind_api_server_port)
+  - [kind_cni_configfile](#kind_cni_configfile)
   - [kind_enable_dependencies](#kind_enable_dependencies)
   - [kind_enable_private_registry](#kind_enable_private_registry)
   - [kind_exposed_port](#kind_exposed_port)
@@ -24,6 +26,22 @@ Installation kind
 - Minimum Ansible version: `2.1`
 
 ## Default Variables
+
+### kind_api_server_port
+
+#### Default value
+
+```YAML
+kind_api_server_port: 6443
+```
+
+### kind_cni_configfile
+
+#### Default value
+
+```YAML
+kind_cni_configfile: '{{ ansible_facts.user_dir }}/.config/cni/net.d/kind.conflist'
+```
 
 ### kind_enable_dependencies
 

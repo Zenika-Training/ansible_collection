@@ -4,4 +4,3 @@ kind_enable_dependencies: true
 kind_enable_private_registry: true
 kind_exposed_port: 8080
 kind_registry_local_port: 5000
-
