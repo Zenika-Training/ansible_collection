@@ -2,7 +2,6 @@
 - name: Install needed packages
   become: true
   ansible.builtin.package:
-    update_cache: true
     name: "{{ irc_packages }}"
 - name: Enable and start service
   become: true

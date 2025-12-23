@@ -11,8 +11,6 @@
     create_namespace: true
     name: awx-operator
     release_namespace: "{{ awx_ns }}"
-  vars:
-    ansible_python_interpreter: "{{ awx_virtualenv_directory }}/bin/python"
 - name: Generate node port
   ansible.builtin.template:
     src: awx-cr.yaml.j2
@@ -24,8 +22,6 @@
     state: present
     namespace: "{{ awx_ns }}"
     src: "{{ awx_workdir }}/awx-cr.yaml"
-  vars:
-    ansible_python_interpreter: "{{ awx_virtualenv_directory }}/bin/python"
 - name: Wait install of AWX
   ansible.builtin.uri:
     url: "http://localhost:{{ awx_controller_port }}"
