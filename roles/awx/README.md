@@ -13,7 +13,6 @@ Configuration d'un controleur AWX
   - [awx_enable_dependencies](#awx_enable_dependencies)
   - [awx_enable_private_registry](#awx_enable_private_registry)
   - [awx_helm_repo](#awx_helm_repo)
-  - [awx_k9s_repo](#awx_k9s_repo)
   - [awx_kind_repo](#awx_kind_repo)
   - [awx_kube_config](#awx_kube_config)
   - [awx_name](#awx_name)
@@ -91,15 +90,6 @@ awx_enable_private_registry: true
 awx_helm_repo: https://get.helm.sh/helm-v3.19.1-linux-amd64.tar.gz
 ```
 
-### awx_k9s_repo
-
-#### Default value
-
-```YAML
-awx_k9s_repo: 
-  https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_Linux_amd64.tar.gz
-```
-
 ### awx_kind_repo
 
 #### Default value
@@ -137,7 +127,7 @@ awx_ns: awx
 #### Default value
 
 ```YAML
-awx_package: [ca-certificates, git, python3-yaml, tar, unzip]
+awx_package: [git, python3-yaml, tar, unzip]
 ```
 
 ### awx_private_registry
@@ -175,6 +165,8 @@ awx_workdir: /tmp/awx
 ## Dependencies
 
 - zenika.training.podman
+- zenika.training.kubectl
+- zenika.training.k9s
 
 ## License
 
