@@ -31,11 +31,6 @@ galaxy_info:
     #       Maximum 20 tags per role.
 
 dependencies:
-  - role: zenika.training.ansible_virtualenv
-    vars:
-      ansible_virtualenv_directory: "{{ awx_virtualenv_directory }}"
-    when:
-      - awx_enable_dependencies | default(true)
   - role: zenika.training.podman
     vars:
       podman_registry_local_port: "{{ awx_registry_local_port }}"
