@@ -66,5 +66,17 @@
       [storage.options.overlay]
       mount_program = "/usr/bin/fuse-overlayfs"
       force_mask = "shared"
+- name: Container - Increase inotify Limits
+  become: true
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/podman.conf
+  loop:
+    - name: "fs.inotify.max_user_watches"
+      value: 524288
+    - name: "fs.inotify.max_user_instances"
+      value: 512
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers

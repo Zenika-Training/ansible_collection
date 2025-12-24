@@ -1,4 +1,8 @@
 ---
+- name: Ensure that control-plane is started
+  containers.podman.podman_container:
+    name: kind-control-plane
+    state: started
 - name: Add a helm repository
   kubernetes.core.helm_repository:
     binary_path: "{{ awx_helm }}"
