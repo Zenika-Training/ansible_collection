@@ -1,5 +1,5 @@
 ---
 kind_cni_configfile: "{{ ansible_facts.user_dir }}/.config/cni/net.d/kind.conflist"
 kind_kube_config: "{{ ansible_facts.user_dir }}/.kube/config"
-kind_repo: https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+kind_repo: https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
 kind_workdir: "/tmp/kind"
