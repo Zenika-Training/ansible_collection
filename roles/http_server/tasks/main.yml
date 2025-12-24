@@ -1,14 +1,7 @@
 ---
-- name: Ensure that public directory exist
-  ansible.builtin.file:
-    path: "{{ http_server_public }}"
-    state: directory
-    mode: "0755"
-- name: Create http server service
-  become: true
-  ansible.builtin.template:
-    src: http-server@.service.j2
-    dest: /lib/systemd/system/http-server@.service
-    mode: "0644"
-  notify:
-    - http-server
+- name: HTTP server
+  when:
+    - http_server_ansible_action in ['converge', 'verify']
+  block:
+    - name: Include tasks
+      ansible.builtin.include_tasks: "{{ http_server_ansible_action }}.yml"

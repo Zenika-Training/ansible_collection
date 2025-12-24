@@ -5,4 +5,4 @@
     image: docker.io/registry:2
     state: started
     publish:
-      - "0.0.0.0:{{ awx_registry_local_port }}:5000"
+      - "0.0.0.0:{{ kind_registry_local_port }}:5000"

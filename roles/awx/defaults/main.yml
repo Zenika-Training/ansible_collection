@@ -1,4 +1,3 @@
 ---
 awx_enable_dependencies: true
-awx_enable_private_registry: true
 awx_registry_local_port: 5000
