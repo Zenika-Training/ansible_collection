@@ -1,0 +1,24 @@
+---
+- name: Gather facts if ansible_facts.distribution_major_version is undefined
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - distribution
+      - distribution_major_version
+      - os_family
+  when:
+    - ansible_facts.distribution_major_version is undefined
+- name: Create podman network
+  containers.podman.podman_network:
+    name: kind
+# https://bugs.launchpad.net/ubuntu/+source/libpod/+bug/2024394
+- name: Fix CNI version (bug libpod 2024394)
+  ansible.builtin.lineinfile:
+    state: present
+    path: "{{ kind_cni_configfile }}"
+    line: '   "cniVersion": "0.4.0",'
+    regexp: '^   "cniVersion": "1.0.0",$'
+    mode: "0644"
+  when:
+    - ansible_facts.distribution == "Ubuntu"
+    - ansible_facts.distribution_major_version == "22"
