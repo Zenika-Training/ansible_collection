@@ -17,7 +17,6 @@ Configuration d'un controleur AWX
   - [awx_ns](#awx_ns)
   - [awx_private_registry](#awx_private_registry)
   - [awx_registry_local_port](#awx_registry_local_port)
-  - [awx_venv_path](#awx_venv_path)
   - [awx_workdir](#awx_workdir)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -117,14 +116,6 @@ awx_private_registry: local-registry
 
 ```YAML
 awx_registry_local_port: 5000
-```
-
-### awx_venv_path
-
-#### Default value
-
-```YAML
-awx_venv_path: '{{ ansible_facts.user_dir }}/.local/pipx/venvs'
 ```
 
 ### awx_workdir

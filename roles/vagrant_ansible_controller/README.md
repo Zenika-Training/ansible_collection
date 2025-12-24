@@ -9,7 +9,6 @@ Configuration d'un controleur Ansible sous Vagrant
   - [vagrant_ansible_controller_nodes](#vagrant_ansible_controller_nodes)
   - [vagrant_ansible_controller_ssh_key](#vagrant_ansible_controller_ssh_key)
   - [vagrant_ansible_controller_user](#vagrant_ansible_controller_user)
-  - [vagrant_ansible_controller_venv_path](#vagrant_ansible_controller_venv_path)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -44,14 +43,6 @@ vagrant_ansible_controller_ssh_key: ~/.ssh/id_ecdsa
 
 ```YAML
 vagrant_ansible_controller_user: vagrant
-```
-
-### vagrant_ansible_controller_venv_path
-
-#### Default value
-
-```YAML
-vagrant_ansible_controller_venv_path: '{{ ansible_facts.user_dir }}/.local/pipx/venvs'
 ```
 
 ## Dependencies
