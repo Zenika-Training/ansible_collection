@@ -1,0 +1,2 @@
+---
+vagrant_ansible_controller_venv_path: "{{ ansible_facts.user_dir }}/.local/share/pipx/venvs"
