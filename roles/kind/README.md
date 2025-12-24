@@ -88,7 +88,7 @@ kind_registry_local_port: 5000
 #### Default value
 
 ```YAML
-kind_repo: https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+kind_repo: https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
 ```
 
 ### kind_workdir
