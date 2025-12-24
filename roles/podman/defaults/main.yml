@@ -1,2 +1,3 @@
 ---
+podman_ansible_action: "converge"
 podman_registry_local_port: 5000
