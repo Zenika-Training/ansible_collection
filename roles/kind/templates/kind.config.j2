@@ -1,0 +1,19 @@
+---
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+networking:
+  apiServerAddress: "127.0.0.1"
+  apiServerPort: {{ kind_api_server_port }}
+nodes:
+  - role: control-plane
+    extraPortMappings:
+    - containerPort: {{ kind_exposed_port }}
+      hostPort: {{ kind_exposed_port }}
+      listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
+      protocol: tcp # Optional, defaults to tcp
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ ansible_facts.default_ipv4.address }}:{{ kind_exposed_port }}"]
+      endpoint = ["http://{{ ansible_facts.default_ipv4.address }}:{{ kind_exposed_port }}"]
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ ansible_facts.default_ipv4.address }}:{{ kind_exposed_port }}".tls]
+      insecure_skip_verify = true

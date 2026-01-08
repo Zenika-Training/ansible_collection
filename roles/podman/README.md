@@ -6,6 +6,7 @@ Configuration Podman
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
+  - [podman_ansible_action](#podman_ansible_action)
   - [podman_registry_local_port](#podman_registry_local_port)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -18,6 +19,14 @@ Configuration Podman
 - Minimum Ansible version: `2.1`
 
 ## Default Variables
+
+### podman_ansible_action
+
+#### Default value
+
+```YAML
+podman_ansible_action: converge
+```
 
 ### podman_registry_local_port
 

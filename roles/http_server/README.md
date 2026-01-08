@@ -6,6 +6,7 @@ Reprise du script http-server.sh de strigo-init-script-libs en Ansible
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
+  - [http_server_ansible_action](#http_server_ansible_action)
   - [http_server_port](#http_server_port)
   - [http_server_public](#http_server_public)
   - [http_server_user](#http_server_user)
@@ -20,6 +21,14 @@ Reprise du script http-server.sh de strigo-init-script-libs en Ansible
 - Minimum Ansible version: `2.1`
 
 ## Default Variables
+
+### http_server_ansible_action
+
+#### Default value
+
+```YAML
+http_server_ansible_action: converge
+```
 
 ### http_server_port
 

@@ -31,13 +31,18 @@ galaxy_info:
     #       Maximum 20 tags per role.
 
 dependencies:
-  - role: zenika.training.ansible_virtualenv
-    vars:
-      ansible_virtualenv_directory: "{{ awx_virtualenv_directory }}"
+  - role: zenika.training.kubectl
     when:
       - awx_enable_dependencies | default(true)
-  - role: zenika.training.podman
+  - role: zenika.training.k9s
+    when:
+      - awx_enable_dependencies | default(true)
+  - role: zenika.training.helm
+    when:
+      - awx_enable_dependencies | default(true)
+  - role: zenika.training.kind
     vars:
-      podman_registry_local_port: "{{ awx_registry_local_port }}"
+      kind_exposed_port: "{{ awx_controller_port }}"
+      kind_registry_local_port: "{{ awx_registry_local_port }}"
     when:
       - awx_enable_dependencies | default(true)

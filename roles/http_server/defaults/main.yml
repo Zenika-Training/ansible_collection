@@ -1,5 +1,5 @@
 ---
-# defaults file for http_server
-http_server_user: "{{ ansible_facts.user_id }}"
-http_server_public: "{{ ansible_facts.user_dir }}/public"
+http_server_ansible_action: "converge"
 http_server_port: 9997
+http_server_public: "{{ ansible_facts.user_dir }}/public"
+http_server_user: "{{ ansible_facts.user_id }}"
