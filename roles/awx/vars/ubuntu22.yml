@@ -1,0 +1,2 @@
+---
+awx_venv_path: "{{ ansible_facts.user_dir }}/.local/pipx/venvs"

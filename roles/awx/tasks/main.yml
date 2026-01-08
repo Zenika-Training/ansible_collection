@@ -1,4 +1,7 @@
 ---
+- name: Facts
+  ansible.builtin.include_tasks: facts.yml
+
 - name: Configure system
   ansible.builtin.include_tasks: system.yml
 
