@@ -1,0 +1,16 @@
+---
+- name: Update Path
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/etc/profile.d/bashrc_pipx.sh"
+    regexp: "^export PATH=$PATH:$HOME/.local/bin:$HOME/bin"
+    line: "export PATH=$PATH:$HOME/.local/bin:$HOME/bin"
+    mode: "0644"
+    backup: false
+    create: true
+- name: Pipx - install packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - pipx
+    state: present

@@ -1,0 +1,9 @@
+---
+- name: Install Ansible-core
+  ansible.builtin.command:
+    cmd: "pipx install ansible-core"
+    creates: "{{ vagrant_ansible_controller_venv_path }}/ansible-core/bin/ansible"
+- name: Install kubernetes
+  ansible.builtin.command:
+    cmd: "pipx inject ansible-core kubernetes"
+    creates: "{{ vagrant_ansible_controller_venv_path }}/ansible-core/lib/python*/site-packages/kubernetes/"

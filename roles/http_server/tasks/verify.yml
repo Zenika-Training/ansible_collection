@@ -1,0 +1,11 @@
+---
+- name: Get HTTP content
+  ansible.builtin.uri:
+    url: http://127.0.0.1:{{ http_server_port }}
+  register: http_server_content
+  environment:
+    no_proxy: 127.0.0.1
+- name: Assert HTTP status
+  ansible.builtin.assert:
+    that:
+      - http_server_content.status == 200

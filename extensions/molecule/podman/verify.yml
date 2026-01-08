@@ -1,0 +1,9 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: "Include podman"
+      ansible.builtin.include_role:
+        name: "zenika.training.podman"
+      vars:
+        podman_ansible_action: "verify"

@@ -6,6 +6,7 @@ Configuration globale Ansible
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
+  - [ansible_global_configuration_ansible_action](#ansible_global_configuration_ansible_action)
   - [ansible_global_configuration_nodes](#ansible_global_configuration_nodes)
   - [ansible_global_configuration_public](#ansible_global_configuration_public)
   - [ansible_global_configuration_user](#ansible_global_configuration_user)
@@ -20,6 +21,14 @@ Configuration globale Ansible
 - Minimum Ansible version: `2.1`
 
 ## Default Variables
+
+### ansible_global_configuration_ansible_action
+
+#### Default value
+
+```YAML
+ansible_global_configuration_ansible_action: converge
+```
 
 ### ansible_global_configuration_nodes
 

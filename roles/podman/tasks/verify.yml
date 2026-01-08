@@ -1,0 +1,11 @@
+---
+- name: Get Podman system information into a variable
+  become: true
+  containers.podman.podman_system_info:
+  register: podman_info
+- name: Assert overlay storage
+  ansible.builtin.assert:
+    that:
+      - podman_info['podman_system_info']['store']['graphDriverName'] == 'overlay'
+    success_msg: "Storage overlay is configured"
+    fail_msg: "Storage overlay is not configured"

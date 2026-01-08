@@ -1,0 +1,9 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: "Include irc"
+      ansible.builtin.include_role:
+        name: "zenika.training.irc"
+      vars:
+        irc_ansible_action: "verify"
