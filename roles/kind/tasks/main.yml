@@ -1,4 +1,7 @@
 ---
+- name: Configure Podman network
+  ansible.builtin.include_tasks: podman.yml
+
 - name: Install Kind
   ansible.builtin.include_tasks: install.yml
 
