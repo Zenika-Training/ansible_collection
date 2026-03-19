@@ -19,7 +19,9 @@
           {% endfor %}
         ]
     },
-    "controllers": [
-        "{{ ansible_facts.hostname }}"
-    ]
+    "controllers": {
+        "hosts": [
+          "{{ ansible_facts.hostname }}"
+        ]
+    }
 }

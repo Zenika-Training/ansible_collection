@@ -43,7 +43,7 @@ awx_admin: admin
 #### Default value
 
 ```YAML
-awx_chart_version: 3.2.0
+awx_chart_version: 3.2.1
 ```
 
 ### awx_config
