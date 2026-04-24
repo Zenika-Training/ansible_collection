@@ -2,7 +2,7 @@
 - name: Install OpenShift binary
   ansible.builtin.include_tasks: install_binary.yml
   loop_control:
-    loop_var: _oc_binary
+    loop_var: oc_command_binary
   loop:
     - name: oc
       url: "{{ oc_command_client }}"
