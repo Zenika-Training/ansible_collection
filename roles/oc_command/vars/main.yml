@@ -1,0 +1,2 @@
+---
+oc_command_repo: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ oc_command_version }}/openshift-client-linux.tar.gz"
