@@ -6,7 +6,8 @@ Installation OC command
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
-  - [oc_command_repo](#oc_command_repo)
+  - [oc_command_client](#oc_command_client)
+  - [oc_command_install](#oc_command_install)
   - [oc_command_version](#oc_command_version)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -20,13 +21,22 @@ Installation OC command
 
 ## Default Variables
 
-### oc_command_repo
+### oc_command_client
 
 #### Default value
 
 ```YAML
-oc_command_repo: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ 
+oc_command_client: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ 
   oc_command_version }}/openshift-client-linux.tar.gz
+```
+
+### oc_command_install
+
+#### Default value
+
+```YAML
+oc_command_install: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{
+  oc_command_version }}/openshift-install-linux.tar.gz
 ```
 
 ### oc_command_version

@@ -1,2 +1,3 @@
 ---
-oc_command_repo: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ oc_command_version }}/openshift-client-linux.tar.gz"
+oc_command_client: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ oc_command_version }}/openshift-client-linux.tar.gz"
+oc_command_install: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ oc_command_version }}/openshift-install-linux.tar.gz"
