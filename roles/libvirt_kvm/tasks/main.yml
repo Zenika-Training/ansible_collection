@@ -1,0 +1,47 @@
+---
+- name: Pre-checks
+  ansible.builtin.include_tasks: pre_tasks.yml
+
+- name: Copy RHCOS ISO to KVM host
+  become: true
+  ansible.builtin.copy:
+    src: "{{ libvirt_kvm_iso_src }}"
+    dest: "{{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"
+    mode: "0644"
+
+- name: Create LVM volume for VM disk
+  become: true
+  community.general.lvol:
+    vg: "{{ libvirt_kvm_vg_pool }}"
+    lv: "vm_{{ libvirt_kvm_name }}"
+    size: "{{ libvirt_kvm_disk_size }}"
+    state: present
+
+- name: Create KVM virtual machine
+  become: true
+  community.libvirt.virt_install:
+    name: "{{ libvirt_kvm_name }}"
+    osinfo:
+      name: "{{ libvirt_kvm_osinfo }}"
+    disks:
+      - path: "/dev/{{ libvirt_kvm_vg_pool }}/vm_{{ libvirt_kvm_name }}"
+        bus: virtio
+        format: raw
+    cdrom: "{{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"
+    memory: "{{ libvirt_kvm_memory }}"
+    vcpus: "{{ libvirt_kvm_vcpus }}"
+    cpu:
+      model: "{{ libvirt_kvm_cpu_model }}"
+    autostart: true
+    graphics:
+      type: "{{ libvirt_kvm_graphics_type }}"
+      listen: "{{ libvirt_kvm_graphics_listen }}"
+    networks:
+      - bridge: "{{ libvirt_kvm_bridge }}"
+        model:
+          type: "virtio"
+        mac:
+          address: "{{ libvirt_kvm_mac }}"
+
+- name: Post-tasks
+  ansible.builtin.include_tasks: post_tasks.yml

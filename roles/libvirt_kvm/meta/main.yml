@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: Yannick Sébastia
+  description: Création d'une VM KVM libvirt pour SNO OpenShift à partir d'une ISO RHCOS
+  company: Zenika
+  license: GPL-3.0-only
+  min_ansible_version: "2.1"
+  galaxy_tags: []
+dependencies: []

@@ -1,0 +1,24 @@
+---
+# Identité — obligatoirement surchargé par inventaire
+libvirt_kvm_name: ""
+libvirt_kvm_iso_src: ""
+
+# Ressources compute
+libvirt_kvm_memory: 32768
+libvirt_kvm_vcpus: 8
+libvirt_kvm_cpu_model: host-model
+
+# Stockage LVM
+libvirt_kvm_vg_pool: vg_guest
+libvirt_kvm_disk_size: 120g
+
+# Réseau — mac obligatoirement surchargé par inventaire
+libvirt_kvm_bridge: br0
+libvirt_kvm_mac: ""
+
+libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
+
+# Système invité
+libvirt_kvm_osinfo: fedora-coreos-stable
+libvirt_kvm_graphics_type: vnc
+libvirt_kvm_graphics_listen: 127.0.0.1

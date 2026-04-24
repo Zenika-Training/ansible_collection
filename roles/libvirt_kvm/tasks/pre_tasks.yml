@@ -1,0 +1,26 @@
+---
+- name: Validate VM name is defined
+  ansible.builtin.assert:
+    that: libvirt_kvm_name | length > 0
+    fail_msg: "libvirt_kvm_name doit être renseigné"
+
+- name: Validate MAC address is defined
+  ansible.builtin.assert:
+    that: libvirt_kvm_mac | length > 0
+    fail_msg: "libvirt_kvm_mac doit être renseigné"
+
+- name: Validate ISO source is defined
+  ansible.builtin.assert:
+    that: libvirt_kvm_iso_src | length > 0
+    fail_msg: "libvirt_kvm_iso_src doit être renseigné"
+
+- name: Validate ISO source exists
+  ansible.builtin.stat:
+    path: "{{ libvirt_kvm_iso_src }}"
+  register: libvirt_kvm_iso_stat
+  delegate_to: localhost
+
+- name: Assert ISO source file exists
+  ansible.builtin.assert:
+    that: libvirt_kvm_iso_stat.stat.exists
+    fail_msg: "ISO source introuvable : {{ libvirt_kvm_iso_src }}"
