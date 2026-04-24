@@ -1,0 +1,64 @@
+---
+- name: Cilium — generate manifests
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create manifests"
+  changed_when: true
+
+- name: Cilium — download manifests archive
+  ansible.builtin.get_url:
+    url: "{{ oc_coreos_cilium_manifests_url }}"
+    dest: "{{ oc_coreos_work_dir }}/cilium-manifests.tar.gz"
+    mode: "0644"
+
+- name: Cilium — extract manifests archive into ignition directory
+  ansible.builtin.unarchive:
+    src: "{{ oc_coreos_work_dir }}/cilium-manifests.tar.gz"
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+
+- name: Cilium — read cluster-network-02-config.yml
+  ansible.builtin.slurp:
+    src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/cluster-network-02-config.yml"
+  register: _oc_coreos_cn02_raw
+
+- name: "Cilium — patch cluster-network-02-config.yml (deployKubeProxy: false)"
+  ansible.builtin.copy:
+    content: "{{ _oc_coreos_cn02_raw.content | b64decode | from_yaml | combine({'spec': {'deployKubeProxy': false}}, recursive=True) | to_nice_yaml(indent=2) }}"
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/cluster-network-02-config.yml"
+    mode: "0644"
+
+- name: Cilium — find CiliumConfig manifest
+  ansible.builtin.find:
+    paths: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests"
+    patterns: "*ciliumconfig.yaml"
+  register: _oc_coreos_cilium_config_files
+
+- name: Cilium — read CiliumConfig manifest
+  ansible.builtin.slurp:
+    src: "{{ _oc_coreos_cilium_config_files.files[0].path }}"
+  register: _oc_coreos_cilium_config_raw
+  when: _oc_coreos_cilium_config_files.files | length > 0
+
+- name: Cilium — patch CiliumConfig
+  ansible.builtin.copy:
+    content: >-
+      {{ _oc_coreos_cilium_config_raw.content | b64decode | from_yaml | combine({
+           'spec': {
+             'kubeProxyReplacement': true,
+             'cilium': {
+               'kubeProxyReplacement': {'enabled': true},
+               'k8sServiceHost': 'api-int.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain,
+               'k8sServicePort': 6443,
+               'ipam': {
+                 'operator': {
+                   'clusterPoolIPv4PodCIDRList': [oc_coreos_cluster_network_cidr]
+                 }
+               }
+             }
+           }
+         }, recursive=True) | to_nice_yaml(indent=2) }}
+    dest: "{{ _oc_coreos_cilium_config_files.files[0].path }}"
+    mode: "0644"
+  when: _oc_coreos_cilium_config_files.files | length > 0
