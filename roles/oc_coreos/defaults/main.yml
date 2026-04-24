@@ -1,0 +1,24 @@
+---
+oc_coreos_arch: x86_64
+oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
+
+# Cluster identity — à surcharger par inventaire
+oc_coreos_ocp_name: ocp1
+oc_coreos_ocp_domain: "example.com"
+
+# IP du nœud — obligatoirement surchargée par inventaire
+oc_coreos_ocp_ip: ""
+
+# Réseau
+oc_coreos_ocp_subnet: "192.168.0.0/24"
+oc_coreos_ocp_network: OVNKubernetes
+oc_coreos_cluster_network_cidr: "10.128.0.0/14"
+oc_coreos_cluster_network_prefix: 23
+oc_coreos_service_network: "172.30.0.0/16"
+
+# Disque d'installation dans la VM
+oc_coreos_install_disk: /dev/vda
+
+# Secrets — obligatoirement surchargés par inventaire/vault
+oc_coreos_pull_secret: ""
+oc_coreos_ssh_key: ""

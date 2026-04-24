@@ -1,0 +1,7 @@
+---
+- name: ISO ready
+  ansible.builtin.debug:
+    msg:
+      - "ISO    : {{ oc_coreos_work_dir }}/rhcos-live.iso"
+      - "Nœud   : {{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      - "Réseau : {{ oc_coreos_ocp_network }}"

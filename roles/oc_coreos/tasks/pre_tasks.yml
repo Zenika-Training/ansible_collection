@@ -1,0 +1,31 @@
+---
+- name: Validate pull secret is defined
+  ansible.builtin.assert:
+    that: oc_coreos_pull_secret | length > 0
+    fail_msg: "oc_coreos_pull_secret doit être renseigné (téléchargement : https://console.redhat.com/openshift/create/local)"
+
+- name: Validate SSH key is defined
+  ansible.builtin.assert:
+    that: oc_coreos_ssh_key | length > 0
+    fail_msg: "oc_coreos_ssh_key doit être renseigné"
+
+- name: Validate OCP IP is defined
+  ansible.builtin.assert:
+    that: oc_coreos_ocp_ip | length > 0
+    fail_msg: "oc_coreos_ocp_ip doit être renseigné"
+
+- name: Check DNS records
+  ansible.builtin.assert:
+    that: lookup('community.general.dig', item.query) not in ['', 'NXDOMAIN']
+    fail_msg: "DNS manquant : {{ item.label }}"
+  loop:
+    - query: "{{ oc_coreos_ocp_ip }}/PTR"
+      label: "PTR {{ oc_coreos_ocp_ip }}"
+    - query: "api.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      label: "api.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+    - query: "api-int.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      label: "api-int.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+    - query: "random.apps.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      label: "*.apps.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+  loop_control:
+    label: "{{ item.label }}"
