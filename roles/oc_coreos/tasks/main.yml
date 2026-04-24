@@ -50,6 +50,10 @@
     mode: "0600"
     remote_src: true
 
+- name: Cilium
+  ansible.builtin.include_tasks: cilium.yml
+  when: oc_coreos_ocp_network == 'Cilium'
+
 - name: Generate single-node ignition config
   ansible.builtin.command:
     cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create single-node-ignition-config"

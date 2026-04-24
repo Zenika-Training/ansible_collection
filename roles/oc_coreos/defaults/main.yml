@@ -22,3 +22,6 @@ oc_coreos_install_disk: /dev/vda
 # Secrets — obligatoirement surchargés par inventaire/vault
 oc_coreos_pull_secret: ""
 oc_coreos_ssh_key: ""
+
+# Cilium EE manifests (utilisé uniquement si oc_coreos_ocp_network == 'Cilium')
+oc_coreos_cilium_manifests_url: "https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz"

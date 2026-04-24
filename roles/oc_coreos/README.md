@@ -7,6 +7,7 @@ Préparation ISO RHCOS SNO (Single Node OpenShift) avec ignition embarqué
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [oc_coreos_arch](#oc_coreos_arch)
+  - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
   - [oc_coreos_install_disk](#oc_coreos_install_disk)
@@ -37,6 +38,15 @@ Préparation ISO RHCOS SNO (Single Node OpenShift) avec ignition embarqué
 
 ```YAML
 oc_coreos_arch: x86_64
+```
+
+### oc_coreos_cilium_manifests_url
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_manifests_url: 
+  https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz
 ```
 
 ### oc_coreos_cluster_network_cidr
