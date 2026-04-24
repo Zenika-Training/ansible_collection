@@ -1,0 +1,8 @@
+---
+- name: Generate CoreOS iso file
+  hosts: "{{ ansible_limit | default('localhost') }}"
+  pre_tasks:
+  tasks:
+    - name: "Call oc_coreos"
+      ansible.builtin.include_role:
+        name: "zenika.training.oc_coreos"

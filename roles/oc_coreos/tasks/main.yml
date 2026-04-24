@@ -1,0 +1,80 @@
+---
+- name: Pre-checks
+  ansible.builtin.include_tasks: pre_tasks.yml
+
+- name: Create working directory
+  ansible.builtin.file:
+    path: "{{ oc_coreos_work_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Get RHCOS stream JSON
+  ansible.builtin.command:
+    cmd: /usr/local/bin/openshift-install coreos print-stream-json
+  register: _oc_coreos_stream_json
+  changed_when: false
+
+- name: Set RHCOS ISO URL from stream JSON
+  ansible.builtin.set_fact:
+    _oc_coreos_iso_url: >-
+      {{ (_oc_coreos_stream_json.stdout | from_json)
+         .architectures[oc_coreos_arch].artifacts.metal.formats.iso.disk.location }}
+
+- name: Download RHCOS live ISO
+  ansible.builtin.get_url:
+    url: "{{ _oc_coreos_iso_url }}"
+    dest: "{{ oc_coreos_work_dir }}/rhcos-live.iso"
+    mode: "0644"
+
+- name: Generate install-config.yaml
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "{{ oc_coreos_work_dir }}/install-config.yaml"
+    mode: "0600"
+
+- name: Clean ignition config directory
+  ansible.builtin.file:
+    path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}"
+    state: absent
+
+- name: Create ignition config directory
+  ansible.builtin.file:
+    path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy install-config.yaml into ignition directory
+  ansible.builtin.copy:
+    src: "{{ oc_coreos_work_dir }}/install-config.yaml"
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/install-config.yaml"
+    mode: "0600"
+    remote_src: true
+
+- name: Generate single-node ignition config
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create single-node-ignition-config"
+  changed_when: true
+
+- name: Pull coreos-installer image
+  containers.podman.podman_image:
+    name: quay.io/coreos/coreos-installer:release
+    force: true
+
+- name: Embed ignition config into RHCOS ISO
+  containers.podman.podman_container:
+    name: coreos-installer
+    image: quay.io/coreos/coreos-installer:release
+    state: started
+    detach: false
+    rm: true
+    privileged: true
+    volumes:
+      - /dev:/dev
+      - /run/udev:/run/udev
+      - "{{ oc_coreos_work_dir }}:/data"
+    workdir: /data
+    command: "iso ignition embed -fi {{ oc_coreos_ocp_name }}/bootstrap-in-place-for-live-iso.ign rhcos-live.iso"
+  changed_when: true
+
+- name: Post-tasks
+  ansible.builtin.include_tasks: post_tasks.yml
