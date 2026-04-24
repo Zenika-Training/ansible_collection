@@ -1,7 +1,13 @@
 ---
+- name: Read kubeadmin password
+  ansible.builtin.slurp:
+    src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeadmin-password"
+  register: oc_coreos_kubeadmin_password
+
 - name: ISO ready
   ansible.builtin.debug:
     msg:
-      - "ISO    : {{ oc_coreos_work_dir }}/rhcos-live.iso"
-      - "Nœud   : {{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
-      - "Réseau : {{ oc_coreos_ocp_network }}"
+      - "ISO        : {{ oc_coreos_work_dir }}/rhcos-live.iso"
+      - "Nœud       : {{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      - "Réseau     : {{ oc_coreos_ocp_network }}"
+      - "kubeadmin  : {{ oc_coreos_kubeadmin_password.content | b64decode | trim }}"
