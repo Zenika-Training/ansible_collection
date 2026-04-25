@@ -43,5 +43,21 @@
         mac:
           address: "{{ libvirt_kvm_mac }}"
 
+- name: Wait for first-boot installation to complete (VM shuts off)
+  become: true
+  community.libvirt.virt:
+    command: status
+    name: "{{ libvirt_kvm_name }}"
+  until: _libvirt_kvm_domstate.status == 'shutdown'
+  register: _libvirt_kvm_domstate
+  retries: 60
+  delay: 30
+
+- name: Start VM (second boot from disk)
+  become: true
+  community.libvirt.virt:
+    name: "{{ libvirt_kvm_name }}"
+    state: running
+
 - name: Post-tasks
   ansible.builtin.include_tasks: post_tasks.yml
