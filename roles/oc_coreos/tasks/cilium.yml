@@ -29,6 +29,66 @@
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/cluster-network-02-config.yml"
     mode: "0644"
 
+- name: Cilium — find clife controller Deployment
+  ansible.builtin.find:
+    paths: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests"
+    patterns: "*deployment_clife*.yaml"
+  register: _oc_coreos_clife_deploy_files
+
+- name: Cilium — read clife controller Deployment
+  ansible.builtin.slurp:
+    src: "{{ _oc_coreos_clife_deploy_files.files[0].path }}"
+  register: _oc_coreos_clife_deploy_raw
+  when: _oc_coreos_clife_deploy_files.files | length > 0
+
+- name: Cilium — patch clife controller Deployment (KUBERNETES_SERVICE_HOST/PORT)
+  vars:
+    _oc_coreos_deploy: "{{ _oc_coreos_clife_deploy_raw.content | b64decode | from_yaml }}"
+    _oc_coreos_container: "{{ _oc_coreos_deploy.spec.template.spec.containers[0] }}"
+    _oc_coreos_env_patch:
+      - name: KUBERNETES_SERVICE_HOST
+        value: "api.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+  ansible.builtin.copy:
+    content: >-
+      {{ _oc_coreos_deploy | combine({
+           'spec': {
+             'template': {
+               'spec': {
+                 'containers': [
+                   _oc_coreos_container | combine({'env': _oc_coreos_container.env + _oc_coreos_env_patch})
+                 ]
+               }
+             }
+           }
+         }, recursive=True) | to_nice_yaml(indent=2) }}
+    dest: "{{ _oc_coreos_clife_deploy_files.files[0].path }}"
+    mode: "0644"
+  when: _oc_coreos_clife_deploy_files.files | length > 0
+
+- name: Cilium — read subscription.yaml
+  ansible.builtin.slurp:
+    src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/subscription.yaml"
+  register: _oc_coreos_subscription_raw
+
+- name: Cilium — patch subscription.yaml (KUBERNETES_SERVICE_HOST/PORT)
+  ansible.builtin.copy:
+    content: >-
+      {{ _oc_coreos_subscription_raw.content | b64decode | from_yaml | combine({
+           'spec': {
+             'config': {
+               'env': [
+                 {'name': 'KUBERNETES_SERVICE_HOST',
+                  'value': 'api.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain},
+                 {'name': 'KUBERNETES_SERVICE_PORT', 'value': '6443'}
+               ]
+             }
+           }
+         }, recursive=True) | to_nice_yaml(indent=2) }}
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/subscription.yaml"
+    mode: "0644"
+
 - name: Cilium — find CiliumConfig manifest
   ansible.builtin.find:
     paths: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests"
@@ -49,7 +109,7 @@
              'kubeProxyReplacement': true,
              'cilium': {
                'kubeProxyReplacement': {'enabled': true},
-               'k8sServiceHost': 'api-int.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain,
+               'k8sServiceHost': 'api.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain,
                'k8sServicePort': 6443,
                'ipam': {
                  'operator': {
