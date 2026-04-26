@@ -1,0 +1,4 @@
+---
+ansible_connection: local
+kvm_host: {{ sno_inventory_kvm_host }}
+libvirt_kvm_target_host: "{{ '{{' }} kvm_host {{ '}}' }}"

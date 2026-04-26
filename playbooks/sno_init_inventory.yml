@@ -1,0 +1,8 @@
+---
+- name: Initialize SNO inventory skeleton
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: "Call sno_inventory"
+      ansible.builtin.include_role:
+        name: "zenika.training.sno_inventory"
