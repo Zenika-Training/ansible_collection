@@ -85,7 +85,7 @@ libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
 #### Default value
 
 ```YAML
-libvirt_kvm_iso_src: '{{ oc_coreos_work_dir }}/rhcos-live.iso'
+libvirt_kvm_iso_src: /tmp/openshift/{{ libvirt_kvm_name }}/rhcos-live.iso
 ```
 
 ### libvirt_kvm_mac
