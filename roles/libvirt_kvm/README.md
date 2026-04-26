@@ -17,6 +17,7 @@ Création d'une VM KVM libvirt pour SNO OpenShift à partir d'une ISO RHCOS
   - [libvirt_kvm_memory](#libvirt_kvm_memory)
   - [libvirt_kvm_name](#libvirt_kvm_name)
   - [libvirt_kvm_osinfo](#libvirt_kvm_osinfo)
+  - [libvirt_kvm_target_host](#libvirt_kvm_target_host)
   - [libvirt_kvm_vcpus](#libvirt_kvm_vcpus)
   - [libvirt_kvm_vg_pool](#libvirt_kvm_vg_pool)
 - [Dependencies](#dependencies)
@@ -84,7 +85,7 @@ libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
 #### Default value
 
 ```YAML
-libvirt_kvm_iso_src: ''
+libvirt_kvm_iso_src: '{{ oc_coreos_work_dir }}/rhcos-live.iso'
 ```
 
 ### libvirt_kvm_mac
@@ -108,7 +109,7 @@ libvirt_kvm_memory: 32768
 #### Default value
 
 ```YAML
-libvirt_kvm_name: ''
+libvirt_kvm_name: '{{ inventory_hostname }}'
 ```
 
 ### libvirt_kvm_osinfo
@@ -117,6 +118,14 @@ libvirt_kvm_name: ''
 
 ```YAML
 libvirt_kvm_osinfo: fedora-coreos-stable
+```
+
+### libvirt_kvm_target_host
+
+#### Default value
+
+```YAML
+libvirt_kvm_target_host: localhost
 ```
 
 ### libvirt_kvm_vcpus

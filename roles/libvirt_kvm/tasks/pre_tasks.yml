@@ -17,10 +17,10 @@
 - name: Validate ISO source exists
   ansible.builtin.stat:
     path: "{{ libvirt_kvm_iso_src }}"
-  register: libvirt_kvm_iso_stat
+  register: _libvirt_kvm_iso_stat
   delegate_to: localhost
 
 - name: Assert ISO source file exists
   ansible.builtin.assert:
-    that: libvirt_kvm_iso_stat.stat.exists
+    that: _libvirt_kvm_iso_stat.stat.exists
     fail_msg: "ISO source introuvable : {{ libvirt_kvm_iso_src }}"

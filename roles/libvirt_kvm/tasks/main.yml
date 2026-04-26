@@ -8,6 +8,7 @@
     src: "{{ libvirt_kvm_iso_src }}"
     dest: "{{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"
     mode: "0644"
+  delegate_to: "{{ libvirt_kvm_target_host }}"
 
 - name: Create LVM volume for VM disk
   become: true
@@ -16,6 +17,7 @@
     lv: "vm_{{ libvirt_kvm_name }}"
     size: "{{ libvirt_kvm_disk_size }}"
     state: present
+  delegate_to: "{{ libvirt_kvm_target_host }}"
 
 - name: Create KVM virtual machine
   become: true
@@ -42,6 +44,7 @@
           type: "virtio"
         mac:
           address: "{{ libvirt_kvm_mac }}"
+  delegate_to: "{{ libvirt_kvm_target_host }}"
 
 - name: Wait for first-boot installation to complete (VM shuts off)
   become: true
@@ -52,12 +55,14 @@
   register: _libvirt_kvm_domstate
   retries: 60
   delay: 30
+  delegate_to: "{{ libvirt_kvm_target_host }}"
 
 - name: Start VM (second boot from disk)
   become: true
   community.libvirt.virt:
     name: "{{ libvirt_kvm_name }}"
     state: running
+  delegate_to: "{{ libvirt_kvm_target_host }}"
 
 - name: Post-tasks
   ansible.builtin.include_tasks: post_tasks.yml
