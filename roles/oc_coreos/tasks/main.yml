@@ -32,11 +32,6 @@
     dest: "{{ oc_coreos_work_dir }}/install-config.yaml"
     mode: "0600"
 
-- name: Clean ignition config directory
-  ansible.builtin.file:
-    path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}"
-    state: absent
-
 - name: Create ignition config directory
   ansible.builtin.file:
     path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}"
