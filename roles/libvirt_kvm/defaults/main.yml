@@ -17,6 +17,7 @@ libvirt_kvm_bridge: br0
 libvirt_kvm_mac: ""
 
 libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
+libvirt_kvm_target_host: localhost
 
 # Système invité
 libvirt_kvm_osinfo: fedora-coreos-stable
