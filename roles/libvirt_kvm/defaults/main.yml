@@ -1,7 +1,7 @@
 ---
 # Identité — obligatoirement surchargé par inventaire
 libvirt_kvm_name: "{{ inventory_hostname }}"
-libvirt_kvm_iso_src: "{{ oc_coreos_work_dir }}/rhcos-live.iso"
+libvirt_kvm_iso_src: "/tmp/openshift/{{ libvirt_kvm_name }}/rhcos-live.iso"
 
 # Ressources compute
 libvirt_kvm_memory: 32768
