@@ -1,0 +1,8 @@
+---
+sno_inventory_dir: "{{ lookup('env', 'PWD') }}"
+sno_inventory_clusters: []
+sno_inventory_domain: "lab.example.com"
+sno_inventory_subnet: "192.168.0.0/24"
+sno_inventory_bridge: "br0"
+sno_inventory_kvm_host: "kvm-server"
+sno_inventory_kvm_user: "root"

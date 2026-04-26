@@ -1,0 +1,70 @@
+---
+- name: Create inventory directory structure
+  ansible.builtin.file:
+    path: "{{ sno_inventory_dir }}/inventory/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - group_vars
+    - host_vars
+
+- name: Generate ansible.cfg
+  ansible.builtin.copy:
+    dest: "{{ sno_inventory_dir }}/ansible.cfg"
+    content: |
+      [defaults]
+      inventory = inventory/
+    force: false
+    mode: "0644"
+
+- name: Generate hosts.ini
+  ansible.builtin.template:
+    src: hosts.ini.j2
+    dest: "{{ sno_inventory_dir }}/inventory/hosts.ini"
+    force: false
+    mode: "0644"
+
+- name: Generate group_vars/all.yml
+  ansible.builtin.template:
+    src: all.yml.j2
+    dest: "{{ sno_inventory_dir }}/inventory/group_vars/all.yml"
+    force: false
+    mode: "0644"
+
+- name: Generate group_vars/sno.yml
+  ansible.builtin.template:
+    src: sno.yml.j2
+    dest: "{{ sno_inventory_dir }}/inventory/group_vars/sno.yml"
+    force: false
+    mode: "0644"
+
+- name: Generate group_vars/ovn.yml
+  ansible.builtin.copy:
+    dest: "{{ sno_inventory_dir }}/inventory/group_vars/ovn.yml"
+    content: |
+      ---
+      oc_coreos_ocp_network: OVNKubernetes
+    force: false
+    mode: "0644"
+  when: sno_inventory_clusters | selectattr('cni', 'equalto', 'ovn') | list | length > 0
+
+- name: Generate group_vars/cilium.yml
+  ansible.builtin.copy:
+    dest: "{{ sno_inventory_dir }}/inventory/group_vars/cilium.yml"
+    content: |
+      ---
+      oc_coreos_ocp_network: Cilium
+    force: false
+    mode: "0644"
+  when: sno_inventory_clusters | selectattr('cni', 'equalto', 'cilium') | list | length > 0
+
+- name: Generate host_vars per cluster
+  ansible.builtin.template:
+    src: host_vars.yml.j2
+    dest: "{{ sno_inventory_dir }}/inventory/host_vars/{{ _sno_cluster.name }}.yml"
+    force: false
+    mode: "0644"
+  loop: "{{ sno_inventory_clusters }}"
+  loop_control:
+    loop_var: _sno_cluster
+    label: "{{ _sno_cluster.name }}"

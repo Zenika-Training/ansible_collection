@@ -1,0 +1,12 @@
+---
+oc_coreos_ocp_domain: "{{ sno_inventory_domain }}"
+oc_coreos_ocp_subnet: "{{ sno_inventory_subnet }}"
+libvirt_kvm_bridge: {{ sno_inventory_bridge }}
+
+# Télécharger depuis https://console.redhat.com/openshift/create/local
+oc_coreos_pull_secret: |
+  # RENSEIGNER ICI
+
+# Clé SSH publique du poste de travail (cat ~/.ssh/id_*.pub)
+oc_coreos_ssh_key: |
+  # RENSEIGNER ICI
