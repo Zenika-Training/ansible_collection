@@ -3,7 +3,7 @@ oc_coreos_arch: x86_64
 oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
 
 # Cluster identity — à surcharger par inventaire
-oc_coreos_ocp_name: ocp1
+oc_coreos_ocp_name: "{{ inventory_hostname }}"
 oc_coreos_ocp_domain: "example.com"
 
 # IP du nœud — obligatoirement surchargée par inventaire

@@ -1,7 +1,8 @@
 ---
 - name: Deploy SNO on libvirt/kvm
-  hosts: "{{ ansible_limit | default('kvm') }}"
+  hosts: "{{ ansible_limit | default('sno') }}"
   tasks:
     - name: "Call libvirt_kvm"
       ansible.builtin.include_role:
         name: "zenika.training.libvirt_kvm"
+      delegate_to: "{{ kvm_host }}"
