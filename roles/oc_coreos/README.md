@@ -94,7 +94,7 @@ oc_coreos_ocp_ip: ''
 #### Default value
 
 ```YAML
-oc_coreos_ocp_name: ocp1
+oc_coreos_ocp_name: '{{ inventory_hostname }}'
 ```
 
 ### oc_coreos_ocp_network
