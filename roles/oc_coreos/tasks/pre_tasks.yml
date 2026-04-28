@@ -2,22 +2,22 @@
 - name: Validate pull secret is defined
   ansible.builtin.assert:
     that: oc_coreos_pull_secret | length > 0
-    fail_msg: "oc_coreos_pull_secret doit être renseigné (téléchargement : https://console.redhat.com/openshift/create/local)"
+    fail_msg: "oc_coreos_pull_secret must be set (download from: https://console.redhat.com/openshift/create/local)"
 
 - name: Validate SSH key is defined
   ansible.builtin.assert:
     that: oc_coreos_ssh_key | length > 0
-    fail_msg: "oc_coreos_ssh_key doit être renseigné"
+    fail_msg: "oc_coreos_ssh_key must be set"
 
 - name: Validate OCP IP is defined
   ansible.builtin.assert:
     that: oc_coreos_ocp_ip | length > 0
-    fail_msg: "oc_coreos_ocp_ip doit être renseigné"
+    fail_msg: "oc_coreos_ocp_ip must be set"
 
 - name: Check DNS records
   ansible.builtin.assert:
     that: lookup('community.general.dig', item.query) not in ['', 'NXDOMAIN']
-    fail_msg: "DNS manquant : {{ item.label }}"
+    fail_msg: "Missing DNS record: {{ item.label }}"
   loop:
     - query: "{{ oc_coreos_ocp_ip }}/PTR"
       label: "PTR {{ oc_coreos_ocp_ip }}"

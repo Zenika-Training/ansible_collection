@@ -1,6 +1,6 @@
 # oc_command
 
-Installation OC command
+Install the OpenShift CLI (oc) and openshift-install binaries
 
 ## Table of contents
 
@@ -17,11 +17,13 @@ Installation OC command
 
 ## Requirements
 
-- Minimum Ansible version: `2.1`
+- Minimum Ansible version: `2.14`
 
 ## Default Variables
 
 ### oc_command_client
+
+Download URL for the OpenShift client (oc) tarball.
 
 #### Default value
 
@@ -32,6 +34,8 @@ oc_command_client: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{
 
 ### oc_command_install
 
+Download URL for the openshift-install binary tarball.
+
 #### Default value
 
 ```YAML
@@ -40,6 +44,8 @@ oc_command_install: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{
 ```
 
 ### oc_command_version
+
+OpenShift client version to install (must match the cluster version).
 
 #### Default value
 

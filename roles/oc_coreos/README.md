@@ -1,6 +1,6 @@
 # oc_coreos
 
-Préparation ISO RHCOS SNO (Single Node OpenShift) avec ignition embarqué
+Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition config
 
 ## Table of contents
 
@@ -28,7 +28,7 @@ Préparation ISO RHCOS SNO (Single Node OpenShift) avec ignition embarqué
 
 ## Requirements
 
-- Minimum Ansible version: `2.1`
+- Minimum Ansible version: `2.14`
 
 ## Default Variables
 

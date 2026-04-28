@@ -64,8 +64,8 @@
     name: quay.io/coreos/coreos-installer:release
     force: true
 
-# Supprime toute ignition précédemment embarquée avant de réencoder.
-# Idempotent : sort avec code 0 si l'ISO est déjà vierge.
+# Removes any previously embedded ignition before re-encoding.
+# Idempotent: exits with code 0 if the ISO has no embedded ignition.
 - name: Remove existing ignition from ISO
   containers.podman.podman_container:
     name: coreos-installer-reset

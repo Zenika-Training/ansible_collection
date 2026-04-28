@@ -1,9 +1,9 @@
 ---
 galaxy_info:
   author: Yannick Sébastia
-  description: Préparation ISO RHCOS SNO (Single Node OpenShift) avec ignition embarqué
+  description: Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition config
   company: Zenika
   license: GPL-3.0-only
-  min_ansible_version: "2.1"
+  min_ansible_version: "2.14"
   galaxy_tags: []
 dependencies: []
