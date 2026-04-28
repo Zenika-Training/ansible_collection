@@ -1,25 +1,61 @@
 ---
-# Identité — obligatoirement surchargé par inventaire
+# @section VM identity
+
+# @var libvirt_kvm_name:description: Name of the VM. Defaults to the Ansible inventory hostname.
 libvirt_kvm_name: "{{ inventory_hostname }}"
+
+# @var libvirt_kvm_iso_src:description: >
+# Path to the RHCOS live ISO on the Ansible controller.
+# Used as source for the copy task that places it on the KVM host.
+# @end
 libvirt_kvm_iso_src: "/tmp/openshift/{{ libvirt_kvm_name }}/rhcos-live.iso"
 
-# Ressources compute
+# @section Compute resources
+
+# @var libvirt_kvm_memory:description: RAM allocated to the VM, in MiB.
 libvirt_kvm_memory: 32768
+
+# @var libvirt_kvm_vcpus:description: Number of virtual CPUs.
 libvirt_kvm_vcpus: 8
+
+# @var libvirt_kvm_cpu_model:description: CPU model passed to libvirt. host-model exposes all host CPU features.
 libvirt_kvm_cpu_model: host-model
 
-# Stockage LVM
+# @section LVM storage
+
+# @var libvirt_kvm_vg_pool:description: LVM volume group used to create the VM disk.
 libvirt_kvm_vg_pool: vg_guest
+
+# @var libvirt_kvm_disk_size:description: Size of the VM disk in virt-install format (e.g. 120g).
 libvirt_kvm_disk_size: 120g
 
-# Réseau — mac obligatoirement surchargé par inventaire
+# @section Network
+
+# @var libvirt_kvm_bridge:description: Linux bridge interface on the KVM host used for the VM network.
 libvirt_kvm_bridge: br0
+
+# @var libvirt_kvm_mac:description: >
+# MAC address of the VM NIC. Required — must be set in host_vars or inventory.
+# Used to ensure a predictable static IP via DHCP or DNS.
+# @end
 libvirt_kvm_mac: ""
 
+# @var libvirt_kvm_iso_dest_dir:description: Directory on the KVM host where the ISO is copied before boot.
 libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
+
+# @var libvirt_kvm_target_host:description: >
+# Ansible inventory hostname of the KVM host. Tasks that must run on the KVM host
+# are delegated to this host. Override in group_vars with the actual KVM server hostname.
+# @end
 libvirt_kvm_target_host: localhost
 
-# Système invité
+# @section Guest OS
+
+# @var libvirt_kvm_osinfo:description: OS variant identifier passed to virt-install (--os-variant).
 libvirt_kvm_osinfo: fedora-coreos-stable
+
+# @var libvirt_kvm_graphics_type:description: Graphical display protocol for the VM console (vnc or spice).
 libvirt_kvm_graphics_type: vnc
+
+# @var libvirt_kvm_graphics_listen:description: Address on which the graphics server listens. 127.0.0.1 restricts to localhost.
 libvirt_kvm_graphics_listen: 127.0.0.1

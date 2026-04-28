@@ -8,6 +8,6 @@
   ansible.builtin.debug:
     msg:
       - "ISO        : {{ oc_coreos_work_dir }}/rhcos-live.iso"
-      - "Nœud       : {{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
-      - "Réseau     : {{ oc_coreos_ocp_network }}"
+      - "Node       : {{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      - "Network    : {{ oc_coreos_ocp_network }}"
       - "kubeadmin  : {{ oc_coreos_kubeadmin_password.content | b64decode | trim }}"

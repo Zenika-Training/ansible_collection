@@ -2,21 +2,21 @@
 - name: "Check current version of {{ oc_command_binary.name }}"
   ansible.builtin.command:
     cmd: "/usr/local/bin/{{ oc_command_binary.name }} {{ oc_command_binary.version_arg }}"
-  register: oc_command_binary_version_result
+  register: _oc_command_binary_version_result
   failed_when: false
   changed_when: false
 
 - name: "Set installed version to empty for {{ oc_command_binary.name }}"
   ansible.builtin.set_fact:
-    oc_command_binary_installed_version: ""
+    _oc_command_binary_installed_version: ""
 
 - name: "Set installed version from binary for {{ oc_command_binary.name }}"
   ansible.builtin.set_fact:
-    oc_command_binary_installed_version: >-
-      {{ oc_command_binary_version_result.stdout
+    _oc_command_binary_installed_version: >-
+      {{ _oc_command_binary_version_result.stdout
          | regex_search('(\d+\.\d+\.\d+)', '\1')
          | first | default('') }}
-  when: oc_command_binary_version_result.rc == 0 and oc_command_binary_version_result.stdout != ''
+  when: _oc_command_binary_version_result.rc == 0 and _oc_command_binary_version_result.stdout != ''
 
 - name: "Download and install of {{ oc_command_binary.name }}"
   become: true
@@ -27,7 +27,7 @@
     group: root
     mode: "0755"
     remote_src: true
-  when: oc_command_binary_installed_version != oc_command_version
+  when: _oc_command_binary_installed_version != oc_command_version
 
 - name: "Bash completion for {{ oc_command_binary.name }}"
   become: true
@@ -35,4 +35,4 @@
     cmd: "(/usr/local/bin/{{ oc_command_binary.name }} completion bash) > /etc/profile.d/{{ oc_command_binary.name }}.sh"
   args:
     creates: /etc/profile.d/{{ oc_command_binary.name }}.sh
-  when: oc_command_binary_installed_version != oc_command_version
+  when: _oc_command_binary_installed_version != oc_command_version
