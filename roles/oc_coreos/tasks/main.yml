@@ -32,6 +32,11 @@
     dest: "{{ oc_coreos_work_dir }}/install-config.yaml"
     mode: "0600"
 
+- name: Clean ignition config directory
+  ansible.builtin.file:
+    path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}"
+    state: absent
+
 - name: Create ignition config directory
   ansible.builtin.file:
     path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}"
@@ -58,6 +63,24 @@
   containers.podman.podman_image:
     name: quay.io/coreos/coreos-installer:release
     force: true
+
+# Supprime toute ignition précédemment embarquée avant de réencoder.
+# Idempotent : sort avec code 0 si l'ISO est déjà vierge.
+- name: Remove existing ignition from ISO
+  containers.podman.podman_container:
+    name: coreos-installer-reset
+    image: quay.io/coreos/coreos-installer:release
+    state: started
+    detach: false
+    rm: true
+    privileged: true
+    volumes:
+      - /dev:/dev
+      - /run/udev:/run/udev
+      - "{{ oc_coreos_work_dir }}:/data"
+    workdir: /data
+    command: "iso ignition remove rhcos-live.iso"
+  changed_when: false
 
 - name: Embed ignition config into RHCOS ISO
   containers.podman.podman_container:
