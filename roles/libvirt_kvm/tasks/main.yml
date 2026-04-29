@@ -8,6 +8,7 @@
     src: "{{ libvirt_kvm_iso_src }}"
     dest: "{{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"
     mode: "0644"
+    remote_src: "{{ libvirt_kvm_iso_host == libvirt_kvm_target_host }}"
   delegate_to: "{{ libvirt_kvm_target_host }}"
 
 - name: Create LVM volume for VM disk

@@ -12,6 +12,7 @@ Create a KVM libvirt VM for SNO OpenShift from an RHCOS live ISO
   - [libvirt_kvm_graphics_listen](#libvirt_kvm_graphics_listen)
   - [libvirt_kvm_graphics_type](#libvirt_kvm_graphics_type)
   - [libvirt_kvm_iso_dest_dir](#libvirt_kvm_iso_dest_dir)
+  - [libvirt_kvm_iso_host](#libvirt_kvm_iso_host)
   - [libvirt_kvm_iso_src](#libvirt_kvm_iso_src)
   - [libvirt_kvm_mac](#libvirt_kvm_mac)
   - [libvirt_kvm_memory](#libvirt_kvm_memory)
@@ -92,10 +93,22 @@ Directory on the KVM host where the ISO is copied before boot.
 libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
 ```
 
+### libvirt_kvm_iso_host
+
+Host where the source ISO resides. Defaults to localhost (Ansible controller).
+Set to the KVM host name when the ISO was generated directly on the KVM host
+(e.g. libvirt_kvm_iso_host: "{{ libvirt_kvm_target_host }}").
+Controls both where the pre-check stat runs and whether the copy uses remote_src.
+
+#### Default value
+
+```YAML
+libvirt_kvm_iso_host: localhost
+```
+
 ### libvirt_kvm_iso_src
 
-Path to the RHCOS live ISO on the Ansible controller.
-Used as source for the copy task that places it on the KVM host.
+Path to the RHCOS live ISO on the host identified by libvirt_kvm_iso_host.
 
 #### Default value
 

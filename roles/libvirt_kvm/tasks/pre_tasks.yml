@@ -18,7 +18,7 @@
   ansible.builtin.stat:
     path: "{{ libvirt_kvm_iso_src }}"
   register: _libvirt_kvm_iso_stat
-  delegate_to: localhost
+  delegate_to: "{{ libvirt_kvm_iso_host }}"
 
 - name: Assert ISO source file exists
   ansible.builtin.assert:
