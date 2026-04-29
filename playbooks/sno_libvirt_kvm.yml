@@ -2,6 +2,11 @@
 - name: Deploy SNO on libvirt/kvm
   hosts: "{{ ansible_limit | default('sno') }}"
   tasks:
-    - name: "Call libvirt_kvm"
+    - name: Start VM
       ansible.builtin.include_role:
         name: "zenika.training.libvirt_kvm"
+
+    - name: Wait for SNO installation to complete
+      ansible.builtin.include_role:
+        name: "zenika.training.oc_coreos"
+        tasks_from: wait_install.yml
