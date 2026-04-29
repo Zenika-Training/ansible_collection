@@ -1,11 +1,4 @@
 ---
-- name: Get VM boot time
-  become: true
-  ansible.builtin.command: virsh domtime {{ libvirt_kvm_name }}
-  register: _libvirt_kvm_domtime
-  changed_when: false
-  delegate_to: "{{ libvirt_kvm_target_host }}"
-
 - name: VM created
   ansible.builtin.debug:
     msg:
@@ -15,4 +8,3 @@
       - "Disque : /dev/{{ libvirt_kvm_vg_pool }}/vm_{{ libvirt_kvm_name }} ({{ libvirt_kvm_disk_size }})"
       - "Réseau : bridge={{ libvirt_kvm_bridge }} mac={{ libvirt_kvm_mac }}"
       - "ISO    : {{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"
-      - "Boot   : {{ _libvirt_kvm_domtime.stdout }}"
