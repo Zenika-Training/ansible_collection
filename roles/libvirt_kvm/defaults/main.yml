@@ -5,10 +5,17 @@
 libvirt_kvm_name: "{{ inventory_hostname }}"
 
 # @var libvirt_kvm_iso_src:description: >
-# Path to the RHCOS live ISO on the Ansible controller.
-# Used as source for the copy task that places it on the KVM host.
+# Path to the RHCOS live ISO on the host identified by libvirt_kvm_iso_host.
 # @end
 libvirt_kvm_iso_src: "/tmp/openshift/{{ libvirt_kvm_name }}/rhcos-live.iso"
+
+# @var libvirt_kvm_iso_host:description: >
+# Host where the source ISO resides. Defaults to localhost (Ansible controller).
+# Set to the KVM host name when the ISO was generated directly on the KVM host
+# (e.g. libvirt_kvm_iso_host: "{{ libvirt_kvm_target_host }}").
+# Controls both where the pre-check stat runs and whether the copy uses remote_src.
+# @end
+libvirt_kvm_iso_host: localhost
 
 # @section Compute resources
 
