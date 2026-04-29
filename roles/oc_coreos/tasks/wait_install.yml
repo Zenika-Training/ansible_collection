@@ -6,6 +6,8 @@
       --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}
       wait-for install-complete
   delegate_to: localhost
-  async: 3600
-  poll: 30
   changed_when: false
+  register: _oc_coreos_wait_result
+  retries: "{{ oc_coreos_install_retries }}"
+  delay: 0
+  until: _oc_coreos_wait_result.rc == 0

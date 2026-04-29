@@ -94,3 +94,12 @@ oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
 # Update this URL to change the deployed Cilium version.
 # @end
 oc_coreos_cilium_manifests_url: "https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz"
+
+# @section Installation wait
+
+# @var oc_coreos_install_retries:description: >
+# Number of times wait-for install-complete is retried before failing.
+# Each attempt waits up to 40 minutes (the command's internal timeout).
+# Total maximum wait = retries × 40 min. Default: 3 attempts = 2 hours.
+# @end
+oc_coreos_install_retries: 3

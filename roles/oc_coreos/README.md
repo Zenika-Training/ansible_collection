@@ -11,6 +11,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
   - [oc_coreos_install_disk](#oc_coreos_install_disk)
+  - [oc_coreos_install_retries](#oc_coreos_install_retries)
   - [oc_coreos_ocp_domain](#oc_coreos_ocp_domain)
   - [oc_coreos_ocp_ip](#oc_coreos_ocp_ip)
   - [oc_coreos_ocp_name](#oc_coreos_ocp_name)
@@ -84,6 +85,18 @@ Target disk in the VM for the CoreOS installation.
 
 ```YAML
 oc_coreos_install_disk: /dev/vda
+```
+
+### oc_coreos_install_retries
+
+Number of times wait-for install-complete is retried before failing.
+Each attempt waits up to 40 minutes (the command's internal timeout).
+Total maximum wait = retries × 40 min. Default: 3 attempts = 2 hours.
+
+#### Default value
+
+```YAML
+oc_coreos_install_retries: 3
 ```
 
 ### oc_coreos_ocp_domain
