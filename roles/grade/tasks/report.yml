@@ -1,0 +1,26 @@
+---
+- name: Compute results summary
+  ansible.builtin.set_fact:
+    _grade_passed_count: "{{ _grade_results | selectattr('passed') | list | length }}"
+    _grade_failed_list: "{{ _grade_results | rejectattr('passed') | list }}"
+
+- name: Display grade results — {{ grade_lab_name }}
+  ansible.builtin.debug:
+    msg: "{{ ('[OK]' if item.passed else '[KO]') + '  ' + item.msg }}"
+  loop: "{{ _grade_results }}"
+  loop_control:
+    label: "{{ item.msg }}"
+
+- name: Display grade summary — {{ grade_lab_name }}
+  ansible.builtin.debug:
+    msg: >-
+      {{ 'SUCCESS: all grades passed!'
+         if (_grade_failed_list | length == 0)
+         else 'FAILURE: ' + (_grade_failed_list | length | string) + ' grade(s) failed' }}
+
+- name: Grade failure
+  ansible.builtin.fail:
+    msg: "{{ _grade_failed_list | map(attribute='msg') | list | join(', ') }}"
+  when:
+    - grade_fail_on_error | bool
+    - _grade_failed_list | length > 0

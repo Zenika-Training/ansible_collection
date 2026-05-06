@@ -1,0 +1,14 @@
+---
+- name: Initialize results
+  ansible.builtin.set_fact:
+    _grade_results: []
+
+- name: Grade item — {{ _grade_item.msg }}
+  ansible.builtin.include_tasks: "grade_{{ _grade_item.type }}.yml"
+  loop: "{{ grade_items }}"
+  loop_control:
+    loop_var: _grade_item
+    label: "{{ _grade_item.msg }}"
+
+- name: Report results
+  ansible.builtin.include_tasks: report.yml

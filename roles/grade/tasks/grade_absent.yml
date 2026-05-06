@@ -1,0 +1,9 @@
+---
+- name: Stat path — {{ _grade_item.path }}
+  ansible.builtin.stat:
+    path: "{{ _grade_item.path | expanduser }}"
+  register: _grade_stat
+
+- name: Record result — {{ _grade_item.msg }}
+  ansible.builtin.set_fact:
+    _grade_results: "{{ _grade_results + [{'msg': _grade_item.msg, 'passed': not _grade_stat.stat.exists}] }}"

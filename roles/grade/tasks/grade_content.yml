@@ -1,0 +1,21 @@
+---
+- name: Stat file — {{ _grade_item.path }}
+  ansible.builtin.stat:
+    path: "{{ _grade_item.path | expanduser }}"
+  register: _grade_stat
+
+- name: Read file — {{ _grade_item.path }}
+  ansible.builtin.slurp:
+    src: "{{ _grade_item.path | expanduser }}"
+  register: _grade_slurp
+  when: _grade_stat.stat.exists and _grade_stat.stat.isreg
+
+- name: Record result (content found) — {{ _grade_item.msg }}
+  ansible.builtin.set_fact:
+    _grade_results: "{{ _grade_results + [{'msg': _grade_item.msg, 'passed': _grade_item.string in (_grade_slurp.content | b64decode)}] }}"
+  when: _grade_stat.stat.exists and _grade_stat.stat.isreg
+
+- name: Record result (file missing) — {{ _grade_item.msg }}
+  ansible.builtin.set_fact:
+    _grade_results: "{{ _grade_results + [{'msg': _grade_item.msg, 'passed': false}] }}"
+  when: not (_grade_stat.stat.exists and _grade_stat.stat.isreg)
