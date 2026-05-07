@@ -20,12 +20,13 @@ class CallbackModule(CallbackBase):
             msg = result._result.get('msg', '')
             if isinstance(msg, str):
                 if msg.startswith('[OK]'):
-                    color = C.COLOR_OK
+                    self._display.display(msg, color=C.COLOR_OK)
                 elif msg.startswith('[KO]'):
-                    color = C.COLOR_ERROR
-                else:
-                    color = C.COLOR_VERBOSE
-                self._display.display(msg, color=color)
+                    self._display.display(msg, color=C.COLOR_ERROR)
+                elif msg.startswith('SUCCESS:'):
+                    self._display.display(msg, color=C.COLOR_OK)
+                elif msg.startswith('FAILURE:'):
+                    self._display.display(msg, color=C.COLOR_ERROR)
 
     def v2_runner_on_ok(self, result):
         self._display_grade_msg(result)
@@ -41,7 +42,7 @@ class CallbackModule(CallbackBase):
         self._display.display(f'UNREACHABLE: {host}', color=C.COLOR_UNREACHABLE)
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
-        if not ignore_errors:
+        if not ignore_errors and result._task.action not in ('ansible.builtin.fail', 'fail'):
             msg = result._result.get('msg', 'Task failed')
             self._display.display(f'FAILED: {msg}', color=C.COLOR_ERROR)
 
