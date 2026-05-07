@@ -11,3 +11,7 @@
     - name: Configure podman
       ansible.builtin.include_role:
         name: zenika.training.podman
+    - name: Install grade command
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+        tasks_from: install
