@@ -3,7 +3,7 @@
   ansible.builtin.set_fact:
     _grade_results: []
 
-- name: Grade item — {{ _grade_item.msg }}
+- name: Grade item
   ansible.builtin.include_tasks: "grade_{{ _grade_item.type }}.yml"
   loop: "{{ grade_items }}"
   loop_control:
