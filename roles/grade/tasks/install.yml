@@ -1,0 +1,7 @@
+---
+- name: Install grade command
+  become: true
+  ansible.builtin.copy:
+    src: grade.sh
+    dest: /usr/local/bin/grade
+    mode: "0755"
