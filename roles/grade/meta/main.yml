@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: zenika
-  description: Rôle d'évaluation de la progression des TPs de formation
+  description: Declarative lab grading role for Zenika training courses
   company: Zenika
   license: GPL-3.0-only
   min_ansible_version: "2.1"
