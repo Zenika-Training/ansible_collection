@@ -13,10 +13,7 @@ if ! ansible-galaxy collection list 2>/dev/null | grep -q "zenika\.training"; th
 fi
 
 GRADES_DIR="$HOME/workspaces/grades"
-if [ ! -f "$GRADES_DIR/ansible.cfg" ]; then
-    echo "Erreur : $GRADES_DIR/ansible.cfg introuvable" >&2
-    exit 1
-fi
+ANSIBLE_CFG="/usr/local/share/zenika/grade/ansible.cfg"
 
 if [ -z "$1" ]; then
     echo "Usage: grade <lab>  (ex: grade lab01)" >&2
@@ -26,5 +23,5 @@ fi
 LAB="$1"
 [[ "$LAB" != lab* ]] && LAB="lab$LAB"
 
-ANSIBLE_CONFIG="$GRADES_DIR/ansible.cfg" \
+ANSIBLE_CONFIG="$ANSIBLE_CFG" \
     ansible-playbook "$GRADES_DIR/grade.yml" --tags "$LAB"
