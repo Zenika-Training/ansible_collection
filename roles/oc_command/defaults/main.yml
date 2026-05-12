@@ -1,3 +1,3 @@
 ---
 # @var oc_command_version:description: OpenShift client version to install (must match the cluster version).
-oc_command_version: 4.21.12
+oc_command_version: 4.21.13
