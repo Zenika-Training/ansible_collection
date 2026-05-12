@@ -17,9 +17,9 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_ocp_name](#oc_coreos_ocp_name)
   - [oc_coreos_ocp_network](#oc_coreos_ocp_network)
   - [oc_coreos_ocp_subnet](#oc_coreos_ocp_subnet)
-  - [oc_coreos_pull_secret](#oc_coreos_pull_secret)
+  - [oc_coreos_pull_secret_file](#oc_coreos_pull_secret_file)
   - [oc_coreos_service_network](#oc_coreos_service_network)
-  - [oc_coreos_ssh_key](#oc_coreos_ssh_key)
+  - [oc_coreos_ssh_key_file](#oc_coreos_ssh_key_file)
   - [oc_coreos_work_dir](#oc_coreos_work_dir)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -163,16 +163,17 @@ Used to compute the node default gateway in the ignition configuration.
 oc_coreos_ocp_subnet: 192.168.0.0/24
 ```
 
-### oc_coreos_pull_secret
+### oc_coreos_pull_secret_file
 
-Red Hat pull secret in JSON format. Required.
-Download from: https://console.redhat.com/openshift/create/local
-Set in group_vars/all.yml or an Ansible vault.
+Path to the Red Hat pull secret JSON file on the Ansible controller.
+Download the file from: https://console.redhat.com/openshift/create/local
+Set in group_vars/all.yml. The file content is loaded at runtime into an
+internal variable and never stored in the inventory.
 
 #### Default value
 
 ```YAML
-oc_coreos_pull_secret: ''
+oc_coreos_pull_secret_file: ~/pull-secret.json
 ```
 
 ### oc_coreos_service_network
@@ -185,16 +186,15 @@ CIDR of the Kubernetes service network (ClusterIP).
 oc_coreos_service_network: 172.30.0.0/16
 ```
 
-### oc_coreos_ssh_key
+### oc_coreos_ssh_key_file
 
-Public SSH key of the workstation, injected into CoreOS via ignition. Required.
-Enables SSH access to the node after the first boot.
-Retrieve with: cat ~/.ssh/id_*.pub
+Path to the public SSH key file on the Ansible controller.
+The key is injected into CoreOS via ignition to allow SSH access after first boot.
 
 #### Default value
 
 ```YAML
-oc_coreos_ssh_key: ''
+oc_coreos_ssh_key_file: ~/.ssh/id_rsa.pub
 ```
 
 ### oc_coreos_work_dir
