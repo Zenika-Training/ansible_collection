@@ -21,6 +21,6 @@ platform:
   none: {}
 bootstrapInPlace:
   installationDisk: {{ oc_coreos_install_disk }}
-pullSecret: {{ oc_coreos_pull_secret | to_json }}
+pullSecret: '{{ _oc_coreos_pull_secret }}'
 sshKey: |
-  {{ oc_coreos_ssh_key }}
+  {{ _oc_coreos_ssh_key }}

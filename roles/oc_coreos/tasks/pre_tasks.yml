@@ -1,13 +1,33 @@
 ---
-- name: Validate pull secret is defined
+- name: Validate pull secret file path is set
   ansible.builtin.assert:
-    that: oc_coreos_pull_secret | length > 0
-    fail_msg: "oc_coreos_pull_secret must be set (download from: https://console.redhat.com/openshift/create/local)"
+    that: oc_coreos_pull_secret_file | length > 0
+    fail_msg: "oc_coreos_pull_secret_file must be set (download from: https://console.redhat.com/openshift/create/local)"
 
-- name: Validate SSH key is defined
+- name: Check pull secret file exists
+  ansible.builtin.stat:
+    path: "{{ oc_coreos_pull_secret_file }}"
+  register: _oc_coreos_pull_secret_stat
+
+- name: Assert pull secret file exists
   ansible.builtin.assert:
-    that: oc_coreos_ssh_key | length > 0
-    fail_msg: "oc_coreos_ssh_key must be set"
+    that: _oc_coreos_pull_secret_stat.stat.exists
+    fail_msg: "Pull secret file not found: {{ oc_coreos_pull_secret_file }}"
+
+- name: Validate SSH key file path is set
+  ansible.builtin.assert:
+    that: oc_coreos_ssh_key_file | length > 0
+    fail_msg: "oc_coreos_ssh_key_file must be set"
+
+- name: Check SSH key file exists
+  ansible.builtin.stat:
+    path: "{{ oc_coreos_ssh_key_file }}"
+  register: _oc_coreos_ssh_key_stat
+
+- name: Assert SSH key file exists
+  ansible.builtin.assert:
+    that: _oc_coreos_ssh_key_stat.stat.exists
+    fail_msg: "SSH key file not found: {{ oc_coreos_ssh_key_file }}"
 
 - name: Validate OCP IP is defined
   ansible.builtin.assert:
@@ -29,3 +49,11 @@
       label: "*.apps.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
   loop_control:
     label: "{{ item.label }}"
+
+- name: Load pull secret from file
+  ansible.builtin.set_fact:
+    _oc_coreos_pull_secret: "{{ lookup('file', oc_coreos_pull_secret_file) | from_json | to_json }}"
+
+- name: Load SSH public key from file
+  ansible.builtin.set_fact:
+    _oc_coreos_ssh_key: "{{ lookup('file', oc_coreos_ssh_key_file) | trim }}"

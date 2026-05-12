@@ -55,19 +55,19 @@ oc_coreos_service_network: "172.30.0.0/16"
 
 # @section Secrets (required)
 
-# @var oc_coreos_pull_secret:description: >
-# Red Hat pull secret in JSON format. Required.
-# Download from: https://console.redhat.com/openshift/create/local
-# Set in group_vars/all.yml or an Ansible vault.
+# @var oc_coreos_pull_secret_file:description: >
+# Path to the Red Hat pull secret JSON file on the Ansible controller.
+# Download the file from: https://console.redhat.com/openshift/create/local
+# Set in group_vars/all.yml. The file content is loaded at runtime into an
+# internal variable and never stored in the inventory.
 # @end
-oc_coreos_pull_secret: ""
+oc_coreos_pull_secret_file: "~/pull-secret.json"
 
-# @var oc_coreos_ssh_key:description: >
-# Public SSH key of the workstation, injected into CoreOS via ignition. Required.
-# Enables SSH access to the node after the first boot.
-# Retrieve with: cat ~/.ssh/id_*.pub
+# @var oc_coreos_ssh_key_file:description: >
+# Path to the public SSH key file on the Ansible controller.
+# The key is injected into CoreOS via ignition to allow SSH access after first boot.
 # @end
-oc_coreos_ssh_key: ""
+oc_coreos_ssh_key_file: "~/.ssh/id_rsa.pub"
 
 # @section Installation
 
