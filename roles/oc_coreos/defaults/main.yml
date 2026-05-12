@@ -95,6 +95,21 @@ oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
 # @end
 oc_coreos_cilium_manifests_url: "https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz"
 
+# @var oc_coreos_cilium_cni_exclusive:description: >
+# Run Cilium as the exclusive CNI plugin (Cilium default: true).
+# Set to false when chaining a secondary CNI — required by Istio Ambient mode
+# (IstioCNI must insert its iptables rules after Cilium sets up the network).
+# https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+# @end
+oc_coreos_cilium_cni_exclusive: true
+
+# @var oc_coreos_cilium_bpf_masquerade:description: >
+# Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
+# Required by Istio Ambient mode prerequisites (https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium).
+# Set to true when deploying Istio Service Mesh in Ambient mode alongside Cilium.
+# @end
+oc_coreos_cilium_bpf_masquerade: false
+
 # @section Installation wait
 
 # @var oc_coreos_install_retries:description: >

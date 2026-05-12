@@ -7,6 +7,8 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [oc_coreos_arch](#oc_coreos_arch)
+  - [oc_coreos_cilium_bpf_masquerade](#oc_coreos_cilium_bpf_masquerade)
+  - [oc_coreos_cilium_cni_exclusive](#oc_coreos_cilium_cni_exclusive)
   - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
@@ -41,6 +43,31 @@ Target architecture for the RHCOS ISO. Only x86_64 is supported.
 
 ```YAML
 oc_coreos_arch: x86_64
+```
+
+### oc_coreos_cilium_bpf_masquerade
+
+Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
+Required by Istio Ambient mode prerequisites (https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium).
+Set to true when deploying Istio Service Mesh in Ambient mode alongside Cilium.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_bpf_masquerade: false
+```
+
+### oc_coreos_cilium_cni_exclusive
+
+Run Cilium as the exclusive CNI plugin (Cilium default: true).
+Set to false when chaining a secondary CNI — required by Istio Ambient mode
+(IstioCNI must insert its iptables rules after Cilium sets up the network).
+https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_cni_exclusive: true
 ```
 
 ### oc_coreos_cilium_manifests_url
