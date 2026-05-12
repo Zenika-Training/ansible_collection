@@ -98,6 +98,12 @@
                'operator': {
                  'clusterPoolIPv4PodCIDRList': [oc_coreos_cluster_network_cidr]
                }
+             },
+             'cni': {
+               'exclusive': oc_coreos_cilium_cni_exclusive
+             },
+             'bpf': {
+               'masquerade': oc_coreos_cilium_bpf_masquerade
              }
            }
          }, recursive=True) | to_nice_yaml(indent=2) }}
