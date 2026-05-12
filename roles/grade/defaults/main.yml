@@ -16,8 +16,10 @@ grade_fail_on_error: true
 #   - `directory`: passes if the path exists and is a directory
 #   - `content`: passes if the file exists and contains the expected string
 #   - `absent`: passes if the path does not exist
+#   - `uri`: passes if the HTTP response matches the expected status code and optional string
 #
 #   All paths support `~` (expanded via `expanduser`).
+#   For `uri` items, `url_username`/`url_password` enable Basic auth; `headers` supports Bearer tokens.
 # @end
 # @var grade_items:type: list
 # @var grade_items:example: >
