@@ -95,7 +95,6 @@
                'kubeProxyReplacement': true,
                'k8sServiceHost': 'api-int.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain,
                'k8sServicePort': 6443,
-               'sessionAffinity': oc_coreos_cilium_session_affinity,
                'ipam': {
                  'operator': {
                    'clusterPoolIPv4PodCIDRList': [oc_coreos_cluster_network_cidr]
