@@ -89,23 +89,31 @@
 - name: Cilium — patch CiliumConfig
   ansible.builtin.copy:
     content: >-
-      {{ _oc_coreos_cilium_config_raw.content | b64decode | from_yaml | combine({
-           'spec': {
-             'kubeProxyReplacement': true,
-             'k8sServiceHost': 'api-int.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain,
-             'k8sServicePort': 6443,
-             'ipam': {
-               'operator': {
-                 'clusterPoolIPv4PodCIDRList': [oc_coreos_cluster_network_cidr]
+      {{ _oc_coreos_cilium_config_raw.content | b64decode | from_yaml
+         | combine({
+             'spec': {
+               'kubeProxyReplacement': true,
+               'k8sServiceHost': 'api-int.' + oc_coreos_ocp_name + '.' + oc_coreos_ocp_domain,
+               'k8sServicePort': 6443,
+               'sessionAffinity': oc_coreos_cilium_session_affinity,
+               'ipam': {
+                 'operator': {
+                   'clusterPoolIPv4PodCIDRList': [oc_coreos_cluster_network_cidr]
+                 }
+               },
+               'cni': {
+                 'exclusive': oc_coreos_cilium_cni_exclusive
+               },
+               'bpf': {
+                 'masquerade': oc_coreos_cilium_bpf_masquerade
                }
-             },
-             'cni': {
-               'exclusive': oc_coreos_cilium_cni_exclusive
-             },
-             'bpf': {
-               'masquerade': oc_coreos_cilium_bpf_masquerade
              }
-           }
-         }, recursive=True) | to_nice_yaml(indent=2) }}
+           }, recursive=True)
+         | combine(
+             {'spec': {'socketLB': {'hostNamespaceOnly': true}}}
+             if oc_coreos_cilium_socket_lb_host_namespace_only else {},
+             recursive=True
+           )
+         | to_nice_yaml(indent=2) }}
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/ciliumconfig.yaml"
     mode: "0644"
