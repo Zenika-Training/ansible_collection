@@ -1,0 +1,26 @@
+{% set _ovn = sno_inventory_clusters | selectattr('cni', 'equalto', 'ovn') | list %}
+{% set _cilium = sno_inventory_clusters | selectattr('cni', 'equalto', 'cilium') | list %}
+{% if _ovn %}
+[ovn]
+{% for c in _ovn %}
+{{ c.name }}
+{% endfor %}
+
+{% endif %}
+{% if _cilium %}
+[cilium]
+{% for c in _cilium %}
+{{ c.name }}
+{% endfor %}
+
+{% endif %}
+[sno:children]
+{% if _ovn %}
+ovn
+{% endif %}
+{% if _cilium %}
+cilium
+{% endif %}
+
+[kvm_hosts]
+{{ sno_inventory_kvm_host }} ansible_user={{ sno_inventory_kvm_user }}
