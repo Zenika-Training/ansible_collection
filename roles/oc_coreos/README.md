@@ -13,6 +13,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
+  - [oc_coreos_controller_host](#oc_coreos_controller_host)
   - [oc_coreos_install_disk](#oc_coreos_install_disk)
   - [oc_coreos_install_retries](#oc_coreos_install_retries)
   - [oc_coreos_ocp_domain](#oc_coreos_ocp_domain)
@@ -49,26 +50,26 @@ oc_coreos_arch: x86_64
 ### oc_coreos_cilium_bpf_masquerade
 
 Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-Required by Istio Ambient mode prerequisites (https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium).
-Set to true when deploying Istio Service Mesh in Ambient mode alongside Cilium.
-
-#### Default value
-
-```YAML
-oc_coreos_cilium_bpf_masquerade: false
-```
-
-### oc_coreos_cilium_cni_exclusive
-
-Run Cilium as the exclusive CNI plugin (Cilium default: true).
-Set to false when chaining a secondary CNI — required by Istio Ambient mode
-(IstioCNI must insert its iptables rules after Cilium sets up the network).
+Required by Istio Ambient mode (default here).
 https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 
 #### Default value
 
 ```YAML
-oc_coreos_cilium_cni_exclusive: true
+oc_coreos_cilium_bpf_masquerade: true
+```
+
+### oc_coreos_cilium_cni_exclusive
+
+Run Cilium as the exclusive CNI plugin.
+Set to false (default here) to allow IstioCNI chaining — IstioCNI must insert
+its iptables rules after Cilium sets up the network (Istio Ambient prerequisite).
+https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_cni_exclusive: false
 ```
 
 ### oc_coreos_cilium_manifests_url
@@ -124,6 +125,21 @@ Per-node subnet size allocated within oc_coreos_cluster_network_cidr.
 oc_coreos_cluster_network_prefix: 23
 ```
 
+### oc_coreos_controller_host
+
+Host where openshift-install runs (must hold the work directory and the binary).
+Defaults to localhost (the Ansible controller / workstation).
+Set to the KVM host name when the controller and the KVM server are the same machine,
+or when the ISO was generated directly on the KVM host.
+In the sno_libvirt_kvm playbook this is automatically aligned with libvirt_kvm_target_host
+unless overridden in the inventory.
+
+#### Default value
+
+```YAML
+oc_coreos_controller_host: localhost
+```
+
 ### oc_coreos_install_disk
 
 Target disk in the VM for the CoreOS installation.
@@ -139,12 +155,12 @@ oc_coreos_install_disk: /dev/vda
 
 Number of times wait-for install-complete is retried before failing.
 Each attempt waits up to 40 minutes (the command's internal timeout).
-Total maximum wait = retries × 40 min. Default: 3 attempts = 2 hours.
+Total maximum wait = retries × 40 min. Default: 4 attempts = 160 minutes.
 
 #### Default value
 
 ```YAML
-oc_coreos_install_retries: 3
+oc_coreos_install_retries: 4
 ```
 
 ### oc_coreos_ocp_domain
