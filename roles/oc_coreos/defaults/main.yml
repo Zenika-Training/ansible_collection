@@ -130,6 +130,6 @@ oc_coreos_cilium_socket_lb_host_namespace_only: true
 # @var oc_coreos_install_retries:description: >
 # Number of times wait-for install-complete is retried before failing.
 # Each attempt waits up to 40 minutes (the command's internal timeout).
-# Total maximum wait = retries × 40 min. Default: 3 attempts = 2 hours.
+# Total maximum wait = retries × 40 min. Default: 4 attempts = 160 minutes.
 # @end
-oc_coreos_install_retries: 3
+oc_coreos_install_retries: 4
