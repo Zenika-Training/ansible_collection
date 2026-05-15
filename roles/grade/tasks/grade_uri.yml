@@ -1,0 +1,23 @@
+---
+- name: HTTP request — {{ _grade_item.url }}
+  ansible.builtin.uri:
+    url: "{{ _grade_item.url }}"
+    url_username: "{{ _grade_item.url_username | default(omit) }}"
+    url_password: "{{ _grade_item.url_password | default(omit) }}"
+    force_basic_auth: "{{ true if _grade_item.url_username is defined else omit }}"
+    headers: "{{ _grade_item.headers | default({}) }}"
+    status_code:
+      - "{{ _grade_item.status_code | default(200) }}"
+    return_content: true
+    validate_certs: false
+  register: _grade_uri_result
+  failed_when: false
+
+- name: Record result — {{ _grade_item.msg }}
+  ansible.builtin.set_fact:
+    _grade_results: "{{ _grade_results + [{'msg': _grade_item.msg, 'passed': _passed}] }}"
+  vars:
+    _expected_status: "{{ _grade_item.status_code | default(200) | int }}"
+    _status_ok: "{{ (_grade_uri_result.status | default(-1) | int) == _expected_status | int }}"
+    _string_ok: "{{ _grade_item.string is not defined or _grade_item.string in (_grade_uri_result.content | default('')) }}"
+    _passed: "{{ _status_ok | bool and _string_ok | bool }}"

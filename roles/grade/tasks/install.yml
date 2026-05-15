@@ -1,0 +1,21 @@
+---
+- name: Create grade config directory
+  become: true
+  ansible.builtin.file:
+    path: /usr/local/share/zenika/grade
+    state: directory
+    mode: "0755"
+
+- name: Install grade ansible.cfg
+  become: true
+  ansible.builtin.copy:
+    src: ansible.cfg
+    dest: /usr/local/share/zenika/grade/ansible.cfg
+    mode: "0644"
+
+- name: Install grade command
+  become: true
+  ansible.builtin.copy:
+    src: grade.sh
+    dest: /usr/local/bin/grade
+    mode: "0755"

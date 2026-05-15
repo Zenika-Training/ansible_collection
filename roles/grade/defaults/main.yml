@@ -1,0 +1,41 @@
+---
+# @var grade_lab_name:description: Human-readable name of the lab being graded. Displayed in the results header and summary.
+# @var grade_lab_name:type: string
+# @var grade_lab_name:example: "Lab02 — Ansible Roles"
+grade_lab_name: Grade
+
+# @var grade_fail_on_error:description: When true, the play fails if any check does not pass. Set to false to always display the full report without failing the play.
+# @var grade_fail_on_error:type: boolean
+grade_fail_on_error: true
+
+# @var grade_items:description: >
+#   List of checks to evaluate. Each item requires a `type` and a `msg`. Additional fields depend on the check type.
+#
+#   Supported types:
+#   - `file`: passes if the path exists and is a regular file
+#   - `directory`: passes if the path exists and is a directory
+#   - `content`: passes if the file exists and contains the expected string
+#   - `absent`: passes if the path does not exist
+#   - `uri`: passes if the HTTP response matches the expected status code and optional string
+#
+#   All paths support `~` (expanded via `expanduser`).
+#   For `uri` items, `url_username`/`url_password` enable Basic auth; `headers` supports Bearer tokens.
+# @end
+# @var grade_items:type: list
+# @var grade_items:example: >
+#   grade_items:
+#     - type: directory
+#       path: "~/my.collection/roles/apache"
+#       msg: "Role apache directory created"
+#     - type: file
+#       path: "~/my.collection/roles/apache/tasks/main.yml"
+#       msg: "File tasks/main.yml present in role apache"
+#     - type: content
+#       path: "~/my.collection/roles/apache/tasks/main.yml"
+#       string: "ansible.builtin.package"
+#       msg: "Module ansible.builtin.package used"
+#     - type: absent
+#       path: "~/my.collection/roles/apache/files/legacy.conf"
+#       msg: "Obsolete file removed"
+# @end
+grade_items: []
