@@ -96,19 +96,19 @@ oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
 oc_coreos_cilium_manifests_url: "https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz"
 
 # @var oc_coreos_cilium_cni_exclusive:description: >
-# Run Cilium as the exclusive CNI plugin (Cilium default: true).
-# Set to false when chaining a secondary CNI — required by Istio Ambient mode
-# (IstioCNI must insert its iptables rules after Cilium sets up the network).
+# Run Cilium as the exclusive CNI plugin.
+# Set to false (default here) to allow IstioCNI chaining — IstioCNI must insert
+# its iptables rules after Cilium sets up the network (Istio Ambient prerequisite).
 # https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 # @end
-oc_coreos_cilium_cni_exclusive: true
+oc_coreos_cilium_cni_exclusive: false
 
 # @var oc_coreos_cilium_bpf_masquerade:description: >
 # Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-# Required by Istio Ambient mode prerequisites (https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium).
-# Set to true when deploying Istio Service Mesh in Ambient mode alongside Cilium.
+# Required by Istio Ambient mode (default here).
+# https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 # @end
-oc_coreos_cilium_bpf_masquerade: false
+oc_coreos_cilium_bpf_masquerade: true
 
 # @var oc_coreos_cilium_socket_lb_host_namespace_only:description: >
 # Restrict Cilium socket-level load balancing to the host network namespace only.
