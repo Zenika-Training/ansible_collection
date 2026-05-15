@@ -10,7 +10,6 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_bpf_masquerade](#oc_coreos_cilium_bpf_masquerade)
   - [oc_coreos_cilium_cni_exclusive](#oc_coreos_cilium_cni_exclusive)
   - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
-  - [oc_coreos_cilium_session_affinity](#oc_coreos_cilium_session_affinity)
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
@@ -85,36 +84,19 @@ oc_coreos_cilium_manifests_url:
   https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz
 ```
 
-### oc_coreos_cilium_session_affinity
-
-Enable Cilium session affinity for load-balanced connections (ClientIP stickiness).
-The CLiFE base manifest defaults this to true, which causes all connections from a
-given source pod to be consistently routed to the same backend pod.
-Effect when set to false with Istio Ambient (both confirmed on CLiFE):
-- Kiali traffic graph becomes representative (traffic distributed across pods,
-consistent with OVN-Kubernetes behaviour).
-- Waypoint traffic splitting (HTTPRoute/VirtualService canary) works correctly.
-Set to false when deploying Istio Ambient Service Mesh alongside Cilium.
-
-#### Default value
-
-```YAML
-oc_coreos_cilium_session_affinity: false
-```
-
 ### oc_coreos_cilium_socket_lb_host_namespace_only
 
 Restrict Cilium socket-level load balancing to the host network namespace only.
-When true, the eBPF cgroup/connect4 hook does NOT translate ClusterIP → PodIP
-inside pod cgroups, allowing the Waypoint to receive the original ClusterIP.
+When true, the eBPF cgroup/connect4 hook is limited to the host namespace and does
+NOT translate ClusterIP → PodIP inside pod cgroups. The ZTunnel then encodes the
+original ClusterIP in HBONE, allowing the Waypoint to select the correct route.
 Upstream reference: https://docs.cilium.io/en/stable/network/servicemesh/istio/
-Status on CLiFE: `cilium config get bpf-lb-sock-hostns-only` returns
-"Configuration does not exist" — the parameter does NOT appear in the runtime
-config. However, whether CLiFE silently honours it at install time has NOT been
-fully discriminated: canary works with sessionAffinity: false, but the respective
-contribution of socketLB vs sessionAffinity is unknown.
-Test protocol: deploy with socketLB: false + sessionAffinity: false and check
-whether canary breaks. If it does, socketLB IS silently effective in CLiFE.
+Note: `cilium config get bpf-lb-sock-hostns-only` returns "Configuration does not
+exist" on CLiFE — the parameter is silently effective only when declared in the
+CiliumConfig before installation; runtime patches are ignored.
+Side effect: confining the hook to the host namespace also neutralises session
+affinity inside pods — sessionAffinity: true (CLiFE default) has no observable
+effect on Istio Ambient traffic distribution when this parameter is true.
 
 #### Default value
 
