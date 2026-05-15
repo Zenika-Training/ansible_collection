@@ -48,7 +48,7 @@
   delegate_to: "{{ libvirt_kvm_target_host }}"
   register: _libvirt_kvm_install
 
-- name: Wait for first-boot installation to complete (VM shuts off)
+- name: Wait for first-boot installation to complete (VM shuts off) # noqa: no-handler
   become: true
   community.libvirt.virt:
     command: status
