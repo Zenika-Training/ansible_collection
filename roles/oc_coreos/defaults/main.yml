@@ -86,6 +86,16 @@ oc_coreos_install_disk: /dev/vda
 # @end
 oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
 
+# @var oc_coreos_controller_host:description: >
+# Host where openshift-install runs (must hold the work directory and the binary).
+# Defaults to localhost (the Ansible controller / workstation).
+# Set to the KVM host name when the controller and the KVM server are the same machine,
+# or when the ISO was generated directly on the KVM host.
+# In the sno_libvirt_kvm playbook this is automatically aligned with libvirt_kvm_target_host
+# unless overridden in the inventory.
+# @end
+oc_coreos_controller_host: localhost
+
 # @section Cilium
 
 # @var oc_coreos_cilium_manifests_url:description: >

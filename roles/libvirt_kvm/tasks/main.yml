@@ -46,6 +46,7 @@
         mac:
           address: "{{ libvirt_kvm_mac }}"
   delegate_to: "{{ libvirt_kvm_target_host }}"
+  register: _libvirt_kvm_install
 
 - name: Wait for first-boot installation to complete (VM shuts off)
   become: true
@@ -57,6 +58,7 @@
   retries: 60
   delay: 30
   delegate_to: "{{ libvirt_kvm_target_host }}"
+  when: _libvirt_kvm_install.changed
 
 - name: Start VM (second boot from disk)
   become: true
