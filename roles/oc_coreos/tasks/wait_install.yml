@@ -9,5 +9,5 @@
   changed_when: false
   register: _oc_coreos_wait_result
   retries: "{{ oc_coreos_install_retries }}"
-  delay: 0
+  delay: 30
   until: _oc_coreos_wait_result.rc == 0
