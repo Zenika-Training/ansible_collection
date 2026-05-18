@@ -1,0 +1,10 @@
+---
+- name: VM created
+  ansible.builtin.debug:
+    msg:
+      - "VM     : {{ libvirt_kvm_name }}"
+      - "vCPU   : {{ libvirt_kvm_vcpus }}"
+      - "RAM    : {{ libvirt_kvm_memory }} MiB"
+      - "Disk   : /dev/{{ libvirt_kvm_vg_pool }}/vm_{{ libvirt_kvm_name }} ({{ libvirt_kvm_disk_size }})"
+      - "Network: bridge={{ libvirt_kvm_bridge }} mac={{ libvirt_kvm_mac }}"
+      - "ISO    : {{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"

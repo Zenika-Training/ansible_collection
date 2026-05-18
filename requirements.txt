@@ -1,0 +1,8 @@
+# Python dependencies for this collection.
+# Install with: pipx inject ansible-core -r requirements.txt
+
+# Required by the community.general.dig lookup plugin
+dnspython
+
+# Required for AWX
+kubernetes

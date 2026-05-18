@@ -1,0 +1,145 @@
+---
+# @section Cluster identity
+
+# @var oc_coreos_ocp_name:description: >
+# Name of the SNO cluster. Defaults to the Ansible inventory hostname.
+# Used to name the working directory, manifests and DNS entries.
+# NOT used to establish an SSH connection: playbooks run locally
+# (ansible_connection: local set in group_vars/sno.yml of the consumer inventory).
+# @end
+oc_coreos_ocp_name: "{{ inventory_hostname }}"
+
+# @var oc_coreos_ocp_domain:description: >
+# DNS domain of the cluster (e.g. lab.example.com).
+# Used to build the required FQDNs: api.<name>.<domain>, *.apps.<name>.<domain>.
+# @end
+oc_coreos_ocp_domain: "example.com"
+
+# @section Node network
+
+# @var oc_coreos_ocp_ip:description: >
+# Fixed IP address of the SNO node on the KVM bridge. Required.
+# IMPORTANT: this variable is NOT ansible_host. Ansible never connects via SSH
+# to this address — the VM does not exist yet at execution time.
+# It is only injected into the ignition config (NetworkManager) so that CoreOS
+# boots with a static IP, and is used to validate DNS entries in the pre-check.
+# Must be set in host_vars/<cluster_name>.yml.
+# @end
+oc_coreos_ocp_ip: ""
+
+# @var oc_coreos_ocp_subnet:description: >
+# KVM bridge subnet in CIDR notation.
+# Used to compute the node default gateway in the ignition configuration.
+# @end
+oc_coreos_ocp_subnet: "192.168.0.0/24"
+
+# @section CNI (Container Network Interface)
+
+# @var oc_coreos_ocp_network:description: >
+# OpenShift network plugin. Accepted values: OVNKubernetes or Cilium.
+# Normally set via inventory group membership:
+# group [ovn] -> OVNKubernetes, group [cilium] -> Cilium (via group_vars/).
+# For Cilium, CLIFE manifests are downloaded and patched automatically
+# before the ignition is generated.
+# @end
+oc_coreos_ocp_network: OVNKubernetes
+
+# @var oc_coreos_cluster_network_cidr:description: CIDR of the internal pod network.
+oc_coreos_cluster_network_cidr: "10.128.0.0/14"
+
+# @var oc_coreos_cluster_network_prefix:description: Per-node subnet size allocated within oc_coreos_cluster_network_cidr.
+oc_coreos_cluster_network_prefix: 23
+
+# @var oc_coreos_service_network:description: CIDR of the Kubernetes service network (ClusterIP).
+oc_coreos_service_network: "172.30.0.0/16"
+
+# @section Secrets (required)
+
+# @var oc_coreos_pull_secret_file:description: >
+# Path to the Red Hat pull secret JSON file on the Ansible controller.
+# Download the file from: https://console.redhat.com/openshift/create/local
+# Set in group_vars/all.yml. The file content is loaded at runtime into an
+# internal variable and never stored in the inventory.
+# @end
+oc_coreos_pull_secret_file: "~/pull-secret.json"
+
+# @var oc_coreos_ssh_key_file:description: >
+# Path to the public SSH key file on the Ansible controller.
+# The key is injected into CoreOS via ignition to allow SSH access after first boot.
+# @end
+oc_coreos_ssh_key_file: "~/.ssh/id_rsa.pub"
+
+# @section Installation
+
+# @var oc_coreos_arch:description: Target architecture for the RHCOS ISO. Only x86_64 is supported.
+oc_coreos_arch: x86_64
+
+# @var oc_coreos_install_disk:description: >
+# Target disk in the VM for the CoreOS installation.
+# /dev/vda is the standard VirtIO disk on KVM.
+# @end
+oc_coreos_install_disk: /dev/vda
+
+# @var oc_coreos_work_dir:description: >
+# Local working directory on the Ansible controller (workstation).
+# Contains the downloaded ISO, generated manifests and the final ignition file.
+# @end
+oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
+
+# @var oc_coreos_controller_host:description: >
+# Host where openshift-install runs (must hold the work directory and the binary).
+# Defaults to localhost (the Ansible controller / workstation).
+# Set to the KVM host name when the controller and the KVM server are the same machine,
+# or when the ISO was generated directly on the KVM host.
+# In the sno_libvirt_kvm playbook this is automatically aligned with libvirt_kvm_target_host
+# unless overridden in the inventory.
+# @end
+oc_coreos_controller_host: localhost
+
+# @section Cilium
+
+# @var oc_coreos_cilium_manifests_url:description: >
+# URL of the CLIFE archive (Cilium for OpenShift). Used only when
+# oc_coreos_ocp_network == 'Cilium'.
+# Update this URL to change the deployed Cilium version.
+# @end
+oc_coreos_cilium_manifests_url: "https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz"
+
+# @var oc_coreos_cilium_cni_exclusive:description: >
+# Run Cilium as the exclusive CNI plugin.
+# Set to false (default here) to allow IstioCNI chaining — IstioCNI must insert
+# its iptables rules after Cilium sets up the network (Istio Ambient prerequisite).
+# https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+# @end
+oc_coreos_cilium_cni_exclusive: false
+
+# @var oc_coreos_cilium_bpf_masquerade:description: >
+# Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
+# Required by Istio Ambient mode (default here).
+# https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+# @end
+oc_coreos_cilium_bpf_masquerade: true
+
+# @var oc_coreos_cilium_socket_lb_host_namespace_only:description: >
+# Restrict Cilium socket-level load balancing to the host network namespace only.
+# When true, the eBPF cgroup/connect4 hook is limited to the host namespace and does
+# NOT translate ClusterIP → PodIP inside pod cgroups. The ZTunnel then encodes the
+# original ClusterIP in HBONE, allowing the Waypoint to select the correct route.
+# Upstream reference: https://docs.cilium.io/en/stable/network/servicemesh/istio/
+# Note: `cilium config get bpf-lb-sock-hostns-only` returns "Configuration does not
+# exist" on CLiFE — the parameter is silently effective only when declared in the
+# CiliumConfig before installation; runtime patches are ignored.
+# Side effect: confining the hook to the host namespace also neutralises session
+# affinity inside pods — sessionAffinity: true (CLiFE default) has no observable
+# effect on Istio Ambient traffic distribution when this parameter is true.
+# @end
+oc_coreos_cilium_socket_lb_host_namespace_only: true
+
+# @section Installation wait
+
+# @var oc_coreos_install_retries:description: >
+# Number of times wait-for install-complete is retried before failing.
+# Each attempt waits up to 40 minutes (the command's internal timeout).
+# Total maximum wait = retries × 40 min. Default: 4 attempts = 160 minutes.
+# @end
+oc_coreos_install_retries: 4

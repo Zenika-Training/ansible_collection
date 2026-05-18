@@ -1,0 +1,13 @@
+---
+- name: Wait for SNO installation to complete
+  ansible.builtin.command:
+    cmd: >-
+      /usr/local/bin/openshift-install
+      --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}
+      wait-for install-complete
+  delegate_to: "{{ oc_coreos_controller_host }}"
+  changed_when: false
+  register: _oc_coreos_wait_result
+  retries: "{{ oc_coreos_install_retries }}"
+  delay: 30
+  until: _oc_coreos_wait_result.rc == 0
