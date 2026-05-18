@@ -1,0 +1,12 @@
+---
+- name: Install OpenShift binary
+  ansible.builtin.include_tasks: install_binary.yml
+  loop_control:
+    loop_var: oc_command_binary
+  loop:
+    - name: oc
+      url: "{{ oc_command_client }}"
+      version_arg: "version --client"
+    - name: openshift-install
+      url: "{{ oc_command_install }}"
+      version_arg: version

@@ -1,0 +1,7 @@
+---
+- name: Prepare OC lab
+  hosts: "{{ ansible_limit | default('localhost') }}"
+  tasks:
+    - name: "Call oc_command"
+      ansible.builtin.include_role:
+        name: "zenika.training.oc_command"
