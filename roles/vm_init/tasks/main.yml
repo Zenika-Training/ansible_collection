@@ -15,9 +15,9 @@
   become: true
   ansible.builtin.apt:
     update_cache: true
-# get_url triggers an urllib3/Python version conflict on Ubuntu 24.04 — use wget to bypass Ansible's HTTP stack
 - name: Update Google APT signing key
   become: true
-  ansible.builtin.command:
-    cmd: wget -q -O /etc/apt/trusted.gpg.d/google.asc https://dl.google.com/linux/linux_signing_key.pub
-    creates: /etc/apt/trusted.gpg.d/google.asc
+  ansible.builtin.get_url:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    dest: /etc/apt/trusted.gpg.d/google.asc
+    mode: "0644"
