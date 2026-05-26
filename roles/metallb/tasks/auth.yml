@@ -1,0 +1,27 @@
+---
+- name: Check kubeconfig existence
+  ansible.builtin.stat:
+    path: "{{ metallb_kubeconfig }}"
+  register: _metallb_kubeconfig_stat
+  when: metallb_kubeconfig | length > 0
+
+# When the kubeconfig file is absent (e.g. cluster provisioned elsewhere),
+# clear the variable so kubernetes.core falls back to ~/.kube/config,
+# which is populated by a prior `oc login`.
+- name: Fall back to current kube context when kubeconfig is absent
+  ansible.builtin.set_fact:
+    metallb_kubeconfig: ""
+  when: not (_metallb_kubeconfig_stat.stat.exists | default(false))
+
+- name: Check default kube context existence
+  ansible.builtin.stat:
+    path: "~/.kube/config"
+  register: _metallb_default_kubeconfig_stat
+  when: metallb_kubeconfig | length == 0
+
+- name: Assert that a kube context is available
+  ansible.builtin.assert:
+    that: metallb_kubeconfig | length > 0 or _metallb_default_kubeconfig_stat.stat.exists | default(false)
+    fail_msg: >-
+      No kubeconfig found at '{{ metallb_kubeconfig }}' and ~/.kube/config does not exist.
+      Run `oc login <api-url>` first, or set metallb_kubeconfig to a valid kubeconfig path.

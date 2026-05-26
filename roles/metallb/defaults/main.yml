@@ -1,0 +1,54 @@
+---
+# @section Cluster access
+
+# @var metallb_kubeconfig:description: >
+# Path to the kubeconfig file of the target cluster on the Ansible controller.
+# Defaults to the standard path produced by the oc_coreos role after SNO installation.
+# If the file does not exist at that path, the role falls back to ~/.kube/config,
+# which is populated by a prior `oc login`. Set to an explicit path in host_vars
+# to override both behaviours.
+# @end
+metallb_kubeconfig: "/tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeconfig"
+
+# @section Operator
+
+# @var metallb_namespace:description: Namespace where the MetalLB operator and its resources are deployed.
+metallb_namespace: metallb-system
+
+# @var metallb_channel:description: OLM subscription channel for the MetalLB operator.
+metallb_channel: stable
+
+# @var metallb_catalog_source:description: OLM CatalogSource providing the MetalLB operator package.
+metallb_catalog_source: redhat-operators
+
+# @var metallb_catalog_source_namespace:description: Namespace of the OLM CatalogSource.
+metallb_catalog_source_namespace: openshift-marketplace
+
+# @var metallb_csv_wait_retries:description: >
+# Number of retries while waiting for the MetalLB CSV to reach Succeeded phase.
+# Each retry waits metallb_csv_wait_delay seconds. Total max wait = retries × delay.
+# @end
+metallb_csv_wait_retries: 30
+
+# @var metallb_csv_wait_delay:description: Delay in seconds between CSV readiness retries.
+metallb_csv_wait_delay: 20
+
+# @section IP Address Pool
+
+# @var metallb_pool_name:description: Name of the MetalLB IPAddressPool resource.
+metallb_pool_name: training-pool
+
+# @var metallb_ip_ranges:description: >
+# List of IP ranges assigned to the MetalLB pool.
+# Each entry is a range in the form "start-end" or a CIDR.
+# These IPs must be free on the KVM bridge subnet (not in dnsmasq DHCP range,
+# not assigned to any host). Two distinct ranges are typically needed when two
+# SNO clusters share the same bridge: one range per cluster, defined in host_vars.
+# @end
+metallb_ip_ranges:
+  - "192.168.100.100-192.168.100.110"
+
+# @section L2 Advertisement
+
+# @var metallb_l2advertisement_name:description: Name of the MetalLB L2Advertisement resource.
+metallb_l2advertisement_name: training-l2

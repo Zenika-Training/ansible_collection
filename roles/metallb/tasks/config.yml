@@ -1,0 +1,12 @@
+---
+- name: Create IPAddressPool
+  kubernetes.core.k8s:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'ipaddresspool.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Create L2Advertisement
+  kubernetes.core.k8s:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'l2advertisement.yaml.j2') | from_yaml }}"
+    state: present
