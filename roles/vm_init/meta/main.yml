@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: Yannick Sébastia
+  description: Port of ubuntu-24.04-apt-fix.sh from strigo-init-script-libs to Ansible
+  company: Zenika
+
+  license: GPL-3.0-only
+
+  min_ansible_version: "2.16"
+
+  galaxy_tags: []
+dependencies: []

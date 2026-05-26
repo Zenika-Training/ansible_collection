@@ -1,0 +1,23 @@
+---
+- name: Configure DPkg lock timeout
+  become: true
+  ansible.builtin.copy:
+    content: 'DPkg::Lock::Timeout "900";'
+    dest: /etc/apt/apt.conf.d/99-dpkg-timeout
+    mode: "0644"
+- name: Remove unattended-upgrades
+  become: true
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: absent
+    purge: true
+- name: Update APT cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+- name: Update Google APT signing key
+  become: true
+  ansible.builtin.get_url:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    dest: /etc/apt/trusted.gpg.d/google.asc
+    mode: "0644"
