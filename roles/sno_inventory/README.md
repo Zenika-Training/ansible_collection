@@ -35,10 +35,36 @@ sno_inventory_bridge: br0
 
 ### sno_inventory_clusters
 
+List of SNO cluster definitions. Each entry is a dict with the following keys:
+name (required) : cluster name, used as Ansible inventory hostname
+cni (optional) : CNI plugin — "ovn" (default) or "cilium"
+ip (optional) : static IP of the node (written to host_vars)
+mac (optional) : MAC address of the KVM NIC (written to host_vars)
+metallb_ip_ranges (optional): list of IP ranges reserved for MetalLB LoadBalancer
+in "start-end" or CIDR notation (written to host_vars)
+
 #### Default value
 
 ```YAML
 sno_inventory_clusters: []
+```
+
+#### Example usage
+
+```YAML
+sno_inventory_clusters:
+  - name: ocp1
+    cni: ovn
+    ip: 192.168.17.150
+    mac: "52:54:00:d1:a6:8c"
+    metallb_ip_ranges:
+      - "192.168.17.100-192.168.17.110"
+  - name: ocp2
+    cni: cilium
+    ip: 192.168.17.151
+    mac: "52:54:00:d2:b7:9d"
+    metallb_ip_ranges:
+      - "192.168.17.120-192.168.17.130"
 ```
 
 ### sno_inventory_dir
