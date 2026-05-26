@@ -1,4 +1,11 @@
 ---
+- name: Initialize all VMs
+  hosts: all
+  tasks:
+    - name: Initialize VM
+      ansible.builtin.include_role:
+        name: zenika.training.vm_init
+
 - name: Configure controller on Vagrant
   hosts: "{{ ansible_limit | default('controller') }}"
   tasks:
@@ -10,6 +17,7 @@
     - name: Configure http server
       ansible.builtin.include_role:
         name: zenika.training.http_server
+
 - name: Configure nodes on Vagrant
   hosts: nodes
   strategy: linear

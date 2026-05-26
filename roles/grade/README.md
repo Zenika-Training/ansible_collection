@@ -42,8 +42,10 @@ Supported types:
 - `directory`: passes if the path exists and is a directory
 - `content`: passes if the file exists and contains the expected string
 - `absent`: passes if the path does not exist
+- `uri`: passes if the HTTP response matches the expected status code and optional string
 
 All paths support `~` (expanded via `expanduser`).
+For `uri` items, `url_username`/`url_password` enable Basic auth; `headers` supports Bearer tokens.
 
 **_Type:_** list<br />
 
