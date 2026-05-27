@@ -1,0 +1,9 @@
+---
+- name: Resolve kubeconfig
+  ansible.builtin.include_tasks: auth.yml
+
+- name: Install MetalLB operator
+  ansible.builtin.include_tasks: operator.yml
+
+- name: Configure MetalLB
+  ansible.builtin.include_tasks: config.yml

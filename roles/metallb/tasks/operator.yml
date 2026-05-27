@@ -1,0 +1,89 @@
+---
+- name: Create metallb-system namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'namespace.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Check for existing OperatorGroup
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    namespace: "{{ metallb_namespace }}"
+  register: _metallb_og_existing
+
+- name: Create MetalLB OperatorGroup
+  kubernetes.core.k8s:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'operatorgroup.yaml.j2') | from_yaml }}"
+    state: present
+  when: _metallb_og_existing.resources | length == 0
+
+- name: Create MetalLB Subscription
+  kubernetes.core.k8s:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'subscription.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Wait for MetalLB Subscription to resolve a CSV
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: metallb-operator
+    namespace: "{{ metallb_namespace }}"
+  register: _metallb_sub
+  until:
+    - _metallb_sub.resources | length > 0
+    - _metallb_sub.resources[0].status.installedCSV is defined
+  retries: "{{ metallb_csv_wait_retries }}"
+  delay: "{{ metallb_csv_wait_delay }}"
+
+- name: Wait for MetalLB CSV to reach Succeeded phase
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{ _metallb_sub.resources[0].status.installedCSV }}"
+    namespace: "{{ metallb_namespace }}"
+  register: _metallb_csv
+  until:
+    - _metallb_csv.resources | length > 0
+    - _metallb_csv.resources[0].status.phase == "Succeeded"
+  retries: "{{ metallb_csv_wait_retries }}"
+  delay: "{{ metallb_csv_wait_delay }}"
+
+- name: Create MetalLB instance
+  kubernetes.core.k8s:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'metallb_cr.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Wait for MetalLB controller to be ready
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    api_version: apps/v1
+    kind: Deployment
+    name: controller
+    namespace: "{{ metallb_namespace }}"
+  register: _metallb_controller
+  until:
+    - _metallb_controller.resources | length > 0
+    - (_metallb_controller.resources[0].status.readyReplicas | default(0)) >= 1
+  retries: "{{ metallb_csv_wait_retries }}"
+  delay: "{{ metallb_csv_wait_delay }}"
+
+- name: Wait for MetalLB speaker DaemonSet to be ready
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ metallb_kubeconfig | default(omit, true) }}"
+    api_version: apps/v1
+    kind: DaemonSet
+    name: speaker
+    namespace: "{{ metallb_namespace }}"
+  register: _metallb_speaker
+  until:
+    - _metallb_speaker.resources | length > 0
+    - _metallb_speaker.resources[0].status.numberReady | default(0) >= 1
+  retries: "{{ metallb_csv_wait_retries }}"
+  delay: "{{ metallb_csv_wait_delay }}"

@@ -13,7 +13,7 @@ Port of ubuntu-24.04-apt-fix.sh from strigo-init-script-libs to Ansible
 
 ## Requirements
 
-- Minimum Ansible version: `2.1`
+- Minimum Ansible version: `2.16`
 
 
 ## Dependencies
