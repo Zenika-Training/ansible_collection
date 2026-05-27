@@ -1,9 +1,0 @@
----
-- name: Initial OpenShift cluster configuration before a training session
-  hosts: "{{ ansible_limit | default('sno') }}"
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-  tasks:
-    - name: Configure OpenShift cluster
-      ansible.builtin.include_role:
-        name: zenika.training.ocp_init
