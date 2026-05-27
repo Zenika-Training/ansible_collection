@@ -1,0 +1,56 @@
+---
+- name: Create groups
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_init_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_init_validate_certs }}"
+    definition:
+      apiVersion: user.openshift.io/v1
+      kind: Group
+      metadata:
+        name: "{{ item.name }}"
+      users: "{{ item.users }}"
+    state: present
+  loop: "{{ ocp_init_groups }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Grant cluster-admin to admin users
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_init_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_init_validate_certs }}"
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: "{{ item }}-cluster-admin"
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - apiGroup: rbac.authorization.k8s.io
+          kind: User
+          name: "{{ item }}"
+    state: present
+  loop: "{{ ocp_init_cluster_admins }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Disable self-provisioning for OAuth users
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_init_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_init_validate_certs }}"
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: self-provisioners
+        annotations:
+          rbac.authorization.kubernetes.io/autoupdate: "false"
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: self-provisioner
+      subjects: []
+    state: present
+  when: ocp_init_disable_self_provisioning

@@ -1,0 +1,9 @@
+---
+- name: Resolve kubeconfig
+  ansible.builtin.include_tasks: auth.yml
+
+- name: Configure authentication
+  ansible.builtin.include_tasks: auth_providers.yml
+
+- name: Configure RBAC
+  ansible.builtin.include_tasks: rbac.yml

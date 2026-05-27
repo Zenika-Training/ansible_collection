@@ -1,0 +1,14 @@
+---
+- name: Create htpasswd secret
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_init_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_init_validate_certs }}"
+    definition: "{{ lookup('template', 'htpasswd-secret.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Configure HTPasswd identity provider
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_init_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_init_validate_certs }}"
+    definition: "{{ lookup('template', 'oauth-cluster.yaml.j2') | from_yaml }}"
+    state: present

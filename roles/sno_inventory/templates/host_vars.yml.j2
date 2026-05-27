@@ -1,6 +1,8 @@
 ---
 oc_coreos_ocp_ip: {{ _sno_cluster.ip | default('# RENSEIGNER ICI') }}
 libvirt_kvm_mac: "{{ _sno_cluster.mac | default('52:54:00:xx:xx:xx') }}"
+metallb_kubeconfig: "/tmp/openshift/{{ _sno_cluster.name }}/{{ _sno_cluster.name }}/auth/kubeconfig"
+ocp_init_kubeconfig: "/tmp/openshift/{{ _sno_cluster.name }}/{{ _sno_cluster.name }}/auth/kubeconfig"
 {% if _sno_cluster.metallb_ip_ranges is defined %}
 metallb_ip_ranges:
 {% for range in _sno_cluster.metallb_ip_ranges %}
