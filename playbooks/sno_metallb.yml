@@ -1,9 +1,0 @@
----
-- name: Install and configure MetalLB on SNO clusters
-  hosts: "{{ ansible_limit | default('sno') }}"
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-  tasks:
-    - name: Install MetalLB
-      ansible.builtin.include_role:
-        name: zenika.training.metallb
