@@ -42,6 +42,9 @@ ip (optional) : static IP of the node (written to host_vars)
 mac (optional) : MAC address of the KVM NIC (written to host_vars)
 metallb_ip_ranges (optional): list of IP ranges reserved for MetalLB LoadBalancer
 in "start-end" or CIDR notation (written to host_vars)
+The following variables are always written to host_vars and derived from the cluster name:
+metallb_kubeconfig : path to the cluster kubeconfig on the Ansible controller
+ocp_init_kubeconfig : same path, used by the ocp_init role
 
 #### Default value
 

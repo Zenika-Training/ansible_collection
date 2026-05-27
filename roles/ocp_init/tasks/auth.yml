@@ -1,0 +1,59 @@
+---
+- name: Check kubeadmin-password file
+  ansible.builtin.stat:
+    path: "{{ ocp_init_kubeadmin_password_file }}"
+  register: _ocp_init_kubeadmin_stat
+
+- name: Read kubeadmin password
+  ansible.builtin.slurp:
+    src: "{{ ocp_init_kubeadmin_password_file }}"
+  register: _ocp_init_kubeadmin_password
+  when: _ocp_init_kubeadmin_stat.stat.exists
+
+- name: Authenticate with kubeadmin credentials
+  ansible.builtin.command:
+    cmd: >-
+      oc login {{ ocp_init_api_url }}
+      --kubeconfig={{ ocp_init_kubeconfig }}
+      --insecure-skip-tls-verify=true
+      -u kubeadmin
+      -p {{ _ocp_init_kubeadmin_password.content | b64decode | trim }}
+  when: _ocp_init_kubeadmin_stat.stat.exists
+  no_log: true
+  changed_when: false
+  register: _ocp_init_login_result
+  failed_when: false
+
+- name: Fail with oc login error
+  ansible.builtin.fail:
+    msg: "oc login failed (rc={{ _ocp_init_login_result.rc }}): {{ _ocp_init_login_result.stderr | default('no stderr') }}"
+  when: >-
+    _ocp_init_kubeadmin_stat.stat.exists and
+    (_ocp_init_login_result.rc | default(0)) != 0
+
+- name: Check kubeconfig existence (fallback when no kubeadmin-password)
+  ansible.builtin.stat:
+    path: "{{ ocp_init_kubeconfig }}"
+  register: _ocp_init_kubeconfig_stat
+  when: not _ocp_init_kubeadmin_stat.stat.exists
+
+- name: Fall back to current kube context when kubeconfig is absent
+  ansible.builtin.set_fact:
+    ocp_init_kubeconfig: ""
+  when: >-
+    not _ocp_init_kubeadmin_stat.stat.exists and
+    not (_ocp_init_kubeconfig_stat.stat.exists | default(false))
+
+- name: Check default kube context existence
+  ansible.builtin.stat:
+    path: "~/.kube/config"
+  register: _ocp_init_default_kubeconfig_stat
+  when: ocp_init_kubeconfig | length == 0
+
+- name: Assert that a kube context is available
+  ansible.builtin.assert:
+    that: ocp_init_kubeconfig | length > 0 or _ocp_init_default_kubeconfig_stat.stat.exists | default(false)
+    fail_msg: >-
+      No kubeadmin-password at '{{ ocp_init_kubeadmin_password_file }}',
+      no kubeconfig at '{{ ocp_init_kubeconfig }}', and ~/.kube/config does not exist.
+      Run the cluster installation first, or run `oc login <api-url>`.
