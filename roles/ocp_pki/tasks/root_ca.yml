@@ -1,0 +1,44 @@
+---
+- name: Ensure root CA directory exists
+  ansible.builtin.file:
+    path: "{{ ocp_pki_root_ca_dir }}"
+    state: directory
+    mode: "0700"
+  delegate_to: "{{ ocp_pki_controller_host }}"
+  run_once: true
+
+- name: Generate root CA private key
+  community.crypto.openssl_privatekey:
+    path: "{{ ocp_pki_root_ca_dir }}/root-ca.key"
+    size: 4096
+    mode: "0600"
+  delegate_to: "{{ ocp_pki_controller_host }}"
+  run_once: true
+
+- name: Create CSR for root CA certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ ocp_pki_root_ca_dir }}/root-ca.key"
+    common_name: "{{ ocp_pki_root_ca_cn }}"
+    organization_name: "Zenika Training"
+    use_common_name_for_san: false
+    basic_constraints:
+      - "CA:TRUE"
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+      - cRLSign
+    key_usage_critical: true
+  register: _ocp_pki_root_csr
+  delegate_to: "{{ ocp_pki_controller_host }}"
+  run_once: true
+  changed_when: false
+
+- name: Generate root CA certificate (self-signed)
+  community.crypto.x509_certificate:
+    path: "{{ ocp_pki_root_ca_dir }}/root-ca.crt"
+    csr_content: "{{ _ocp_pki_root_csr.csr }}"
+    privatekey_path: "{{ ocp_pki_root_ca_dir }}/root-ca.key"
+    provider: selfsigned
+    selfsigned_not_after: "+{{ ocp_pki_root_ca_days }}d"
+  delegate_to: "{{ ocp_pki_controller_host }}"
+  run_once: true
