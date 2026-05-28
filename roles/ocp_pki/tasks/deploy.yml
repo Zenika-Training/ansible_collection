@@ -1,0 +1,31 @@
+---
+# cert-manager uses the namespace cert-manager (--cluster-resource-namespace default)
+# to look up secrets referenced by ClusterIssuers. Pre-creating the namespace here
+# is idempotent with the cert-manager operator installation performed later in the course.
+- name: Ensure cert-manager namespace exists
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_pki_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_pki_validate_certs }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: cert-manager
+
+- name: Deploy pki-issuer-ca secret in cert-manager namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ocp_pki_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ ocp_pki_validate_certs }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: pki-issuer-ca
+        namespace: cert-manager
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ _ocp_pki_ca_cert.content }}"
+        tls.key: "{{ _ocp_pki_ca_key.content }}"
+  no_log: true
