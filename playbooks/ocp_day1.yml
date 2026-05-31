@@ -8,6 +8,10 @@
       ansible.builtin.include_role:
         name: zenika.training.ocp_init
 
+    - name: Bootstrap shared PKI and deploy cert-manager CA secret
+      ansible.builtin.include_role:
+        name: zenika.training.ocp_pki
+
     - name: Install MetalLB
       ansible.builtin.include_role:
         name: zenika.training.metallb
