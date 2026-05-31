@@ -55,8 +55,8 @@
     name: "{{ libvirt_kvm_name }}"
   until: _libvirt_kvm_domstate.status == 'shutdown'
   register: _libvirt_kvm_domstate
-  retries: 60
-  delay: 30
+  retries: "{{ libvirt_kvm_first_boot_retries }}"
+  delay: "{{ libvirt_kvm_first_boot_delay }}"
   delegate_to: "{{ libvirt_kvm_target_host }}"
   when: _libvirt_kvm_install.changed
 
