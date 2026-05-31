@@ -42,7 +42,7 @@ libvirt_kvm_disk_size: 120g
 libvirt_kvm_bridge: br0
 
 # @var libvirt_kvm_mac:description: >
-# MAC address of the VM NIC. Required — must be set in host_vars or inventory.
+# MAC address of the VM NIC. Required - must be set in host_vars or inventory.
 # Used to ensure a predictable static IP via DHCP or DNS.
 # @end
 libvirt_kvm_mac: ""

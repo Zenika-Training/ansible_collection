@@ -1,6 +1,6 @@
 # ocp_pki
 
-PKI bootstrap for OpenShift training clusters — generates a shared root CA and per-cluster intermediate CAs, then deploys the cert-manager ClusterIssuer backing secret.
+PKI bootstrap for OpenShift training clusters - generates a shared root CA and per-cluster intermediate CAs, then deploys the cert-manager ClusterIssuer backing secret.
 
 
 ## Table of contents
