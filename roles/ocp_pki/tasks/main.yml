@@ -1,0 +1,12 @@
+---
+- name: Resolve kubeconfig
+  ansible.builtin.include_tasks: auth.yml
+
+- name: Generate shared root CA
+  ansible.builtin.include_tasks: root_ca.yml
+
+- name: Generate per-cluster intermediate CA
+  ansible.builtin.include_tasks: intermediate_ca.yml
+
+- name: Deploy PKI secrets to cluster
+  ansible.builtin.include_tasks: deploy.yml

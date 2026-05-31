@@ -1,0 +1,11 @@
+---
+galaxy_info:
+  author: Yannick Sébastia
+  description: >
+    PKI bootstrap for OpenShift training clusters — generates a shared root CA and
+    per-cluster intermediate CAs, then deploys the cert-manager ClusterIssuer backing secret.
+  company: Zenika
+  license: GPL-3.0-only
+  min_ansible_version: "2.14"
+  galaxy_tags: []
+dependencies: []
