@@ -89,7 +89,7 @@ grade_lab_name: Grade
 #### Example usage
 
 ```YAML
-"Lab02 — Ansible Roles"
+"Lab02 - Ansible Roles"
 ```
 
 ## Dependencies

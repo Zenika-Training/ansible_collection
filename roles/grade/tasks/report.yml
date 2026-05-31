@@ -4,14 +4,14 @@
     _grade_passed_count: "{{ _grade_results | selectattr('passed') | list | length }}"
     _grade_failed_list: "{{ _grade_results | rejectattr('passed') | list }}"
 
-- name: Display grade results — {{ grade_lab_name }}
+- name: Display grade results - {{ grade_lab_name }}
   ansible.builtin.debug:
     msg: "{{ ('[OK]' if item.passed else '[KO]') + '  ' + item.msg }}"
   loop: "{{ _grade_results }}"
   loop_control:
     label: "{{ item.msg }}"
 
-- name: Display grade summary — {{ grade_lab_name }}
+- name: Display grade summary - {{ grade_lab_name }}
   ansible.builtin.debug:
     msg: >-
       {{ 'SUCCESS: all grades passed!'

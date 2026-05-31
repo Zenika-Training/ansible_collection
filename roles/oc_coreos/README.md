@@ -62,7 +62,7 @@ oc_coreos_cilium_bpf_masquerade: true
 ### oc_coreos_cilium_cni_exclusive
 
 Run Cilium as the exclusive CNI plugin.
-Set to false (default here) to allow IstioCNI chaining — IstioCNI must insert
+Set to false (default here) to allow IstioCNI chaining - IstioCNI must insert
 its iptables rules after Cilium sets up the network (Istio Ambient prerequisite).
 https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 
@@ -93,10 +93,10 @@ NOT translate ClusterIP → PodIP inside pod cgroups. The ZTunnel then encodes t
 original ClusterIP in HBONE, allowing the Waypoint to select the correct route.
 Upstream reference: https://docs.cilium.io/en/stable/network/servicemesh/istio/
 Note: `cilium config get bpf-lb-sock-hostns-only` returns "Configuration does not
-exist" on CLiFE — the parameter is silently effective only when declared in the
+exist" on CLiFE - the parameter is silently effective only when declared in the
 CiliumConfig before installation; runtime patches are ignored.
 Side effect: confining the hook to the host namespace also neutralises session
-affinity inside pods — sessionAffinity: true (CLiFE default) has no observable
+affinity inside pods - sessionAffinity: true (CLiFE default) has no observable
 effect on Istio Ambient traffic distribution when this parameter is true.
 
 #### Default value
@@ -178,7 +178,7 @@ oc_coreos_ocp_domain: example.com
 
 Fixed IP address of the SNO node on the KVM bridge. Required.
 IMPORTANT: this variable is NOT ansible_host. Ansible never connects via SSH
-to this address — the VM does not exist yet at execution time.
+to this address - the VM does not exist yet at execution time.
 It is only injected into the ignition config (NetworkManager) so that CoreOS
 boots with a static IP, and is used to validate DNS entries in the pre-check.
 Must be set in host_vars/<cluster_name>.yml.

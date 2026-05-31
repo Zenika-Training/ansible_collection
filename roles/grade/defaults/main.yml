@@ -1,7 +1,7 @@
 ---
 # @var grade_lab_name:description: Human-readable name of the lab being graded. Displayed in the results header and summary.
 # @var grade_lab_name:type: string
-# @var grade_lab_name:example: "Lab02 — Ansible Roles"
+# @var grade_lab_name:example: "Lab02 - Ansible Roles"
 grade_lab_name: Grade
 
 # @var grade_fail_on_error:description: When true, the play fails if any check does not pass. Set to false to always display the full report without failing the play.

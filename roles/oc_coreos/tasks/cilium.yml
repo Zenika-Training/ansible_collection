@@ -1,16 +1,16 @@
 ---
-- name: Cilium — generate manifests
+- name: Cilium - generate manifests
   ansible.builtin.command:
     cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create manifests"
   changed_when: true
 
-- name: Cilium — download manifests archive
+- name: Cilium - download manifests archive
   ansible.builtin.get_url:
     url: "{{ oc_coreos_cilium_manifests_url }}"
     dest: "{{ oc_coreos_work_dir }}/cilium-manifests.tar.gz"
     mode: "0644"
 
-- name: Cilium — extract manifests archive into ignition directory
+- name: Cilium - extract manifests archive into ignition directory
   ansible.builtin.unarchive:
     src: "{{ oc_coreos_work_dir }}/cilium-manifests.tar.gz"
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/"
@@ -18,23 +18,23 @@
     extra_opts:
       - --strip-components=1
 
-- name: Cilium — read cluster-network-02-config.yml
+- name: Cilium - read cluster-network-02-config.yml
   ansible.builtin.slurp:
     src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/cluster-network-02-config.yml"
   register: _oc_coreos_cn02_raw
 
-- name: "Cilium — patch cluster-network-02-config.yml (deployKubeProxy: false)"
+- name: "Cilium - patch cluster-network-02-config.yml (deployKubeProxy: false)"
   ansible.builtin.copy:
     content: "{{ _oc_coreos_cn02_raw.content | b64decode | from_yaml | combine({'spec': {'deployKubeProxy': false}}, recursive=True) | to_nice_yaml(indent=2) }}"
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/cluster-network-02-config.yml"
     mode: "0644"
 
-- name: Cilium — read clife controller Deployment
+- name: Cilium - read clife controller Deployment
   ansible.builtin.slurp:
     src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/apps_v1_deployment_clife-controller-manager.yaml"
   register: _oc_coreos_clife_deploy_raw
 
-- name: Cilium — patch clife controller Deployment (KUBERNETES_SERVICE_HOST/PORT)
+- name: Cilium - patch clife controller Deployment (KUBERNETES_SERVICE_HOST/PORT)
   vars:
     _oc_coreos_deploy: "{{ _oc_coreos_clife_deploy_raw.content | b64decode | from_yaml }}"
     _oc_coreos_container: "{{ _oc_coreos_deploy.spec.template.spec.containers[0] }}"
@@ -59,12 +59,12 @@
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/apps_v1_deployment_clife-controller-manager.yaml"
     mode: "0644"
 
-- name: Cilium — read subscription.yaml
+- name: Cilium - read subscription.yaml
   ansible.builtin.slurp:
     src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/subscription.yaml"
   register: _oc_coreos_subscription_raw
 
-- name: Cilium — patch subscription.yaml (KUBERNETES_SERVICE_HOST/PORT)
+- name: Cilium - patch subscription.yaml (KUBERNETES_SERVICE_HOST/PORT)
   ansible.builtin.copy:
     content: >-
       {{ _oc_coreos_subscription_raw.content | b64decode | from_yaml | combine({
@@ -81,12 +81,12 @@
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/subscription.yaml"
     mode: "0644"
 
-- name: Cilium — read CiliumConfig manifest
+- name: Cilium - read CiliumConfig manifest
   ansible.builtin.slurp:
     src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/ciliumconfig.yaml"
   register: _oc_coreos_cilium_config_raw
 
-- name: Cilium — patch CiliumConfig
+- name: Cilium - patch CiliumConfig
   ansible.builtin.copy:
     content: >-
       {{ _oc_coreos_cilium_config_raw.content | b64decode | from_yaml
