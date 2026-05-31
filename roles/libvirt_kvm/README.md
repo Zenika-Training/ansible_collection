@@ -9,6 +9,8 @@ Create a KVM libvirt VM for SNO OpenShift from an RHCOS live ISO
   - [libvirt_kvm_bridge](#libvirt_kvm_bridge)
   - [libvirt_kvm_cpu_model](#libvirt_kvm_cpu_model)
   - [libvirt_kvm_disk_size](#libvirt_kvm_disk_size)
+  - [libvirt_kvm_first_boot_delay](#libvirt_kvm_first_boot_delay)
+  - [libvirt_kvm_first_boot_retries](#libvirt_kvm_first_boot_retries)
   - [libvirt_kvm_graphics_listen](#libvirt_kvm_graphics_listen)
   - [libvirt_kvm_graphics_type](#libvirt_kvm_graphics_type)
   - [libvirt_kvm_iso_dest_dir](#libvirt_kvm_iso_dest_dir)
@@ -61,6 +63,29 @@ Size of the VM disk in virt-install format (e.g. 120g).
 
 ```YAML
 libvirt_kvm_disk_size: 120g
+```
+
+### libvirt_kvm_first_boot_delay
+
+Seconds between each VM status poll during first-boot wait.
+
+#### Default value
+
+```YAML
+libvirt_kvm_first_boot_delay: 30
+```
+
+### libvirt_kvm_first_boot_retries
+
+Number of status polls before giving up on the first-boot installation.
+Each poll waits libvirt_kvm_first_boot_delay seconds.
+Total maximum wait = retries × delay. Default: 120 × 30s = 60 minutes.
+OCP 4.21+ requires more time due to automatic CPU/memory sizing (autoSizingReserved).
+
+#### Default value
+
+```YAML
+libvirt_kvm_first_boot_retries: 120
 ```
 
 ### libvirt_kvm_graphics_listen
