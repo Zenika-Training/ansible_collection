@@ -143,7 +143,7 @@ libvirt_kvm_iso_src: /tmp/openshift/{{ libvirt_kvm_name }}/rhcos-live.iso
 
 ### libvirt_kvm_mac
 
-MAC address of the VM NIC. Required — must be set in host_vars or inventory.
+MAC address of the VM NIC. Required - must be set in host_vars or inventory.
 Used to ensure a predictable static IP via DHCP or DNS.
 
 #### Default value

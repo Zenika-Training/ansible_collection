@@ -1,5 +1,5 @@
 ---
-- name: HTTP request — {{ _grade_item.url }}
+- name: HTTP request - {{ _grade_item.url }}
   ansible.builtin.uri:
     url: "{{ _grade_item.url }}"
     url_username: "{{ _grade_item.url_username | default(omit) }}"
@@ -13,7 +13,7 @@
   register: _grade_uri_result
   failed_when: false
 
-- name: Record result — {{ _grade_item.msg }}
+- name: Record result - {{ _grade_item.msg }}
   ansible.builtin.set_fact:
     _grade_results: "{{ _grade_results + [{'msg': _grade_item.msg, 'passed': _passed}] }}"
   vars:
