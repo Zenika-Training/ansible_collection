@@ -1,0 +1,7 @@
+---
+- name: Configure Podman on lab controller
+  hosts: "{{ ansible_limit | default('localhost') }}"
+  tasks:
+    - name: Configure podman
+      ansible.builtin.include_role:
+        name: zenika.training.podman
