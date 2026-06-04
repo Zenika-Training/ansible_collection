@@ -13,6 +13,13 @@
     dest: /usr/local/share/zenika/grade/ansible.cfg
     mode: "0644"
 
+- name: Install grade inventory
+  become: true
+  ansible.builtin.copy:
+    src: hosts
+    dest: /usr/local/share/zenika/grade/hosts
+    mode: "0644"
+
 - name: Install grade command
   become: true
   ansible.builtin.copy:
