@@ -11,6 +11,7 @@ PKI bootstrap for OpenShift training clusters - generates a shared root CA and p
   - [ocp_pki_intermediate_cn](#ocp_pki_intermediate_cn)
   - [ocp_pki_intermediate_days](#ocp_pki_intermediate_days)
   - [ocp_pki_intermediate_dir](#ocp_pki_intermediate_dir)
+  - [ocp_pki_intermediate_pathlen](#ocp_pki_intermediate_pathlen)
   - [ocp_pki_kubeconfig](#ocp_pki_kubeconfig)
   - [ocp_pki_root_ca_cn](#ocp_pki_root_ca_cn)
   - [ocp_pki_root_ca_days](#ocp_pki_root_ca_days)
@@ -69,6 +70,18 @@ One sub-directory is created per cluster, named after inventory_hostname.
 
 ```YAML
 ocp_pki_intermediate_dir: '{{ ocp_pki_root_ca_dir }}/{{ inventory_hostname }}'
+```
+
+### ocp_pki_intermediate_pathlen
+
+pathLen constraint of the intermediate CA certificate.
+0 = end-entity certs only (suitable for courses without istio-csr).
+1 = allows one level of sub-CA — required for istio-csr (istiod cert uses isCA:true).
+
+#### Default value
+
+```YAML
+ocp_pki_intermediate_pathlen: 1
 ```
 
 ### ocp_pki_kubeconfig

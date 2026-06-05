@@ -28,6 +28,13 @@ ocp_pki_intermediate_cn: "{{ inventory_hostname }} Intermediate CA"
 # @var ocp_pki_intermediate_days:description: Validity period of the intermediate CA certificate in days.
 ocp_pki_intermediate_days: 1825
 
+# @var ocp_pki_intermediate_pathlen:description: >
+# pathLen constraint of the intermediate CA certificate.
+# 0 = end-entity certs only (suitable for courses without istio-csr).
+# 1 = allows one level of sub-CA — required for istio-csr (istiod cert uses isCA:true).
+# @end
+ocp_pki_intermediate_pathlen: 1
+
 # @section Controller host
 
 # @var ocp_pki_controller_host:description: >
