@@ -1,20 +1,65 @@
-## Unreleased
+## 0.2.0 (2026-06-06)
 
 ### Feat
 
+- add grade playbook
+- add podman playbook
+- update openshift to 4.21.16
+- add role to create a PKI for OCP
+- add role to initialize OCP server after install
+- include MetalLB innto sno_inventory role
+- add metallb role
+- add gpg key from Google
+- add vm_init role
+- **#13**: wait install of SNO server
+- **#13**: add role to generate default inventory
+- **#13**: add cilium support
 - **#13**: add libvirt_kvm install vm role
 - **#13**: generate coreos iso file
 - **#13**: add installation of oc command
+- add uri assert on grade role
+- install grade command
+- add grade_reporter callback
+- add grade role
+- **#8**: add support of ubuntu24 for vagrant_ansible_controller role
+- **#8**: add support of ubuntu24 for kind
 
 ### Fix
 
+- **oc_pki**: update pathLen
+- **grade**: improve display of grade script
+- update retries/delays for libvirt/KVM (#21)
+- use get_url which work with recent ansible-core
+- **#13**: delegate on valid host the ending of installation
+- **cilium**: lb_host_namespace_only
+- **cilium**: add sessionAffinity and hostNamespaceOnly
+- **cilium**: allow IstioCNI
+- **#13**: clean  project directory
+- **#13**: set valid path for ISO
+- **#13**: avoid regenerate iso file with different password
+- **#13**:  linter for libvirt_kvm role
+- **#13**:  path cilium
+- **#13**: add missing dependencies
 - **lint**: ansible-lint
+- '_grade_item' is undefined
 - invalid port for private registry
+- **lint**: EOF
 
 ### Refactor
 
+- merge day 1 OCP playbook
+- **cilium**: enable compat configuration with Mesh
+- **#13**: update sno_inventory template
+- **#13**: load pull-secret and ssh key from file
+- **#13**: can run generate and libvirt on same host
+- **#13**: use delay/until/retry
+- **#13**: update default vars for SNO
+- **#13**: start VM after first shutdown
 - **#13**: show kubeadmin password
 - **#13**: add openshift install client
+- grade script in english
+- update grade files
+- update fails message
 
 ## 0.1.3 (2026-01-08)
 
