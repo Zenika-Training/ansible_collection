@@ -20,7 +20,10 @@
     url: "http://localhost:{{ awx_controller_port }}/api/v2/ping/"
     return_content: true
   register: awx_uri_configure
-  until: awx_uri_configure.json.instances | length > 0
+  failed_when: false
+  until: >-
+    awx_uri_configure.json is defined and
+    awx_uri_configure.json.instances | length > 0
   retries: 15
   delay: 10
 - name: Configure AWX
