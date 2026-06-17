@@ -1,4 +1,4 @@
-## 0.2.0 (2026-06-06)
+## 0.3.0 (2026-06-17)
 
 ### Feat
 
@@ -26,6 +26,7 @@
 
 ### Fix
 
+- **awx**: handle non-JSON responses in wait for AWX to be ready
 - **oc_pki**: update pathLen
 - **grade**: improve display of grade script
 - update retries/delays for libvirt/KVM (#21)
