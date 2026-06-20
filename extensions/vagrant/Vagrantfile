@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
   end
   
   config.vm.define "ubuntu24" do |guest|
-    guest.vm.box = "ubuntu24"
+    guest.vm.box = "bento/ubuntu-24.04"
     guest.vm.hostname = "ubuntu24"
   end
 
