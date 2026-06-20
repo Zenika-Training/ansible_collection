@@ -1,3 +1,5 @@
+# VAGRANT
+
 To deploy an Ansible controller (used by training-ansible-advanced)
 
 ```bash
