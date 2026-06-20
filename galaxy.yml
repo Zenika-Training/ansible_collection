@@ -14,14 +14,14 @@ tags:
   # tags are all lower-case, no spaces, no dashes.
   - linux
 dependencies:
-  "ansible.posix": "2.1.0"
+  "ansible.posix": "2.2.0"
   "ansible.utils": "2.9.0"
   "awx.awx": "24.6.1"
-  "community.crypto": "3.1.0"
-  "community.general": "12.1.0"
+  "community.crypto": "3.2.2"
+  "community.general": "13.1.0"
   "community.libvirt": "2.2.0"
   "containers.podman": "1.18.0"
-  "kubernetes.core": "6.2.0"
+  "kubernetes.core": "6.4.0"
 repository: https://github.com/Zenika-Training/ansible_collection
 homepage: https://github.com/Zenika-Training/ansible_collection
 issues: https://github.com/Zenika-Training/ansible_collection/issues
