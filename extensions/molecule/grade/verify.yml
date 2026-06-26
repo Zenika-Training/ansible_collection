@@ -1,0 +1,135 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    # --- yaml: valeur sans guillemets ---
+    - name: "Grade yaml - sans guillemets"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - yaml sans guillemets"
+        grade_fail_on_error: false
+        grade_items:
+          - type: yaml
+            path: /tmp/grade_test/vars_no_quotes.yml
+            key: apache_owner
+            value: www-data
+            msg: "apache_owner: www-data (sans guillemets)"
+
+    - name: "Assert yaml sans guillemets => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: valeur sans guillemets reconnue"
+        fail_msg: "ECHEC: valeur sans guillemets non reconnue"
+
+    # --- yaml: valeur avec guillemets doubles ---
+    - name: "Grade yaml - guillemets doubles"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - yaml guillemets doubles"
+        grade_fail_on_error: false
+        grade_items:
+          - type: yaml
+            path: /tmp/grade_test/vars_double_quotes.yml
+            key: apache_owner
+            value: www-data
+            msg: 'apache_owner: "www-data" (guillemets doubles)'
+
+    - name: "Assert yaml guillemets doubles => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: guillemets doubles transparents"
+        fail_msg: "ECHEC: guillemets doubles non geres"
+
+    # --- yaml: valeur avec guillemets simples ---
+    - name: "Grade yaml - guillemets simples"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - yaml guillemets simples"
+        grade_fail_on_error: false
+        grade_items:
+          - type: yaml
+            path: /tmp/grade_test/vars_single_quotes.yml
+            key: apache_owner
+            value: www-data
+            msg: "apache_owner: 'www-data' (guillemets simples)"
+
+    - name: "Assert yaml guillemets simples => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: guillemets simples transparents"
+        fail_msg: "ECHEC: guillemets simples non geres"
+
+    # --- yaml: mauvaise valeur ---
+    - name: "Grade yaml - mauvaise valeur"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - yaml mauvaise valeur"
+        grade_fail_on_error: false
+        grade_items:
+          - type: yaml
+            path: /tmp/grade_test/vars_wrong_value.yml
+            key: apache_owner
+            value: www-data
+            msg: "apache_owner attendu www-data, present root"
+
+    - name: "Assert yaml mauvaise valeur => failed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == false
+        success_msg: "OK: mauvaise valeur detectee"
+        fail_msg: "ECHEC: mauvaise valeur non detectee"
+
+    # --- yaml: cle absente du fichier ---
+    - name: "Grade yaml - cle absente"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - yaml cle absente"
+        grade_fail_on_error: false
+        grade_items:
+          - type: yaml
+            path: /tmp/grade_test/vars_missing_key.yml
+            key: apache_owner
+            value: www-data
+            msg: "cle apache_owner absente du fichier"
+
+    - name: "Assert yaml cle absente => failed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == false
+        success_msg: "OK: cle absente detectee"
+        fail_msg: "ECHEC: cle absente non detectee"
+
+    # --- yaml: fichier absent ---
+    - name: "Grade yaml - fichier absent"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - yaml fichier absent"
+        grade_fail_on_error: false
+        grade_items:
+          - type: yaml
+            path: /tmp/grade_test/nonexistent.yml
+            key: apache_owner
+            value: www-data
+            msg: "fichier YAML absent"
+
+    - name: "Assert yaml fichier absent => failed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == false
+        success_msg: "OK: fichier absent detecte"
+        fail_msg: "ECHEC: fichier absent non detecte"
