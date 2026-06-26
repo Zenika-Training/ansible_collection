@@ -40,7 +40,8 @@ grade_fail_on_error: true
 Supported types:
 - `file`: passes if the path exists and is a regular file
 - `directory`: passes if the path exists and is a directory
-- `content`: passes if the file exists and contains the expected string
+- `content`: passes if the file exists and contains the expected string (literal match)
+- `yaml`: passes if the YAML file exists and the given key equals the expected value (quote-insensitive)
 - `absent`: passes if the path does not exist
 - `uri`: passes if the HTTP response matches the expected status code and optional string
 
@@ -69,6 +70,11 @@ grade_items: []
       path: "~/my.collection/roles/apache/tasks/main.yml"
       string: "ansible.builtin.package"
       msg: "Module ansible.builtin.package used"
+    - type: yaml
+      path: "~/my.collection/roles/apache/vars/main.yml"
+      key: "apache_owner"
+      value: "www-data"
+      msg: "Variable apache_owner set in vars/main.yml"
     - type: absent
       path: "~/my.collection/roles/apache/files/legacy.conf"
       msg: "Obsolete file removed"
