@@ -1,0 +1,44 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Create fixture directory
+      ansible.builtin.file:
+        path: /tmp/grade_test
+        state: directory
+        mode: "0755"
+
+    - name: Create fixture - yaml without quotes
+      ansible.builtin.copy:
+        content: |
+          apache_owner: www-data
+        dest: /tmp/grade_test/vars_no_quotes.yml
+        mode: "0644"
+
+    - name: Create fixture - yaml with double quotes
+      ansible.builtin.copy:
+        content: |
+          apache_owner: "www-data"
+        dest: /tmp/grade_test/vars_double_quotes.yml
+        mode: "0644"
+
+    - name: Create fixture - yaml with single quotes
+      ansible.builtin.copy:
+        content: |
+          apache_owner: 'www-data'
+        dest: /tmp/grade_test/vars_single_quotes.yml
+        mode: "0644"
+
+    - name: Create fixture - yaml with wrong value
+      ansible.builtin.copy:
+        content: |
+          apache_owner: root
+        dest: /tmp/grade_test/vars_wrong_value.yml
+        mode: "0644"
+
+    - name: Create fixture - yaml with missing key
+      ansible.builtin.copy:
+        content: |
+          other_key: www-data
+        dest: /tmp/grade_test/vars_missing_key.yml
+        mode: "0644"
