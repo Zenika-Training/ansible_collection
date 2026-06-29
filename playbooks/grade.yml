@@ -14,9 +14,12 @@
         msg: "No grade file found for '{{ grade_lab }}' in ~/workspaces/grades/vars/"
       when: _grade_found.files | length == 0
 
-    - name: "Grade {{ item | basename | regex_replace('\\.yml$', '') }}"
+    - name: "Grade lab"
       ansible.builtin.include_role:
         name: zenika.training.grade
       vars:
-        _grade_var_file: "{{ item }}"
+        _grade_var_file: "{{ _grade_var_file }}"
       loop: "{{ _grade_found.files | map(attribute='path') | list }}"
+      loop_control:
+        loop_var: _grade_var_file
+        label: "{{ _grade_var_file | basename | regex_replace('\\.yml$', '') }}"
