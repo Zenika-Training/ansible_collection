@@ -1,4 +1,8 @@
 ---
+- name: Load vars from file
+  ansible.builtin.include_vars: "{{ _grade_var_file }}"
+  when: _grade_var_file is defined
+
 - name: Initialize results
   ansible.builtin.set_fact:
     _grade_results: []

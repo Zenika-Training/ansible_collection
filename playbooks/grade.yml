@@ -1,8 +1,22 @@
 ---
-- name: Deploy Grade script
+- name: "Lab Verification"
   hosts: localhost
+  gather_facts: false
   tasks:
-    - name: Install grade command
+    - name: "Find grade vars file"
+      ansible.builtin.find:
+        paths: "{{ lookup('env', 'HOME') }}/workspaces/grades/vars/"
+        patterns: "{{ grade_lab }}.yml"
+      register: _grade_found
+
+    - name: "Fail if no grade file found"
+      ansible.builtin.fail:
+        msg: "No grade file found for '{{ grade_lab }}' in ~/workspaces/grades/vars/"
+      when: _grade_found.files | length == 0
+
+    - name: "Grade {{ item | basename | regex_replace('\\.yml$', '') }}"
       ansible.builtin.include_role:
         name: zenika.training.grade
-        tasks_from: install
+      vars:
+        _grade_var_file: "{{ item }}"
+      loop: "{{ _grade_found.files | map(attribute='path') | list }}"
