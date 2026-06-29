@@ -18,8 +18,8 @@
       ansible.builtin.include_role:
         name: zenika.training.grade
       vars:
-        _grade_var_file: "{{ _grade_var_file }}"
+        _grade_var_file: "{{ _grade_loop_file }}"
       loop: "{{ _grade_found.files | map(attribute='path') | list }}"
       loop_control:
-        loop_var: _grade_var_file
-        label: "{{ _grade_var_file | basename | regex_replace('\\.yml$', '') }}"
+        loop_var: _grade_loop_file
+        label: "{{ _grade_loop_file | basename | regex_replace('\\.yml$', '') }}"
