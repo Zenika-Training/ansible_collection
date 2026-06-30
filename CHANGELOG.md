@@ -1,4 +1,16 @@
-## 0.3.0 (2026-06-17)
+## 0.4.0 (2026-06-30)
+
+### Feat
+
+- **grade**: centralize playbook as zenika.training.grade with vars autodiscovery and add yaml check type
+
+### Fix
+
+- **grade**: suppress loop variable warnings in grade playbook
+- **grade**: suppress loop variable warnings in grade playbook
+- **awx**: handle non-JSON responses in wait for AWX to be ready
+
+## 0.2.0 (2026-06-06)
 
 ### Feat
 
@@ -21,12 +33,9 @@
 - install grade command
 - add grade_reporter callback
 - add grade role
-- **#8**: add support of ubuntu24 for vagrant_ansible_controller role
-- **#8**: add support of ubuntu24 for kind
 
 ### Fix
 
-- **awx**: handle non-JSON responses in wait for AWX to be ready
 - **oc_pki**: update pathLen
 - **grade**: improve display of grade script
 - update retries/delays for libvirt/KVM (#21)
@@ -44,7 +53,6 @@
 - **lint**: ansible-lint
 - '_grade_item' is undefined
 - invalid port for private registry
-- **lint**: EOF
 
 ### Refactor
 
