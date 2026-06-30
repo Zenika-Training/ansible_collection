@@ -15,9 +15,15 @@
 
 - name: Record result - {{ _grade_item.msg }}
   ansible.builtin.set_fact:
-    _grade_results: "{{ _grade_results + [{'msg': _grade_item.msg, 'passed': _passed}] }}"
-  vars:
-    _expected_status: "{{ _grade_item.status_code | default(200) | int }}"
-    _status_ok: "{{ (_grade_uri_result.status | default(-1) | int) == _expected_status | int }}"
-    _string_ok: "{{ _grade_item.string is not defined or _grade_item.string in (_grade_uri_result.content | default('')) }}"
-    _passed: "{{ _status_ok | bool and _string_ok | bool }}"
+    _grade_results: >-
+      {{
+        _grade_results + [{
+          'msg': _grade_item.msg,
+          'passed': (
+            (_grade_uri_result.status | default(-1) | int) == (_grade_item.status_code | default(200) | int)
+          ) and (
+            _grade_item.string is not defined or
+            _grade_item.string in (_grade_uri_result.content | default(''))
+          )
+        }]
+      }}
