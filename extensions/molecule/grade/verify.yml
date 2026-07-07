@@ -133,3 +133,127 @@
           - _grade_results[0].passed == false
         success_msg: "OK: missing file detected"
         fail_msg: "FAILED: missing file not detected"
+
+    # --- exec: command succeeds ---
+    - name: "Grade exec - command succeeds"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - exec success"
+        grade_fail_on_error: false
+        grade_items:
+          - type: exec
+            cmd: "true"
+            msg: "Command exited with rc 0"
+
+    - name: "Assert exec success => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: successful command detected"
+        fail_msg: "FAILED: successful command not detected"
+
+    # --- exec: command fails ---
+    - name: "Grade exec - command fails"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - exec failure"
+        grade_fail_on_error: false
+        grade_items:
+          - type: exec
+            cmd: "false"
+            msg: "Command exited with non-zero rc"
+
+    - name: "Assert exec failure => failed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == false
+        success_msg: "OK: failing command detected"
+        fail_msg: "FAILED: failing command not detected"
+
+    # --- exec: string found in stdout ---
+    - name: "Grade exec - string in stdout"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - exec stdout string"
+        grade_fail_on_error: false
+        grade_items:
+          - type: exec
+            cmd: "echo 'hello world'"
+            string: "hello"
+            msg: "String found in stdout"
+
+    - name: "Assert exec stdout string => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: stdout string detected"
+        fail_msg: "FAILED: stdout string not detected"
+
+    # --- exec: string found in stderr ---
+    - name: "Grade exec - string in stderr"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - exec stderr string"
+        grade_fail_on_error: false
+        grade_items:
+          - type: exec
+            cmd: "bash -c 'echo errout >&2'"
+            string: "errout"
+            msg: "String found in stderr"
+
+    - name: "Assert exec stderr string => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: stderr string detected"
+        fail_msg: "FAILED: stderr string not detected"
+
+    # --- exec: string not found ---
+    - name: "Grade exec - string not found"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - exec string absent"
+        grade_fail_on_error: false
+        grade_items:
+          - type: exec
+            cmd: "echo 'hello world'"
+            string: "goodbye"
+            msg: "String not present in output"
+
+    - name: "Assert exec string not found => failed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == false
+        success_msg: "OK: absent string detected"
+        fail_msg: "FAILED: absent string not detected"
+
+    # --- exec: custom rc ---
+    - name: "Grade exec - custom expected rc"
+      ansible.builtin.include_role:
+        name: zenika.training.grade
+      vars:
+        grade_lab_name: "Test - exec custom rc"
+        grade_fail_on_error: false
+        grade_items:
+          - type: exec
+            cmd: "bash -c 'exit 42'"
+            rc: 42
+            msg: "Command exited with expected rc 42"
+
+    - name: "Assert exec custom rc => passed"
+      ansible.builtin.assert:
+        that:
+          - _grade_results | length == 1
+          - _grade_results[0].passed == true
+        success_msg: "OK: custom rc matched"
+        fail_msg: "FAILED: custom rc not matched"
