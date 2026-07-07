@@ -1,3 +1,17 @@
+## 0.5.0 (2026-07-07)
+
+### Feat
+
+- **grade**: ajouter la primitive exec pour valider des commandes shell
+- **grade**: ajouter grade check et pré-vérification centralisée des solutions
+
+### Fix
+
+- **ci**: créer un symlink zenika.training avant ansible-lint pour résoudre les dépendances FQCN entre rôles
+- missing requirement for community.libvirt
+- missing requirement for community.general
+- **grade**: utiliser ~/.hidden/grades/vars comme chemin de découverte des fichiers grade
+
 ## 0.4.0 (2026-06-30)
 
 ### Feat
