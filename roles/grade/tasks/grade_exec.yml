@@ -1,0 +1,21 @@
+---
+- name: Run command - {{ _grade_item.cmd }}
+  ansible.builtin.command: # noqa no-changed-when
+    cmd: "{{ _grade_item.cmd }}"
+  register: _grade_exec
+  failed_when: false
+
+- name: Record result - {{ _grade_item.msg }}
+  ansible.builtin.set_fact:
+    _grade_results: >-
+      {{
+        _grade_results + [{
+          'msg': _grade_item.msg,
+          'passed': (
+            (_grade_exec.rc | int) == (_grade_item.rc | default(0) | int)
+          ) and (
+            _grade_item.string is not defined or
+            _grade_item.string in ((_grade_exec.stdout | default('')) + (_grade_exec.stderr | default('')))
+          )
+        }]
+      }}

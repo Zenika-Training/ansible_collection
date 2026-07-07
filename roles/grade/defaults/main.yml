@@ -18,9 +18,11 @@ grade_fail_on_error: true
 #   - `yaml`: passes if the YAML file exists and the given key equals the expected value (quote-insensitive)
 #   - `absent`: passes if the path does not exist
 #   - `uri`: passes if the HTTP response matches the expected status code and optional string
+#   - `exec`: passes if the shell command exits with the expected return code and optional output string
 #
 #   All paths support `~` (expanded via `expanduser`).
 #   For `uri` items, `url_username`/`url_password` enable Basic auth; `headers` supports Bearer tokens.
+#   For `exec` items, `rc` sets the expected return code (default: 0); `string` checks stdout+stderr contains the value.
 # @end
 # @var grade_items:type: list
 # @var grade_items:example: >
@@ -43,5 +45,15 @@ grade_fail_on_error: true
 #     - type: absent
 #       path: "~/my.collection/roles/apache/files/legacy.conf"
 #       msg: "Obsolete file removed"
+#     - type: exec
+#       cmd: "ansible-lint ~/work/web.yml"
+#       msg: "ansible-lint passe sur web.yml"
+#     - type: exec
+#       cmd: "ansible-playbook --syntax-check ~/work/site.yml"
+#       msg: "Syntaxe du playbook valide"
+#     - type: exec
+#       cmd: "bash -c 'exit 42'"
+#       rc: 42
+#       msg: "Commande terminée avec le code attendu"
 # @end
 grade_items: []
