@@ -5,13 +5,13 @@
   tasks:
     - name: "Find grade vars file"
       ansible.builtin.find:
-        paths: "{{ lookup('env', 'HOME') }}/workspaces/grades/vars/"
+        paths: "{{ lookup('env', 'HOME') }}/.hidden/grades/vars/"
         patterns: "{{ grade_lab }}.yml"
       register: _grade_found
 
     - name: "Fail if no grade file found"
       ansible.builtin.fail:
-        msg: "No grade file found for '{{ grade_lab }}' in ~/workspaces/grades/vars/"
+        msg: "No grade file found for '{{ grade_lab }}' in ~/.hidden/grades/vars/"
       when: _grade_found.files | length == 0
 
     - name: "Grade lab"
