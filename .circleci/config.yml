@@ -26,7 +26,7 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
       - run: ansible-galaxy collection install -r requirements.yml --collections-path "~/.ansible/collections"
-      - run: ansible-lint --parseable $(pwd)
+      - run: ansible-lint --format=pep8 $(pwd)
 
 workflows:
   version: 2
