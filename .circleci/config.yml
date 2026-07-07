@@ -25,6 +25,11 @@ jobs:
       - run: echo ansible-lint > requirements.txt
       - python/install-packages:
           pkg-manager: pip
+      - run:
+          name: Make zenika.training available as an installed collection
+          command: |
+            mkdir -p ~/.ansible/collections/ansible_collections/zenika
+            ln -s $(pwd) ~/.ansible/collections/ansible_collections/zenika/training
       - run: ansible-galaxy collection install -r requirements.yml --collections-path "~/.ansible/collections"
       - run: ansible-lint --format=pep8 $(pwd)
 
