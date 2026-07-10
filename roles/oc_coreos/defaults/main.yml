@@ -115,10 +115,20 @@ oc_coreos_cilium_cni_exclusive: false
 
 # @var oc_coreos_cilium_bpf_masquerade:description: >
 # Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-# Required by Istio Ambient mode (default here).
+# Must be set to false when running Istio in Ambient mode: bpf.masquerade=true causes
+# non-functional pod health checks (Istio uses link-local IPs incompatible with eBPF NAT).
+# Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Masquerade.
 # https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 # @end
-oc_coreos_cilium_bpf_masquerade: true
+oc_coreos_cilium_bpf_masquerade: false
+
+# @var oc_coreos_cilium_bpf_host_legacy_routing:description: >
+# Force Cilium to use legacy (iptables-based) host routing instead of BPF Host Routing.
+# BPF Host Routing is incompatible with Istio (github.com/cilium/cilium/issues/36022).
+# When true, sets bpf.hostLegacyRouting=true in CiliumConfig.
+# Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Host Routing.
+# @end
+oc_coreos_cilium_bpf_host_legacy_routing: true
 
 # @var oc_coreos_cilium_socket_lb_host_namespace_only:description: >
 # Restrict Cilium socket-level load balancing to the host network namespace only.
