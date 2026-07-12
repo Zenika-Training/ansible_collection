@@ -1,0 +1,50 @@
+---
+- name: Read BIND9 TSIG key secret
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    api_version: v1
+    kind: Secret
+    name: "{{ external_dns_tsig_source_secret_name }}"
+    namespace: "{{ external_dns_tsig_source_namespace }}"
+  register: _external_dns_bind_tsig_secret
+  failed_when: _external_dns_bind_tsig_secret.resources | length == 0
+
+- name: Extract raw TSIG key value from BIND9 key file
+  ansible.builtin.set_fact:
+    _external_dns_tsig_value: >-
+      {{ (_external_dns_bind_tsig_secret.resources[0].data['tsig.key'] | b64decode)
+         | regex_search('secret\s+"([^"]+)"', '\1') | first }}
+
+- name: Create ExternalDNS TSIG secret (raw key value)
+  kubernetes.core.k8s:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ external_dns_tsig_secret_name }}"
+        namespace: "{{ external_dns_namespace }}"
+      type: Opaque
+      stringData:
+        secret: "{{ _external_dns_tsig_value }}"
+    state: present
+
+- name: Apply ExternalDNS Deployment
+  kubernetes.core.k8s:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'deployment.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Wait for ExternalDNS Deployment to be ready
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    api_version: apps/v1
+    kind: Deployment
+    name: external-dns
+    namespace: "{{ external_dns_namespace }}"
+  register: _external_dns_deployment
+  until:
+    - _external_dns_deployment.resources | length > 0
+    - (_external_dns_deployment.resources[0].status.readyReplicas | default(0)) >= 1
+  retries: "{{ external_dns_wait_retries }}"
+  delay: "{{ external_dns_wait_delay }}"

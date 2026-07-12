@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: Yannick Sébastia
+  description: Deploy ExternalDNS on OpenShift to auto-create DNS records from Gateway API resources via RFC2136 (BIND9)
+  company: Zenika
+  license: GPL-3.0-only
+  min_ansible_version: "2.14"
+  galaxy_tags: []
+dependencies: []

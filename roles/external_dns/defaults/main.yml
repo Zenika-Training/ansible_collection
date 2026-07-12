@@ -1,0 +1,89 @@
+---
+# @section Cluster access
+
+# @var external_dns_kubeconfig:description: >
+# Path to the kubeconfig file of the target cluster on the Ansible controller.
+# Falls back to ~/.kube/config if the file does not exist.
+# @end
+external_dns_kubeconfig: "/tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeconfig"
+
+# @section Namespace
+
+# @var external_dns_namespace:description: Namespace where ExternalDNS is deployed.
+external_dns_namespace: "external-dns"
+
+# @section ExternalDNS server
+
+# @var external_dns_image:description: Container image for ExternalDNS.
+external_dns_image: "registry.k8s.io/external-dns/external-dns:v0.15.0"
+
+# @var external_dns_service_account:description: ServiceAccount used by the ExternalDNS Deployment.
+external_dns_service_account: "external-dns"
+
+# @var external_dns_log_level:description: Log level for ExternalDNS (debug, info, warning, error).
+external_dns_log_level: "info"
+
+# @section RFC2136 (BIND9) provider
+
+# @var external_dns_rfc2136_host:description: >
+# IP address of the BIND9 DNS server reachable from the cluster.
+# Should match bind_dns_lb_ip (the MetalLB LoadBalancer IP of the DNS service).
+# REQUIRED – set in host_vars alongside bind_dns_lb_ip.
+# @end
+external_dns_rfc2136_host: "{{ bind_dns_lb_ip | default('') }}"
+
+# @var external_dns_rfc2136_port:description: DNS port on the BIND9 server.
+external_dns_rfc2136_port: 53
+
+# @var external_dns_rfc2136_zone:description: >
+# DNS zone managed by ExternalDNS. Must match bind_dns_zone_name.
+# @end
+external_dns_rfc2136_zone: "{{ bind_dns_zone_name | default('') }}"
+
+# @var external_dns_rfc2136_tsig_keyname:description: >
+# Name of the TSIG key used for authenticated DNS updates.
+# Must match bind_dns_tsig_key_name.
+# @end
+external_dns_rfc2136_tsig_keyname: "{{ bind_dns_tsig_key_name | default('mon-update-key') }}"
+
+# @var external_dns_rfc2136_tsig_alg:description: TSIG algorithm (must match the one used in BIND9).
+external_dns_rfc2136_tsig_alg: "hmac-sha256"
+
+# @var external_dns_tsig_source_secret_name:description: >
+# Name of the Kubernetes Secret created by the bind_dns role that contains the TSIG key file.
+# ExternalDNS reads the raw key value from this secret.
+# @end
+external_dns_tsig_source_secret_name: "{{ bind_dns_tsig_secret_name | default('bind-tsig-key') }}"
+
+# @var external_dns_tsig_source_namespace:description: >
+# Namespace where the bind_dns TSIG secret lives.
+# @end
+external_dns_tsig_source_namespace: "{{ bind_dns_namespace | default('infra-dns-zone') }}"
+
+# @var external_dns_tsig_secret_name:description: >
+# Name of the Kubernetes Secret created by this role to store only the raw TSIG key value
+# for ExternalDNS (extracted from the BIND9 key file format).
+# @end
+external_dns_tsig_secret_name: "external-dns-tsig"
+
+# @section Domain filter
+
+# @var external_dns_domain_filter:description: >
+# Restrict ExternalDNS to records within this DNS zone.
+# Must match external_dns_rfc2136_zone.
+# @end
+external_dns_domain_filter: "{{ bind_dns_zone_name | default('') }}"
+
+# @var external_dns_txt_owner_id:description: >
+# Unique identifier for TXT registry ownership records.
+# Prevents ExternalDNS from deleting records it does not own.
+# @end
+external_dns_txt_owner_id: "{{ inventory_hostname }}"
+
+# @section Wait
+
+# @var external_dns_wait_retries:description: Number of retries while waiting for ExternalDNS to be ready.
+external_dns_wait_retries: 20
+
+# @var external_dns_wait_delay:description: Delay in seconds between readiness retries.
+external_dns_wait_delay: 10

@@ -1,0 +1,9 @@
+---
+- name: Resolve kubeconfig path
+  ansible.builtin.include_tasks: auth.yml
+
+- name: Create namespace and RBAC resources
+  ansible.builtin.include_tasks: namespace.yml
+
+- name: Extract TSIG key and deploy ExternalDNS
+  ansible.builtin.include_tasks: deploy.yml
