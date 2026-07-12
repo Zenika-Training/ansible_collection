@@ -1,0 +1,12 @@
+---
+- name: Resolve kubeconfig
+  ansible.builtin.include_tasks: auth.yml
+
+- name: Create namespace and RBAC
+  ansible.builtin.include_tasks: namespace.yml
+
+- name: Generate TSIG key
+  ansible.builtin.include_tasks: tsig.yml
+
+- name: Deploy BIND9 server
+  ansible.builtin.include_tasks: deploy.yml

@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-traffic
+  namespace: {{ bind_dns_namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: dns-bind
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: UDP
+          port: 1053
+        - protocol: TCP
+          port: 1053
+      from: []

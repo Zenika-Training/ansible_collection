@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bind-config
+  namespace: {{ bind_dns_namespace }}
+data:
+  named.conf: |
+    controls { };
+
+    options {
+        directory "/var/cache/bind";
+        listen-on port 1053 { any; };
+        listen-on-v6 { any; };
+        allow-query { any; };
+
+        pid-file "/tmp/named.pid";
+        session-keyfile "/tmp/session.key";
+
+        dnssec-validation auto;
+    };
+
+    include "/etc/bind/secrets/tsig.key";
+
+    zone "{{ bind_dns_zone_name }}" {
+        type master;
+        file "/var/cache/bind/db.{{ bind_dns_zone_name }}";
+        update-policy {
+            grant {{ bind_dns_tsig_key_name }} zonesub ANY;
+        };
+    };

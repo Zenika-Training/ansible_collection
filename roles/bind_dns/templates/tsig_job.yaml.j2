@@ -1,0 +1,38 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: generate-tsig-key
+  namespace: {{ bind_dns_namespace }}
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ bind_dns_job_service_account }}
+      restartPolicy: OnFailure
+      containers:
+        - name: key-generator
+          image: {{ bind_dns_job_image }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              SECRET_NAME="{{ bind_dns_tsig_secret_name }}"
+
+              if oc get secret "$SECRET_NAME" >/dev/null 2>&1; then
+                echo "Secret $SECRET_NAME already exists."
+                exit 0
+              fi
+
+              echo "Generating TSIG key (hmac-sha256)..."
+              RANDOM_KEY=$(head -c 32 /dev/urandom | base64)
+
+              cat <<EOF > /tmp/tsig.key
+              key "{{ bind_dns_tsig_key_name }}" {
+                  algorithm hmac-sha256;
+                  secret "$RANDOM_KEY";
+              };
+              EOF
+
+              echo "Creating Secret $SECRET_NAME..."
+              oc create secret generic "$SECRET_NAME" --from-file=tsig.key=/tmp/tsig.key
+              echo "Secret created."
