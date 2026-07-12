@@ -1,0 +1,38 @@
+---
+- name: Apply NetworkPolicy (allow DNS traffic to bind pod)
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'networkpolicy.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Apply BIND9 ConfigMap (named.conf)
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'configmap.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Apply BIND9 Deployment
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'deployment.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Apply DNS LoadBalancer Service (MetalLB static IP)
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'service.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Wait for BIND9 Deployment to be ready
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    api_version: apps/v1
+    kind: Deployment
+    name: dns-bind
+    namespace: "{{ bind_dns_namespace }}"
+  register: _bind_dns_deployment
+  until:
+    - _bind_dns_deployment.resources | length > 0
+    - (_bind_dns_deployment.resources[0].status.readyReplicas | default(0)) >= 1
+  retries: "{{ bind_dns_wait_retries }}"
+  delay: "{{ bind_dns_wait_delay }}"
