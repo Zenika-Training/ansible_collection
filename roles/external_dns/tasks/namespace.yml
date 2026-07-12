@@ -1,0 +1,24 @@
+---
+- name: Apply ExternalDNS namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'namespace.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Apply ExternalDNS ServiceAccount
+  kubernetes.core.k8s:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'serviceaccount.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Apply ExternalDNS ClusterRole
+  kubernetes.core.k8s:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'clusterrole.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Apply ExternalDNS ClusterRoleBinding
+  kubernetes.core.k8s:
+    kubeconfig: "{{ external_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'clusterrolebinding.yaml.j2') | from_yaml }}"
+    state: present

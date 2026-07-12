@@ -1,0 +1,24 @@
+---
+- name: Check kubeconfig existence
+  ansible.builtin.stat:
+    path: "{{ external_dns_kubeconfig }}"
+  register: _external_dns_kubeconfig_stat
+  when: external_dns_kubeconfig | length > 0
+
+- name: Fall back to current kube context when kubeconfig is absent
+  ansible.builtin.set_fact:
+    external_dns_kubeconfig: ""
+  when: not (_external_dns_kubeconfig_stat.stat.exists | default(false))
+
+- name: Check default kube context existence
+  ansible.builtin.stat:
+    path: "~/.kube/config"
+  register: _external_dns_default_kubeconfig_stat
+  when: external_dns_kubeconfig | length == 0
+
+- name: Assert that a kube context is available
+  ansible.builtin.assert:
+    that: external_dns_kubeconfig | length > 0 or _external_dns_default_kubeconfig_stat.stat.exists | default(false)
+    fail_msg: >-
+      No kubeconfig found at '{{ external_dns_kubeconfig }}' and ~/.kube/config does not exist.
+      Run `oc login <api-url>` first, or set external_dns_kubeconfig to a valid kubeconfig path.
