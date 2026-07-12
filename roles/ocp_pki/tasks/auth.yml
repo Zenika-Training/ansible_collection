@@ -8,4 +8,4 @@
 
 - name: Apply resolved kubeconfig
   ansible.builtin.set_fact:
-    ocp_pki_kubeconfig: "{{ _ocp_kubeconfig_resolved }}"
+    ocp_pki_kubeconfig: "{{ ocp_utils_kubeconfig_resolved }}"

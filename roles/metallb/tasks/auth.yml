@@ -8,4 +8,4 @@
 
 - name: Apply resolved kubeconfig
   ansible.builtin.set_fact:
-    metallb_kubeconfig: "{{ _ocp_kubeconfig_resolved }}"
+    metallb_kubeconfig: "{{ ocp_utils_kubeconfig_resolved }}"
