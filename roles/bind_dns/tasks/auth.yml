@@ -8,4 +8,4 @@
 
 - name: Apply resolved kubeconfig
   ansible.builtin.set_fact:
-    bind_dns_kubeconfig: "{{ _ocp_kubeconfig_resolved }}"
+    bind_dns_kubeconfig: "{{ ocp_utils_kubeconfig_resolved }}"
