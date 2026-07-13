@@ -28,9 +28,10 @@
       data:
         tls.crt: "{{ _ocp_pki_ca_cert.content }}"
         tls.key: "{{ _ocp_pki_ca_key.content }}"
-        # ca.crt = chaîne complète : Intermediate CA cert + Root CA cert (PEM concaténés).
-        # cert-manager propage ce champ dans tous les Certificate émis par ce ClusterIssuer.
-        # Le cert 3 de istiod-tls.tls.crt devient l'Intermediate CA (lien manquant entre
-        # istio-ca et Root CA), et cert 4 = Root CA = trust bundle distribué par Istiod.
-        ca.crt: "{{ ((_ocp_pki_ca_cert.content | b64decode) + (_ocp_pki_root_cert.content | b64decode)) | b64encode }}"
+        # ca.crt = Root CA cert uniquement.
+        # cert-manager propage ce champ dans istio-ca.ca.crt → istio-csr le distribue
+        # comme trust anchor via istio-ca-root-cert (même fingerprint sur tous les clusters).
+        # La chaîne istiod-tls.tls.crt est complète via tls.crt : istiod-tls → istio-ca
+        # → ocp3 Intermediate CA (depuis pki-issuer-ca.tls.crt) → Root CA (trust anchor).
+        ca.crt: "{{ _ocp_pki_root_cert.content }}"
   no_log: true

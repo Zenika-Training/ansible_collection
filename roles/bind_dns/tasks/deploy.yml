@@ -47,7 +47,7 @@
     api_version: operator.openshift.io/v1
     kind: DNS
     name: default
-    merge_type: strategic-merge
+    merge_type: merge
     definition:
       spec:
         servers:
