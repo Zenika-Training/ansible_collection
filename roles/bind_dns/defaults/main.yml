@@ -65,3 +65,11 @@ bind_dns_wait_retries: 30
 
 # @var bind_dns_wait_delay:description: Delay in seconds between readiness retries.
 bind_dns_wait_delay: 10
+
+# @section TLS
+
+# @var bind_dns_validate_certs:description: >
+# Whether to validate TLS certificates when connecting to the Kubernetes API.
+# Set to false when using self-signed certificates (typical in training clusters).
+# @end
+bind_dns_validate_certs: false
