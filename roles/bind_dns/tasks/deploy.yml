@@ -36,3 +36,39 @@
     - (_bind_dns_deployment.resources[0].status.readyReplicas | default(0)) >= 1
   retries: "{{ bind_dns_wait_retries }}"
   delay: "{{ bind_dns_wait_delay }}"
+
+# CoreDNS stub zone — forwards ocp*.lab.example.com queries from pods to BIND9.
+# Without this, pods inside the cluster can't resolve Gateway API hostnames
+# registered by ExternalDNS (e.g. bookinfo.ocp3.lab.example.com).
+- name: Configure CoreDNS stub zone for {{ bind_dns_zone_name }} → BIND9
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    validate_certs: "{{ bind_dns_validate_certs | default(false) }}"
+    api_version: operator.openshift.io/v1
+    kind: DNS
+    name: default
+    merge_type: strategic-merge
+    definition:
+      spec:
+        servers:
+          - name: "{{ bind_dns_zone_name | replace('.', '-') }}"
+            zones:
+              - "{{ bind_dns_zone_name }}"
+            forwardPlugin:
+              policy: Random
+              upstreams:
+                - "{{ bind_dns_lb_ip }}"
+
+- name: Wait for CoreDNS rollout after stub zone update
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    api_version: apps/v1
+    kind: DaemonSet
+    name: dns-default
+    namespace: openshift-dns
+  register: _coredns_ds
+  until:
+    - _coredns_ds.resources | length > 0
+    - (_coredns_ds.resources[0].status.numberReady | default(0)) == (_coredns_ds.resources[0].status.desiredNumberScheduled | default(1))
+  retries: "{{ bind_dns_wait_retries }}"
+  delay: "{{ bind_dns_wait_delay }}"
