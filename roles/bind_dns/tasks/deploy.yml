@@ -66,9 +66,9 @@
     kind: DaemonSet
     name: dns-default
     namespace: openshift-dns
-  register: _coredns_ds
+  register: _bind_dns_coredns
   until:
-    - _coredns_ds.resources | length > 0
-    - (_coredns_ds.resources[0].status.numberReady | default(0)) == (_coredns_ds.resources[0].status.desiredNumberScheduled | default(1))
+    - _bind_dns_coredns.resources | length > 0
+    - (_bind_dns_coredns.resources[0].status.numberReady | default(0)) == (_bind_dns_coredns.resources[0].status.desiredNumberScheduled | default(1))
   retries: "{{ bind_dns_wait_retries }}"
   delay: "{{ bind_dns_wait_delay }}"
