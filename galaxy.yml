@@ -17,7 +17,7 @@ dependencies:
   "ansible.posix": "2.2.1"
   "ansible.utils": "2.9.0"
   "awx.awx": "24.6.1"
-  "community.crypto": "3.2.2"
+  "community.crypto": "3.3.0"
   "community.general": "13.2.0"
   "community.libvirt": "2.2.0"
   "containers.podman": "1.18.0"
