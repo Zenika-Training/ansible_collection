@@ -19,7 +19,7 @@ dependencies:
   "awx.awx": "24.6.1"
   "community.crypto": "3.3.0"
   "community.general": "13.2.0"
-  "community.libvirt": "2.2.0"
+  "community.libvirt": "2.3.0"
   "containers.podman": "1.18.0"
   "kubernetes.core": "6.4.0"
 repository: https://github.com/Zenika-Training/ansible_collection
