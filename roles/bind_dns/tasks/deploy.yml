@@ -40,7 +40,7 @@
 # CoreDNS stub zone — forwards ocp*.lab.example.com queries from pods to BIND9.
 # Without this, pods inside the cluster can't resolve Gateway API hostnames
 # registered by ExternalDNS (e.g. bookinfo.ocp3.lab.example.com).
-- name: Configure CoreDNS stub zone for {{ bind_dns_zone_name }} → BIND9
+- name: "Configure CoreDNS stub zone for {{ bind_dns_zone_name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
     validate_certs: "{{ bind_dns_validate_certs | default(false) }}"
