@@ -1,3 +1,22 @@
+## Unreleased
+
+### Feat
+
+- **ocp_pki**: add intermediate CA deploy task and auth resolution
+- **bind_dns**: configure CoreDNS stub zone for lab DNS resolution
+- **external_dns**: add role to deploy ExternalDNS with RFC2136/BIND9 backend
+- **bind_dns**: add role to deploy a BIND9 DNS server on OpenShift
+- update OCP to 4.22.4
+
+### Fix
+
+- **lint**: use valid variable name
+- **oc_coreos**: disable bpf.masquerade and bpf.hostLegacyRouting for Istio Ambient
+
+### Refactor
+
+- extract shared kubeconfig resolution into ocp_utils role
+
 ## 0.5.0 (2026-07-07)
 
 ### Feat
