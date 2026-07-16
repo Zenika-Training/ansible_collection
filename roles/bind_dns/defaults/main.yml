@@ -1,0 +1,75 @@
+---
+# @section Cluster access
+
+# @var bind_dns_kubeconfig:description: >
+# Path to the kubeconfig file of the target cluster on the Ansible controller.
+# Defaults to the standard path produced by the oc_coreos role after SNO installation.
+# If the file does not exist at that path, the role falls back to ~/.kube/config.
+# Set to an explicit path in host_vars to override both behaviours.
+# @end
+bind_dns_kubeconfig: "/tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeconfig"
+
+# @section Namespace
+
+# @var bind_dns_namespace:description: Namespace where the BIND9 DNS server is deployed.
+bind_dns_namespace: infra-dns-zone
+
+# @section DNS Zone
+
+# @var bind_dns_zone_name:description: >
+# DNS zone name served by the BIND9 server (e.g. "ocp1.lan.example.com").
+# This variable is REQUIRED and must be set in host_vars or group_vars.
+# It is used in named.conf and in the initial zone file SOA/NS records.
+# @end
+bind_dns_zone_name: ""
+
+# @section BIND9 server
+
+# @var bind_dns_image:description: Container image for the BIND9 server.
+bind_dns_image: "ubuntu/bind9:latest"
+
+# @var bind_dns_service_account:description: >
+# ServiceAccount used by the BIND9 Deployment. Granted the anyuid SCC so that
+# the ubuntu/bind9 image can run as root inside OpenShift.
+# @end
+bind_dns_service_account: "bind-dns"
+
+# @section TSIG key
+
+# @var bind_dns_tsig_key_name:description: Name of the TSIG key used for dynamic DNS updates (nsupdate / ExternalDNS).
+bind_dns_tsig_key_name: "mon-update-key"
+
+# @var bind_dns_tsig_secret_name:description: Name of the Kubernetes Secret that stores the TSIG key file.
+bind_dns_tsig_secret_name: "bind-tsig-key"
+
+# @var bind_dns_job_service_account:description: ServiceAccount used by the TSIG key generation Job.
+bind_dns_job_service_account: "bind-initializer"
+
+# @var bind_dns_job_image:description: Container image for the TSIG key generation Job (requires oc CLI).
+bind_dns_job_image: "quay.io/openshift/origin-cli:latest"
+
+# @section MetalLB
+
+# @var bind_dns_lb_ip:description: >
+# Static IP address assigned to the DNS LoadBalancer Service via MetalLB annotation.
+# Must be an address within a configured MetalLB IPAddressPool and must be free.
+# This IP becomes the authoritative NS address declared in the zone SOA.
+# REQUIRED – set in host_vars alongside metallb_ip_ranges.
+# @end
+bind_dns_lb_ip: ""
+
+# @section Wait
+
+# @var bind_dns_wait_retries:description: Number of retries while waiting for the BIND9 pod to be ready.
+bind_dns_wait_retries: 30
+
+# @var bind_dns_wait_delay:description: Delay in seconds between readiness retries.
+bind_dns_wait_delay: 10
+
+# @section TLS
+
+# @var bind_dns_validate_certs:description: >
+# Whether to validate TLS certificates when connecting to the Kubernetes API.
+# Set to false when using self-signed certificates (typical in training clusters).
+# @end
+bind_dns_validate_certs: false

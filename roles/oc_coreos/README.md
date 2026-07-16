@@ -7,6 +7,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [oc_coreos_arch](#oc_coreos_arch)
+  - [oc_coreos_cilium_bpf_host_legacy_routing](#oc_coreos_cilium_bpf_host_legacy_routing)
   - [oc_coreos_cilium_bpf_masquerade](#oc_coreos_cilium_bpf_masquerade)
   - [oc_coreos_cilium_cni_exclusive](#oc_coreos_cilium_cni_exclusive)
   - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
@@ -47,16 +48,31 @@ Target architecture for the RHCOS ISO. Only x86_64 is supported.
 oc_coreos_arch: x86_64
 ```
 
+### oc_coreos_cilium_bpf_host_legacy_routing
+
+Force Cilium to use legacy (iptables-based) host routing instead of BPF Host Routing.
+BPF Host Routing is incompatible with Istio (github.com/cilium/cilium/issues/36022).
+When true, sets bpf.hostLegacyRouting=true in CiliumConfig.
+Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Host Routing.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_bpf_host_legacy_routing: true
+```
+
 ### oc_coreos_cilium_bpf_masquerade
 
 Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-Required by Istio Ambient mode (default here).
+Must be set to false when running Istio in Ambient mode: bpf.masquerade=true causes
+non-functional pod health checks (Istio uses link-local IPs incompatible with eBPF NAT).
+Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Masquerade.
 https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 
 #### Default value
 
 ```YAML
-oc_coreos_cilium_bpf_masquerade: true
+oc_coreos_cilium_bpf_masquerade: false
 ```
 
 ### oc_coreos_cilium_cni_exclusive

@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: Yannick Sébastia
+  description: Deploy a BIND9 DNS server on an OpenShift cluster with TSIG-secured dynamic updates
+  company: Zenika
+  license: GPL-3.0-only
+  min_ansible_version: "2.14"
+  galaxy_tags: []
+dependencies: []

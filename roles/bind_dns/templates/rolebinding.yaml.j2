@@ -1,0 +1,14 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bind-initializer-binding
+  namespace: {{ bind_dns_namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ bind_dns_job_service_account }}
+    namespace: {{ bind_dns_namespace }}
+roleRef:
+  kind: Role
+  name: bind-secret-creator
+  apiGroup: rbac.authorization.k8s.io

@@ -3,7 +3,7 @@
 
 namespace: zenika
 name: training
-version: 0.5.0
+version: 0.6.0
 readme: README.md
 authors:
   - Yannick Sébastia (github.com/ysebastia)
@@ -14,12 +14,12 @@ tags:
   # tags are all lower-case, no spaces, no dashes.
   - linux
 dependencies:
-  "ansible.posix": "2.2.1"
+  "ansible.posix": "2.2.2"
   "ansible.utils": "2.9.0"
   "awx.awx": "24.6.1"
-  "community.crypto": "3.2.2"
-  "community.general": "13.1.0"
-  "community.libvirt": "2.2.0"
+  "community.crypto": "3.3.0"
+  "community.general": "13.2.0"
+  "community.libvirt": "2.3.0"
   "containers.podman": "1.18.0"
   "kubernetes.core": "6.4.0"
 repository: https://github.com/Zenika-Training/ansible_collection

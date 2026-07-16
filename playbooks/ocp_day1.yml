@@ -16,3 +16,13 @@
       ansible.builtin.include_role:
         name: zenika.training.metallb
       when: metallb_ip_ranges is defined and metallb_ip_ranges | length > 0
+
+    - name: Deploy BIND9 DNS server
+      ansible.builtin.include_role:
+        name: zenika.training.bind_dns
+      when: bind_dns_zone_name is defined and bind_dns_zone_name | length > 0 and bind_dns_lb_ip is defined and bind_dns_lb_ip | length > 0
+
+    - name: Deploy ExternalDNS (Gateway API → RFC2136/BIND9)
+      ansible.builtin.include_role:
+        name: zenika.training.external_dns
+      when: bind_dns_zone_name is defined and bind_dns_zone_name | length > 0 and bind_dns_lb_ip is defined and bind_dns_lb_ip | length > 0

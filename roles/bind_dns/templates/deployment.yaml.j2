@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-bind
+  namespace: {{ bind_dns_namespace }}
+  labels:
+    app: dns-bind
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dns-bind
+  template:
+    metadata:
+      labels:
+        app: dns-bind
+    spec:
+      serviceAccountName: {{ bind_dns_service_account }}
+      containers:
+        - name: bind9
+          image: {{ bind_dns_image }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              chmod 777 /var/cache/bind
+
+              ZONE_FILE="/var/cache/bind/db.{{ bind_dns_zone_name }}"
+              if [ ! -f "$ZONE_FILE" ]; then
+                echo "Creating initial zone file for {{ bind_dns_zone_name }}"
+
+                echo "\$ORIGIN {{ bind_dns_zone_name }}." > "$ZONE_FILE"
+                echo "\$TTL 86400" >> "$ZONE_FILE"
+                echo "@ IN SOA ns1.{{ bind_dns_zone_name }}. admin.{{ bind_dns_zone_name }}. ( 2026071201 3H 15M 1W 1D )" >> "$ZONE_FILE"
+                echo "@ IN NS ns1.{{ bind_dns_zone_name }}." >> "$ZONE_FILE"
+                echo "ns1 IN A {{ bind_dns_lb_ip }}" >> "$ZONE_FILE"
+
+                chmod 666 "$ZONE_FILE"
+              fi
+
+              exec /usr/sbin/named -g -c /etc/bind/named.conf -p 1053
+          ports:
+            - containerPort: 1053
+              name: dns-udp
+              protocol: UDP
+            - containerPort: 1053
+              name: dns-tcp
+              protocol: TCP
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/bind/named.conf
+              subPath: named.conf
+            - name: secret-volume
+              mountPath: /etc/bind/secrets
+              readOnly: true
+            - name: zone-storage
+              mountPath: /var/cache/bind
+      volumes:
+        - name: config-volume
+          configMap:
+            name: bind-config
+        - name: secret-volume
+          secret:
+            secretName: {{ bind_dns_tsig_secret_name }}
+        - name: zone-storage
+          emptyDir: {}

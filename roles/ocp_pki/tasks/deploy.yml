@@ -28,4 +28,10 @@
       data:
         tls.crt: "{{ _ocp_pki_ca_cert.content }}"
         tls.key: "{{ _ocp_pki_ca_key.content }}"
+        # ca.crt = Root CA cert uniquement.
+        # cert-manager propage ce champ dans istio-ca.ca.crt → istio-csr le distribue
+        # comme trust anchor via istio-ca-root-cert (même fingerprint sur tous les clusters).
+        # La chaîne istiod-tls.tls.crt est complète via tls.crt : istiod-tls → istio-ca
+        # → ocp3 Intermediate CA (depuis pki-issuer-ca.tls.crt) → Root CA (trust anchor).
+        ca.crt: "{{ _ocp_pki_root_cert.content }}"
   no_log: true

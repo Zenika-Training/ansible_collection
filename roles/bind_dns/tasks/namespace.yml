@@ -1,0 +1,36 @@
+---
+- name: Create infra-dns-zone namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'namespace.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Create bind-initializer ServiceAccount (TSIG key job)
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'serviceaccount_initializer.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Create bind-secret-creator Role
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'role.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Create bind-initializer RoleBinding
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'rolebinding.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Create bind-dns ServiceAccount (BIND9 deployment)
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'serviceaccount_bind.yaml.j2') | from_yaml }}"
+    state: present
+
+- name: Grant anyuid SCC to bind-dns ServiceAccount
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'scc_binding.yaml.j2') | from_yaml }}"
+    state: present

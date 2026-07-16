@@ -1,0 +1,31 @@
+---
+- name: Check if TSIG key secret already exists
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    api_version: v1
+    kind: Secret
+    name: "{{ bind_dns_tsig_secret_name }}"
+    namespace: "{{ bind_dns_namespace }}"
+  register: _bind_dns_tsig_secret
+
+- name: Run TSIG key generation Job
+  kubernetes.core.k8s:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    definition: "{{ lookup('template', 'tsig_job.yaml.j2') | from_yaml }}"
+    state: present
+  when: _bind_dns_tsig_secret.resources | length == 0
+
+- name: Wait for TSIG key generation Job to complete
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ bind_dns_kubeconfig | default(omit, true) }}"
+    api_version: batch/v1
+    kind: Job
+    name: generate-tsig-key
+    namespace: "{{ bind_dns_namespace }}"
+  register: _bind_dns_tsig_job
+  until:
+    - _bind_dns_tsig_job.resources | length > 0
+    - (_bind_dns_tsig_job.resources[0].status.succeeded | default(0)) >= 1
+  retries: "{{ bind_dns_wait_retries }}"
+  delay: "{{ bind_dns_wait_delay }}"
+  when: _bind_dns_tsig_secret.resources | length == 0

@@ -104,7 +104,8 @@
                  'exclusive': oc_coreos_cilium_cni_exclusive
                },
                'bpf': {
-                 'masquerade': oc_coreos_cilium_bpf_masquerade
+                 'masquerade': oc_coreos_cilium_bpf_masquerade,
+                 'hostLegacyRouting': oc_coreos_cilium_bpf_host_legacy_routing
                }
              }
            }, recursive=True)

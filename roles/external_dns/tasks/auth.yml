@@ -4,8 +4,8 @@
     name: zenika.training.ocp_utils
     tasks_from: resolve_kubeconfig.yml
   vars:
-    _kube_path: "{{ ocp_pki_kubeconfig }}"
+    _kube_path: "{{ external_dns_kubeconfig }}"
 
 - name: Apply resolved kubeconfig
   ansible.builtin.set_fact:
-    ocp_pki_kubeconfig: "{{ ocp_utils_kubeconfig_resolved }}"
+    external_dns_kubeconfig: "{{ ocp_utils_kubeconfig_resolved }}"
