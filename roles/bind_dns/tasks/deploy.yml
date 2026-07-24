@@ -37,7 +37,7 @@
   retries: "{{ bind_dns_wait_retries }}"
   delay: "{{ bind_dns_wait_delay }}"
 
-# CoreDNS stub zone — forwards ocp*.lab.example.com queries from pods to BIND9.
+# CoreDNS stub zone - forwards ocp*.lab.example.com queries from pods to BIND9.
 # Without this, pods inside the cluster can't resolve Gateway API hostnames
 # registered by ExternalDNS (e.g. bookinfo.ocp3.lab.example.com).
 - name: "Configure CoreDNS stub zone for {{ bind_dns_zone_name }}"

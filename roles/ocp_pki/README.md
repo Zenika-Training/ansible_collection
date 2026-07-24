@@ -76,7 +76,7 @@ ocp_pki_intermediate_dir: '{{ ocp_pki_root_ca_dir }}/{{ inventory_hostname }}'
 
 pathLen constraint of the intermediate CA certificate.
 0 = end-entity certs only (suitable for courses without istio-csr).
-1 = allows one level of sub-CA — required for istio-csr (istiod cert uses isCA:true).
+1 = allows one level of sub-CA - required for istio-csr (istiod cert uses isCA:true).
 
 #### Default value
 

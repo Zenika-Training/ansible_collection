@@ -42,7 +42,7 @@ if [ "$1" = "check" ]; then
 
     if [ -d "$VARS_DIR" ]; then
         LABS=$(ls "$VARS_DIR"/*.yml 2>/dev/null | xargs -r -I{} basename {} .yml | sort | tr '\n' ' ')
-        _ok "Solutions déployées — labs disponibles : ${LABS:-aucun}"
+        _ok "Solutions déployées - labs disponibles : ${LABS:-aucun}"
     else
         _ko "Solutions non déployées"
     fi
