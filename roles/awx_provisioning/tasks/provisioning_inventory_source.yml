@@ -6,6 +6,7 @@
     source: "scm"
     source_path: "{{ item.source_path }}"
     source_project: "{{ item.source_project }}"
+    source_vars: "{{ item.source_vars | default(omit) }}"
     organization: "{{ awx_item.org }}"
     state: present
     controller_config_file: "{{ awx_provisioning_config }}"
