@@ -50,7 +50,7 @@ OpenShift client version to install (must match the cluster version).
 #### Default value
 
 ```YAML
-oc_command_version: 4.22.4
+oc_command_version: 4.22.15
 ```
 
 ## Dependencies
