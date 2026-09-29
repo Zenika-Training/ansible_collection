@@ -9,7 +9,9 @@
 - name: Generate intermediate CA private key
   community.crypto.openssl_privatekey:
     path: "{{ ocp_pki_intermediate_dir }}/ca.key"
-    size: 4096
+    type: "{{ ocp_pki_intermediate_key_type }}"
+    size: "{{ ocp_pki_intermediate_key_size if ocp_pki_intermediate_key_type == 'RSA' else omit }}"
+    curve: "{{ ocp_pki_intermediate_key_curve if ocp_pki_intermediate_key_type == 'ECC' else omit }}"
     mode: "0600"
   delegate_to: "{{ ocp_pki_controller_host }}"
 
@@ -27,6 +29,7 @@
       - keyCertSign
       - cRLSign
     key_usage_critical: true
+    extended_key_usage: "{{ ocp_pki_intermediate_extended_key_usage if ocp_pki_intermediate_extended_key_usage | length > 0 else omit }}"
   register: _ocp_pki_intermediate_csr
   delegate_to: "{{ ocp_pki_controller_host }}"
   changed_when: false
@@ -39,6 +42,7 @@
     ownca_path: "{{ ocp_pki_root_ca_dir }}/root-ca.crt"
     ownca_privatekey_path: "{{ ocp_pki_root_ca_dir }}/root-ca.key"
     ownca_not_after: "+{{ ocp_pki_intermediate_days }}d"
+    ownca_digest: "{{ ocp_pki_intermediate_digest }}"
   delegate_to: "{{ ocp_pki_controller_host }}"
 
 - name: Read intermediate CA cert
