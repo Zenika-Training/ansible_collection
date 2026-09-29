@@ -34,8 +34,7 @@ Defaults to the standard URL pattern produced by the oc_coreos role.
 #### Default value
 
 ```YAML
-ocp_init_api_url: https://api.{{ inventory_hostname }}.{{ oc_coreos_ocp_domain 
-  }}:6443
+ocp_init_api_url: https://api.{{ inventory_hostname }}.{{ oc_coreos_ocp_domain }}:6443
 ```
 
 ### ocp_init_cluster_admins
@@ -115,8 +114,7 @@ When present, the role runs `oc login` automatically to obtain fresh credentials
 #### Default value
 
 ```YAML
-ocp_init_kubeadmin_password_file: /tmp/openshift/{{ inventory_hostname }}/{{ 
-  inventory_hostname }}/auth/kubeadmin-password
+ocp_init_kubeadmin_password_file: /tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeadmin-password
 ```
 
 ### ocp_init_kubeconfig
@@ -128,8 +126,7 @@ back to ~/.kube/config populated by a prior `oc login`.
 #### Default value
 
 ```YAML
-ocp_init_kubeconfig: /tmp/openshift/{{ inventory_hostname }}/{{ 
-  inventory_hostname }}/auth/kubeconfig
+ocp_init_kubeconfig: /tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeconfig
 ```
 
 ### ocp_init_validate_certs

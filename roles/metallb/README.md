@@ -105,8 +105,7 @@ to override both behaviours.
 #### Default value
 
 ```YAML
-metallb_kubeconfig: /tmp/openshift/{{ inventory_hostname }}/{{ 
-  inventory_hostname }}/auth/kubeconfig
+metallb_kubeconfig: /tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeconfig
 ```
 
 ### metallb_l2advertisement_name

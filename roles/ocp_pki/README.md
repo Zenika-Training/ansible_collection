@@ -10,12 +10,18 @@ PKI bootstrap for OpenShift training clusters - generates a shared root CA and p
   - [ocp_pki_controller_host](#ocp_pki_controller_host)
   - [ocp_pki_intermediate_cn](#ocp_pki_intermediate_cn)
   - [ocp_pki_intermediate_days](#ocp_pki_intermediate_days)
+  - [ocp_pki_intermediate_digest](#ocp_pki_intermediate_digest)
   - [ocp_pki_intermediate_dir](#ocp_pki_intermediate_dir)
+  - [ocp_pki_intermediate_extended_key_usage](#ocp_pki_intermediate_extended_key_usage)
+  - [ocp_pki_intermediate_key_curve](#ocp_pki_intermediate_key_curve)
+  - [ocp_pki_intermediate_key_size](#ocp_pki_intermediate_key_size)
+  - [ocp_pki_intermediate_key_type](#ocp_pki_intermediate_key_type)
   - [ocp_pki_intermediate_pathlen](#ocp_pki_intermediate_pathlen)
   - [ocp_pki_kubeconfig](#ocp_pki_kubeconfig)
   - [ocp_pki_root_ca_cn](#ocp_pki_root_ca_cn)
   - [ocp_pki_root_ca_days](#ocp_pki_root_ca_days)
   - [ocp_pki_root_ca_dir](#ocp_pki_root_ca_dir)
+  - [ocp_pki_root_ca_pathlen](#ocp_pki_root_ca_pathlen)
   - [ocp_pki_validate_certs](#ocp_pki_validate_certs)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -61,6 +67,16 @@ Validity period of the intermediate CA certificate in days.
 ocp_pki_intermediate_days: 1825
 ```
 
+### ocp_pki_intermediate_digest
+
+Digest algorithm used to sign the intermediate CA certificate.
+
+#### Default value
+
+```YAML
+ocp_pki_intermediate_digest: sha256
+```
+
 ### ocp_pki_intermediate_dir
 
 Directory on the Ansible controller where per-cluster intermediate CA files are stored.
@@ -70,6 +86,48 @@ One sub-directory is created per cluster, named after inventory_hostname.
 
 ```YAML
 ocp_pki_intermediate_dir: '{{ ocp_pki_root_ca_dir }}/{{ inventory_hostname }}'
+```
+
+### ocp_pki_intermediate_extended_key_usage
+
+Extended key usages of the intermediate CA certificate (e.g. serverAuth, clientAuth).
+Empty by default; set to add extended_key_usage extensions.
+
+#### Default value
+
+```YAML
+ocp_pki_intermediate_extended_key_usage: []
+```
+
+### ocp_pki_intermediate_key_curve
+
+Elliptic curve, used only when ocp_pki_intermediate_key_type is ECC.
+Use secp256r1 for ECDSA P-256.
+
+#### Default value
+
+```YAML
+ocp_pki_intermediate_key_curve: secp256r1
+```
+
+### ocp_pki_intermediate_key_size
+
+RSA key size in bits, used only when ocp_pki_intermediate_key_type is RSA.
+
+#### Default value
+
+```YAML
+ocp_pki_intermediate_key_size: 4096
+```
+
+### ocp_pki_intermediate_key_type
+
+Private key type of the intermediate CA: RSA or ECC.
+
+#### Default value
+
+```YAML
+ocp_pki_intermediate_key_type: RSA
 ```
 
 ### ocp_pki_intermediate_pathlen
@@ -93,8 +151,7 @@ If the file does not exist at that path, the role falls back to ~/.kube/config.
 #### Default value
 
 ```YAML
-ocp_pki_kubeconfig: /tmp/openshift/{{ inventory_hostname }}/{{ 
-  inventory_hostname }}/auth/kubeconfig
+ocp_pki_kubeconfig: /tmp/openshift/{{ inventory_hostname }}/{{ inventory_hostname }}/auth/kubeconfig
 ```
 
 ### ocp_pki_root_ca_cn
@@ -127,6 +184,19 @@ The root CA is generated once and reused across all clusters.
 
 ```YAML
 ocp_pki_root_ca_dir: '{{ inventory_dir }}/../pki'
+```
+
+### ocp_pki_root_ca_pathlen
+
+pathLen constraint of the root CA certificate.
+Empty (default) = unconstrained, for backward compatibility.
+Set to 1 to allow exactly one CA level below the root (e.g. a single intermediate
+CA that signs end-entity certs directly, with its own pathlen set to 0).
+
+#### Default value
+
+```YAML
+ocp_pki_root_ca_pathlen: ''
 ```
 
 ### ocp_pki_validate_certs
