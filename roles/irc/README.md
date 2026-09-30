@@ -7,8 +7,6 @@ Configuration IRC
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [irc_ansible_action](#irc_ansible_action)
-  - [irc_packages](#irc_packages)
-  - [irc_service](#irc_service)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -27,24 +25,6 @@ Configuration IRC
 
 ```YAML
 irc_ansible_action: converge
-```
-
-### irc_packages
-
-#### Default value
-
-```YAML
-irc_packages:
-  - ngircd
-  - irssi
-```
-
-### irc_service
-
-#### Default value
-
-```YAML
-irc_service: ngircd.service
 ```
 
 ## Dependencies

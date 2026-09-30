@@ -97,8 +97,7 @@ Update this URL to change the deployed Cilium version.
 #### Default value
 
 ```YAML
-oc_coreos_cilium_manifests_url: 
-  https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz
+oc_coreos_cilium_manifests_url: https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz
 ```
 
 ### oc_coreos_cilium_socket_lb_host_namespace_only

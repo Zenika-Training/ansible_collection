@@ -21,8 +21,8 @@
     common_name: "{{ ocp_pki_root_ca_cn }}"
     organization_name: "Zenika Training"
     use_common_name_for_san: false
-    basic_constraints:
-      - "CA:TRUE"
+    basic_constraints: >-
+      {{ ["CA:TRUE"] + (["pathlen:" ~ ocp_pki_root_ca_pathlen] if ocp_pki_root_ca_pathlen != "" else []) }}
     basic_constraints_critical: true
     key_usage:
       - keyCertSign
