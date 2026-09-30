@@ -1,3 +1,23 @@
+## Unreleased
+
+### BREAKING CHANGE
+
+- zenika.training.bind_dns and zenika.training.external_dns
+are removed, and ocp_day1 no longer deploys BIND9/ExternalDNS.
+Last version shipping them: 0.6.0
+(restore with `git checkout 0.6.0 -- roles/bind_dns roles/external_dns`).
+
+### Feat
+
+- **ocp_pki**: make intermediate/root CA algorithm and constraints configurable
+- remove bind_dns and external_dns roles
+- **openshift**: update to 4.22.15
+
+### Fix
+
+- **ocp_day1**: remove dangling bind_dns/external_dns role calls
+- **awx**: add missing attribute for inventory_source
+
 ## 0.6.0 (2026-07-16)
 
 ### Feat
