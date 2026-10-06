@@ -5,7 +5,7 @@
   tasks:
     - name: "Verify solutions are deployed"
       ansible.builtin.stat:
-        path: "{{ lookup('env', 'HOME') }}/.hidden/grades/vars"
+        path: "{{ lookup('env', 'HOME') }}/.hidden/solutions/grades/vars"
       register: _grade_vars_dir
 
     - name: "Fail if solutions not deployed"
@@ -17,13 +17,13 @@
 
     - name: "Find grade vars file"
       ansible.builtin.find:
-        paths: "{{ lookup('env', 'HOME') }}/.hidden/grades/vars/"
+        paths: "{{ lookup('env', 'HOME') }}/.hidden/solutions/grades/vars/"
         patterns: "{{ grade_lab }}.yml"
       register: _grade_found
 
     - name: "Fail if no grade file found"
       ansible.builtin.fail:
-        msg: "No grade file found for '{{ grade_lab }}' in ~/.hidden/grades/vars/"
+        msg: "No grade file found for '{{ grade_lab }}' in ~/.hidden/solutions/grades/vars/"
       when: _grade_found.files | length == 0
 
     - name: "Grade lab"

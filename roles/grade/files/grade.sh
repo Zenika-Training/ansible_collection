@@ -13,7 +13,7 @@ if ! ansible-galaxy collection list 2>/dev/null | grep -q "zenika\.training"; th
 fi
 
 ANSIBLE_CFG="/usr/local/share/zenika/grade/ansible.cfg"
-VARS_DIR="$HOME/.hidden/grades/vars"
+VARS_DIR="$HOME/.hidden/solutions/grades/vars"
 
 _ok()  { echo "[OK]  $1"; }
 _ko()  { echo "[KO]  $1"; GRADE_CHECK_FAILED=1; }
