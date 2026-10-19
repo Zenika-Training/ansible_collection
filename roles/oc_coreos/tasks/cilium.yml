@@ -118,22 +118,10 @@
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/ciliumconfig.yaml"
     mode: "0644"
 
-- name: "Cilium - add dns-default-all-egress NetworkPolicy (DNS/apiserver egress bug workaround)"
-  ansible.builtin.copy:
-    content: |
-      apiVersion: networking.k8s.io/v1
-      kind: NetworkPolicy
-      metadata:
-        name: dns-default-all-egress
-        namespace: openshift-dns
-      spec:
-        egress:
-        - {}
-        podSelector:
-          matchLabels:
-            dns.operator.openshift.io/daemonset-dns: default
-        policyTypes:
-        - Egress
-    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/dns-default-all-egress.yaml"
-    mode: "0644"
-  when: oc_coreos_cilium_dns_default_all_egress_workaround
+# The dns-default-all-egress NetworkPolicy workaround is applied post-install (wait_install.yml),
+# not here: bootkube.service applies every manifests/*.yaml file as one atomic batch during the
+# first-boot bootstrap-in-place phase and retries forever if any of them fails - it never
+# progresses to render the release payload that creates the openshift-dns namespace in the first
+# place. Shipping this NetworkPolicy as a Day-1 manifest therefore deadlocks the bootstrap: the
+# node never shuts down to reboot from disk (reproduced on ocp2, 2026-10-19 - see
+# ~/git/zenika/redhat-cagip/docs/reference/cilium-ocp2-resultats.md CIL6).

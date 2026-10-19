@@ -11,6 +11,8 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_bpf_masquerade](#oc_coreos_cilium_bpf_masquerade)
   - [oc_coreos_cilium_cni_exclusive](#oc_coreos_cilium_cni_exclusive)
   - [oc_coreos_cilium_dns_default_all_egress_workaround](#oc_coreos_cilium_dns_default_all_egress_workaround)
+  - [oc_coreos_cilium_dns_workaround_delay](#oc_coreos_cilium_dns_workaround_delay)
+  - [oc_coreos_cilium_dns_workaround_retries](#oc_coreos_cilium_dns_workaround_retries)
   - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
@@ -91,8 +93,9 @@ oc_coreos_cilium_cni_exclusive: false
 
 ### oc_coreos_cilium_dns_default_all_egress_workaround
 
-Add an extra "dns-default-all-egress" NetworkPolicy (egress: [{}]) for the
-dns-default DaemonSet pods, allowing unrestricted egress.
+Apply an extra "dns-default-all-egress" NetworkPolicy (egress: [{}]) for the
+dns-default DaemonSet pods, allowing unrestricted egress, once the real
+(second-boot) cluster is reachable (see wait_install.yml).
 Works around a Cilium Enterprise bug: the dns-default NetworkPolicy shipped
 by RHOCP 4.22 allows egress to the API server via an ipBlock CIDR
 (0.0.0.0/0), but Cilium does not match CIDR-based rules against the
@@ -102,6 +105,12 @@ never reach the API server, which cascades into dns/authentication/console/
 kube-controller-manager staying Degraded after install.
 Reproduced on ocp2 (Cilium 1.18.8-cee.2) on 2026-10-16: see
 ~/git/zenika/redhat-cagip/docs/reference/cilium-ocp2-resultats.md (CIL1).
+Must NOT be shipped as a Day-1 manifest (manifests/*.yaml): bootkube.service
+applies that whole directory as one atomic batch during the first-boot
+bootstrap-in-place phase and retries forever on any failure, so it never
+gets to render the release payload that creates the openshift-dns namespace
+- the node then never shuts down to reboot from disk (reproduced 2026-10-19,
+CIL6 in the same results file).
 Fixed natively by Isovalent starting with INK v1.19.6-cee.1/v1.18.12-cee.1/
 v1.17.18-cee.1 (the policy ships in the manifests archive itself): set this
 to false once oc_coreos_cilium_manifests_url points to one of those
@@ -111,6 +120,30 @@ versions or later, to avoid a redundant duplicate NetworkPolicy.
 
 ```YAML
 oc_coreos_cilium_dns_default_all_egress_workaround: true
+```
+
+### oc_coreos_cilium_dns_workaround_delay
+
+Seconds between each openshift-dns namespace poll.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_dns_workaround_delay: 10
+```
+
+### oc_coreos_cilium_dns_workaround_retries
+
+Number of times to poll for the openshift-dns namespace to exist before
+applying oc_coreos_cilium_dns_default_all_egress_workaround. Each poll waits
+oc_coreos_cilium_dns_workaround_delay seconds. The namespace is created
+early by the DNS operator, well before CoreDNS itself needs to be healthy,
+so this is expected to succeed in a few minutes.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_dns_workaround_retries: 60
 ```
 
 ### oc_coreos_cilium_manifests_url
