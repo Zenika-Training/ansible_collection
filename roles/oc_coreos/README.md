@@ -10,6 +10,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_bpf_host_legacy_routing](#oc_coreos_cilium_bpf_host_legacy_routing)
   - [oc_coreos_cilium_bpf_masquerade](#oc_coreos_cilium_bpf_masquerade)
   - [oc_coreos_cilium_cni_exclusive](#oc_coreos_cilium_cni_exclusive)
+  - [oc_coreos_cilium_dns_default_all_egress_workaround](#oc_coreos_cilium_dns_default_all_egress_workaround)
   - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
@@ -86,6 +87,30 @@ https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 
 ```YAML
 oc_coreos_cilium_cni_exclusive: false
+```
+
+### oc_coreos_cilium_dns_default_all_egress_workaround
+
+Add an extra "dns-default-all-egress" NetworkPolicy (egress: [{}]) for the
+dns-default DaemonSet pods, allowing unrestricted egress.
+Works around a Cilium Enterprise bug: the dns-default NetworkPolicy shipped
+by RHOCP 4.22 allows egress to the API server via an ipBlock CIDR
+(0.0.0.0/0), but Cilium does not match CIDR-based rules against the
+reserved:host identity used for traffic to a kube-proxy-replacement-
+translated ClusterIP that resolves to the node's own IP. CoreDNS can then
+never reach the API server, which cascades into dns/authentication/console/
+kube-controller-manager staying Degraded after install.
+Reproduced on ocp2 (Cilium 1.18.8-cee.2) on 2026-10-16: see
+~/git/zenika/redhat-cagip/docs/reference/cilium-ocp2-resultats.md (CIL1).
+Fixed natively by Isovalent starting with INK v1.19.6-cee.1/v1.18.12-cee.1/
+v1.17.18-cee.1 (the policy ships in the manifests archive itself): set this
+to false once oc_coreos_cilium_manifests_url points to one of those
+versions or later, to avoid a redundant duplicate NetworkPolicy.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_dns_default_all_egress_workaround: true
 ```
 
 ### oc_coreos_cilium_manifests_url

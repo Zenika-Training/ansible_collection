@@ -117,3 +117,23 @@
          | to_nice_yaml(indent=2) }}
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/ciliumconfig.yaml"
     mode: "0644"
+
+- name: "Cilium - add dns-default-all-egress NetworkPolicy (DNS/apiserver egress bug workaround)"
+  ansible.builtin.copy:
+    content: |
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: dns-default-all-egress
+        namespace: openshift-dns
+      spec:
+        egress:
+        - {}
+        podSelector:
+          matchLabels:
+            dns.operator.openshift.io/daemonset-dns: default
+        policyTypes:
+        - Egress
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/dns-default-all-egress.yaml"
+    mode: "0644"
+  when: oc_coreos_cilium_dns_default_all_egress_workaround
