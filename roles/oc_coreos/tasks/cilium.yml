@@ -123,5 +123,4 @@
 # first-boot bootstrap-in-place phase and retries forever if any of them fails - it never
 # progresses to render the release payload that creates the openshift-dns namespace in the first
 # place. Shipping this NetworkPolicy as a Day-1 manifest therefore deadlocks the bootstrap: the
-# node never shuts down to reboot from disk (reproduced on ocp2, 2026-10-19 - see
-# ~/git/zenika/redhat-cagip/docs/reference/cilium-ocp2-resultats.md CIL6).
+# node never shuts down to reboot from disk (reproduced on a lab cluster, 2026-10-19).

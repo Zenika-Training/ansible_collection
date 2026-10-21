@@ -115,10 +115,14 @@ oc_coreos_cilium_cni_exclusive: false
 
 # @var oc_coreos_cilium_bpf_masquerade:description: >
 # Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-# Must be set to false when running Istio in Ambient mode: bpf.masquerade=true causes
-# non-functional pod health checks (Istio uses link-local IPs incompatible with eBPF NAT).
-# Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Masquerade.
-# https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+# Must be set to false when running Istio in Ambient mode alone: bpf.masquerade=true
+# causes non-functional pod health checks (Istio uses link-local IPs incompatible with
+# eBPF NAT). Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF
+# Masquerade. https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+# Different scenario, different value: when also running Cilium Egress Gateway alongside
+# Istio ambient, Isovalent instead recommends bpf.masquerade=true (confirmed compatible,
+# scope limited to mTLS east-west on enrolled pods and SNAT'ed north-south via the Egress
+# Gateway). Neither value has been validated by a cluster test in this collection yet.
 # @end
 oc_coreos_cilium_bpf_masquerade: false
 
@@ -156,14 +160,12 @@ oc_coreos_cilium_socket_lb_host_namespace_only: true
 # translated ClusterIP that resolves to the node's own IP. CoreDNS can then
 # never reach the API server, which cascades into dns/authentication/console/
 # kube-controller-manager staying Degraded after install.
-# Reproduced on ocp2 (Cilium 1.18.8-cee.2) on 2026-10-16: see
-# ~/git/zenika/redhat-cagip/docs/reference/cilium-ocp2-resultats.md (CIL1).
+# Reproduced on a Cilium Enterprise 1.18.8-cee.2 lab cluster on 2026-10-16.
 # Must NOT be shipped as a Day-1 manifest (manifests/*.yaml): bootkube.service
 # applies that whole directory as one atomic batch during the first-boot
 # bootstrap-in-place phase and retries forever on any failure, so it never
 # gets to render the release payload that creates the openshift-dns namespace
-# - the node then never shuts down to reboot from disk (reproduced 2026-10-19,
-# CIL6 in the same results file).
+# - the node then never shuts down to reboot from disk (reproduced 2026-10-19).
 # Fixed natively by Isovalent starting with INK v1.19.6-cee.1/v1.18.12-cee.1/
 # v1.17.18-cee.1 (the policy ships in the manifests archive itself): set this
 # to false once oc_coreos_cilium_manifests_url points to one of those

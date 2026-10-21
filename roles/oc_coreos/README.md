@@ -103,14 +103,12 @@ reserved:host identity used for traffic to a kube-proxy-replacement-
 translated ClusterIP that resolves to the node's own IP. CoreDNS can then
 never reach the API server, which cascades into dns/authentication/console/
 kube-controller-manager staying Degraded after install.
-Reproduced on ocp2 (Cilium 1.18.8-cee.2) on 2026-10-16: see
-~/git/zenika/redhat-cagip/docs/reference/cilium-ocp2-resultats.md (CIL1).
+Reproduced on a Cilium Enterprise 1.18.8-cee.2 lab cluster on 2026-10-16.
 Must NOT be shipped as a Day-1 manifest (manifests/*.yaml): bootkube.service
 applies that whole directory as one atomic batch during the first-boot
 bootstrap-in-place phase and retries forever on any failure, so it never
 gets to render the release payload that creates the openshift-dns namespace
-- the node then never shuts down to reboot from disk (reproduced 2026-10-19,
-CIL6 in the same results file).
+- the node then never shuts down to reboot from disk (reproduced 2026-10-19).
 Fixed natively by Isovalent starting with INK v1.19.6-cee.1/v1.18.12-cee.1/
 v1.17.18-cee.1 (the policy ships in the manifests archive itself): set this
 to false once oc_coreos_cilium_manifests_url points to one of those
