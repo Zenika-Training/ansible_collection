@@ -134,14 +134,22 @@ oc_coreos_cilium_dns_workaround_delay: 10
 
 Number of times to poll for the openshift-dns namespace to exist before
 applying oc_coreos_cilium_dns_default_all_egress_workaround. Each poll waits
-oc_coreos_cilium_dns_workaround_delay seconds. The namespace is created
-early by the DNS operator, well before CoreDNS itself needs to be healthy,
-so this is expected to succeed in a few minutes.
+oc_coreos_cilium_dns_workaround_delay seconds.
+This namespace is a prerequisite for "Wait for SNO installation to
+complete" (CIL1: without the NetworkPolicy applied here, dns/
+authentication/console/kube-controller-manager stay Degraded forever and
+ClusterVersion never reaches Available, so that later wait cannot succeed
+either). Its budget must therefore be at least as generous as a single
+install-complete attempt (oc_coreos_install_retries' internal 40 min
+timeout), not shorter - a tight budget here defeats the patience given to
+the step it gates. On Cilium/CLiFE this namespace was repeatedly observed
+to take well over 10 minutes to appear (heavier install lifecycle than
+OVN-Kubernetes: extra CRDs, dedicated operator, OLM subscription).
 
 #### Default value
 
 ```YAML
-oc_coreos_cilium_dns_workaround_retries: 60
+oc_coreos_cilium_dns_workaround_retries: 240
 ```
 
 ### oc_coreos_cilium_manifests_url
