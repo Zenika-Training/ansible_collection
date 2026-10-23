@@ -1,0 +1,16 @@
+---
+- name: Validate control plane pool is defined
+  ansible.builtin.assert:
+    that: haproxy_lb_control_plane_hosts | length > 0
+    fail_msg: "haproxy_lb_control_plane_hosts must list at least one control plane node"
+
+- name: Validate control plane pool entries have name and ip
+  ansible.builtin.assert:
+    that:
+      - item.name is defined
+      - item.ip is defined
+      - item.ip | length > 0
+    fail_msg: "Each haproxy_lb_control_plane_hosts entry must define name and ip: {{ item }}"
+  loop: "{{ haproxy_lb_control_plane_hosts }}"
+  loop_control:
+    label: "{{ item.name | default('?') }}"

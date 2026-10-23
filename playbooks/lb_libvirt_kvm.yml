@@ -1,0 +1,21 @@
+---
+- name: Deploy external load balancer VM for a compact (3-master) OpenShift cluster
+  hosts: "{{ ansible_limit | default('loadbalancer') }}"
+  gather_facts: false
+  tasks:
+    - name: Create load balancer VM
+      ansible.builtin.include_role:
+        name: zenika.training.debian_lb_vm
+
+    - name: Wait for SSH on the load balancer VM
+      ansible.builtin.wait_for_connection:
+        delay: 15
+        timeout: 300
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+    - name: Configure haproxy
+      ansible.builtin.include_role:
+        name: zenika.training.haproxy_lb
+      when: haproxy_lb_control_plane_hosts is defined and haproxy_lb_control_plane_hosts | length > 0

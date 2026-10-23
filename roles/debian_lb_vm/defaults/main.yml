@@ -1,0 +1,113 @@
+---
+# @section VM identity
+
+# @var debian_lb_vm_name:description: Name of the VM. Defaults to the Ansible inventory hostname.
+debian_lb_vm_name: "{{ inventory_hostname }}"
+
+# @var debian_lb_vm_target_host:description: >
+# Ansible inventory hostname of the KVM host. Tasks that must run on the KVM host
+# are delegated to this host. Override in group_vars with the actual KVM server hostname.
+# @end
+debian_lb_vm_target_host: localhost
+
+# @var debian_lb_vm_work_dir:description: >
+# Directory on debian_lb_vm_target_host where the generated preseed file is written
+# before being injected into the installer initrd.
+# @end
+debian_lb_vm_work_dir: "/root/debian_lb_vm/{{ debian_lb_vm_name }}"
+
+# @section Compute resources
+
+# @var debian_lb_vm_memory:description: RAM allocated to the VM, in MiB.
+debian_lb_vm_memory: 2048
+
+# @var debian_lb_vm_vcpus:description: Number of virtual CPUs.
+debian_lb_vm_vcpus: 2
+
+# @var debian_lb_vm_cpu_model:description: CPU model passed to libvirt. host-model exposes all host CPU features.
+debian_lb_vm_cpu_model: host-model
+
+# @section LVM storage
+
+# @var debian_lb_vm_vg_pool:description: LVM volume group used to create the VM disk.
+debian_lb_vm_vg_pool: vg_guest
+
+# @var debian_lb_vm_disk_size:description: Size of the VM disk in LVM lvol format (e.g. 20g).
+debian_lb_vm_disk_size: 20g
+
+# @section Network
+
+# @var debian_lb_vm_bridge:description: Linux bridge interface on the KVM host used for the VM network.
+debian_lb_vm_bridge: br0
+
+# @var debian_lb_vm_mac:description: >
+# MAC address of the VM NIC. Required - must be set in host_vars or inventory.
+# @end
+debian_lb_vm_mac: ""
+
+# @var debian_lb_vm_ip:description: >
+# Static IP address of the VM, in the same VLAN as the OpenShift lab VMs.
+# Required - injected into the preseed (netcfg) and used for the post-install summary.
+# @end
+debian_lb_vm_ip: ""
+
+# @var debian_lb_vm_netmask:description: Netmask applied to debian_lb_vm_ip during installation.
+debian_lb_vm_netmask: "255.255.255.0"
+
+# @var debian_lb_vm_gateway:description: Default gateway for the VM. Required.
+debian_lb_vm_gateway: ""
+
+# @var debian_lb_vm_dns:description: DNS resolver(s) used by the VM. Required.
+debian_lb_vm_dns: ""
+
+# @var debian_lb_vm_domain:description: DNS domain appended to debian_lb_vm_name to form the VM FQDN.
+debian_lb_vm_domain: "example.com"
+
+# @var debian_lb_vm_ntp_server:description: NTP server used during installation (clock-setup).
+debian_lb_vm_ntp_server: "0.debian.pool.ntp.org"
+
+# @section Installation source
+
+# @var debian_lb_vm_install_tree:description: >
+# URL of the Debian network installer tree (used as `location` by virt-install).
+# Must match debian_lb_vm_osinfo's release (e.g. a bookworm tree for debian12).
+# @end
+debian_lb_vm_install_tree: "http://ftp.fr.debian.org/debian/dists/stable/main/installer-amd64/"
+
+# @var debian_lb_vm_osinfo:description: OS variant identifier passed to virt-install (--os-variant).
+debian_lb_vm_osinfo: debian12
+
+# @section Accounts (required)
+
+# @var debian_lb_vm_root_password:description: >
+# Clear-text root password injected into the preseed. Required - set in an
+# encrypted host_vars/group_vars file (ansible-vault), never committed in clear.
+# @end
+debian_lb_vm_root_password: ""
+
+# @var debian_lb_vm_user_account:description: Login of the non-root sudo user created during installation.
+debian_lb_vm_user_account: linux
+
+# @var debian_lb_vm_authorized_keys:description: >
+# List of public SSH keys injected into debian_lb_vm_user_account's authorized_keys.
+# @end
+debian_lb_vm_authorized_keys: []
+
+# @section First-boot wait
+
+# @var debian_lb_vm_first_boot_retries:description: >
+# Number of status polls before giving up on the first-boot installation.
+# Each poll waits debian_lb_vm_first_boot_delay seconds.
+# @end
+debian_lb_vm_first_boot_retries: 60
+
+# @var debian_lb_vm_first_boot_delay:description: Seconds between each VM status poll during first-boot wait.
+debian_lb_vm_first_boot_delay: 15
+
+# @section Console
+
+# @var debian_lb_vm_graphics_type:description: Graphical display protocol for the VM console (vnc or spice).
+debian_lb_vm_graphics_type: vnc
+
+# @var debian_lb_vm_graphics_listen:description: Address on which the graphics server listens. 127.0.0.1 restricts to localhost.
+debian_lb_vm_graphics_listen: 127.0.0.1

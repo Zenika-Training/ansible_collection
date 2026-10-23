@@ -1,0 +1,26 @@
+---
+- name: Pre-checks
+  ansible.builtin.include_tasks: pre_tasks.yml
+
+- name: Install haproxy
+  become: true
+  ansible.builtin.package:
+    name: haproxy
+    state: present
+
+- name: Configure haproxy
+  become: true
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: "0644"
+    validate: "haproxy -c -f %s"
+  notify:
+    - haproxy_lb
+
+- name: Ensure haproxy is enabled and started
+  become: true
+  ansible.builtin.service:
+    name: haproxy
+    enabled: true
+    state: started
