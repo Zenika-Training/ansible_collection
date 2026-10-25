@@ -3,6 +3,13 @@
   hosts: "{{ ansible_limit | default('loadbalancer') }}"
   gather_facts: false
   tasks:
+    - name: Stage Debian netinst ISO on the KVM host
+      ansible.builtin.include_role:
+        name: zenika.training.kvm_image
+      vars:
+        kvm_image_target_host: "{{ debian_lb_vm_target_host }}"
+        kvm_image_dest: "{{ debian_lb_vm_iso_src }}"
+
     - name: Create load balancer VM
       ansible.builtin.include_role:
         name: zenika.training.debian_lb_vm

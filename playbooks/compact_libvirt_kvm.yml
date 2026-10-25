@@ -1,0 +1,43 @@
+---
+- name: Generate shared install-config / ignitions / ISOs (compact 3-master cluster)
+  hosts: "{{ ansible_limit | default('compact') }}"
+  run_once: true
+  tasks:
+    - name: Generate cluster artifacts
+      ansible.builtin.include_role:
+        name: zenika.training.oc_coreos
+
+# serial: 1 - copying the same shared ISO (rhcos-master.iso for all 3 masters)
+# to the KVM host in parallel races Ansible's checksum verification and fails
+# randomly. Also avoids starting 4 concurrent RHCOS installs at once.
+- name: Provision bootstrap and control-plane VMs
+  hosts: "{{ ansible_limit | default('compact') }}"
+  serial: 1
+  tasks:
+    - name: Start VM
+      ansible.builtin.include_role:
+        name: zenika.training.libvirt_kvm
+
+- name: Wait for bootstrap to complete
+  hosts: "{{ ansible_limit | default('compact') }}"
+  run_once: true
+  tasks:
+    - name: Wait for bootstrap-complete
+      ansible.builtin.include_role:
+        name: zenika.training.oc_coreos
+        tasks_from: wait_bootstrap.yml
+
+    - name: Pause for manual bootstrap VM removal
+      ansible.builtin.pause:
+        prompt: >-
+          Bootstrap complete. Destroy the bootstrap VM yourself (virt-manager/virsh on the KVM
+          host), then press Enter to continue and wait for the cluster to finish installing
+
+- name: Wait for compact cluster installation to complete
+  hosts: "{{ ansible_limit | default('compact') }}"
+  run_once: true
+  tasks:
+    - name: Wait for install-complete
+      ansible.builtin.include_role:
+        name: zenika.training.oc_coreos
+        tasks_from: wait_install.yml
