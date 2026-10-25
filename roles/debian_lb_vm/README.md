@@ -17,10 +17,14 @@ Create a KVM libvirt Debian VM from a network install tree and a preseed file
   - [debian_lb_vm_gateway](#debian_lb_vm_gateway)
   - [debian_lb_vm_graphics_listen](#debian_lb_vm_graphics_listen)
   - [debian_lb_vm_graphics_type](#debian_lb_vm_graphics_type)
-  - [debian_lb_vm_install_tree](#debian_lb_vm_install_tree)
   - [debian_lb_vm_ip](#debian_lb_vm_ip)
+  - [debian_lb_vm_iso_src](#debian_lb_vm_iso_src)
   - [debian_lb_vm_mac](#debian_lb_vm_mac)
   - [debian_lb_vm_memory](#debian_lb_vm_memory)
+  - [debian_lb_vm_mirror_directory](#debian_lb_vm_mirror_directory)
+  - [debian_lb_vm_mirror_hostname](#debian_lb_vm_mirror_hostname)
+  - [debian_lb_vm_mirror_protocol](#debian_lb_vm_mirror_protocol)
+  - [debian_lb_vm_mirror_suite](#debian_lb_vm_mirror_suite)
   - [debian_lb_vm_name](#debian_lb_vm_name)
   - [debian_lb_vm_netmask](#debian_lb_vm_netmask)
   - [debian_lb_vm_ntp_server](#debian_lb_vm_ntp_server)
@@ -154,17 +158,6 @@ Graphical display protocol for the VM console (vnc or spice).
 debian_lb_vm_graphics_type: vnc
 ```
 
-### debian_lb_vm_install_tree
-
-URL of the Debian network installer tree (used as `location` by virt-install).
-Must match debian_lb_vm_osinfo's release (e.g. a bookworm tree for debian12).
-
-#### Default value
-
-```YAML
-debian_lb_vm_install_tree: http://ftp.fr.debian.org/debian/dists/stable/main/installer-amd64/
-```
-
 ### debian_lb_vm_ip
 
 Static IP address of the VM, in the same VLAN as the OpenShift lab VMs.
@@ -174,6 +167,19 @@ Required - injected into the preseed (netcfg) and used for the post-install summ
 
 ```YAML
 debian_lb_vm_ip: ''
+```
+
+### debian_lb_vm_iso_src
+
+Path to the Debian netinst ISO on debian_lb_vm_target_host. Required - must
+already exist there (e.g. staged with the kvm_image role); this role never
+downloads it itself. Used as virt-install's `location` - read locally, no
+network access needed from the KVM host at VM-creation time.
+
+#### Default value
+
+```YAML
+debian_lb_vm_iso_src: ''
 ```
 
 ### debian_lb_vm_mac
@@ -194,6 +200,54 @@ RAM allocated to the VM, in MiB.
 
 ```YAML
 debian_lb_vm_memory: 2048
+```
+
+### debian_lb_vm_mirror_directory
+
+Base directory of the Debian archive on the mirror.
+
+#### Default value
+
+```YAML
+debian_lb_vm_mirror_directory: /debian
+```
+
+### debian_lb_vm_mirror_hostname
+
+Debian package mirror hostname. deb.debian.org is Debian's official CDN,
+geo-routed and reliable - prefer it over a single country mirror.
+
+#### Default value
+
+```YAML
+debian_lb_vm_mirror_hostname: deb.debian.org
+```
+
+### debian_lb_vm_mirror_protocol
+
+Protocol used by the installer to fetch packages (http or https). https via
+deb.debian.org is the default: some lab networks only allow outbound 443
+(e.g. for container registries) and block plain HTTP mirrors on port 80.
+
+#### Default value
+
+```YAML
+debian_lb_vm_mirror_protocol: https
+```
+
+### debian_lb_vm_mirror_suite
+
+Suite requested from the mirror, for both mirror/suite (final apt sources)
+and mirror/udeb/suite (live udeb fetch during installation). "stable" -
+not the ISO's own baked-in codename (e.g. "trixie"): some netinst builds
+close to a release transition fail choose-mirror's live check otherwise,
+because udeb/suite still defaults to that codename while the mirror's
+Release file already reports Suite: stable.
+
+#### Default value
+
+```YAML
+debian_lb_vm_mirror_suite: stable
 ```
 
 ### debian_lb_vm_name

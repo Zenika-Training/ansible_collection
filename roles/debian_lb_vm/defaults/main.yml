@@ -66,13 +66,41 @@ debian_lb_vm_domain: "example.com"
 # @var debian_lb_vm_ntp_server:description: NTP server used during installation (clock-setup).
 debian_lb_vm_ntp_server: "0.debian.pool.ntp.org"
 
+# @var debian_lb_vm_mirror_protocol:description: >
+# Protocol used by the installer to fetch packages (http or https). https via
+# deb.debian.org is the default: some lab networks only allow outbound 443
+# (e.g. for container registries) and block plain HTTP mirrors on port 80.
+# @end
+debian_lb_vm_mirror_protocol: https
+
+# @var debian_lb_vm_mirror_hostname:description: >
+# Debian package mirror hostname. deb.debian.org is Debian's official CDN,
+# geo-routed and reliable - prefer it over a single country mirror.
+# @end
+debian_lb_vm_mirror_hostname: deb.debian.org
+
+# @var debian_lb_vm_mirror_directory:description: Base directory of the Debian archive on the mirror.
+debian_lb_vm_mirror_directory: /debian
+
+# @var debian_lb_vm_mirror_suite:description: >
+# Suite requested from the mirror, for both mirror/suite (final apt sources)
+# and mirror/udeb/suite (live udeb fetch during installation). "stable" -
+# not the ISO's own baked-in codename (e.g. "trixie"): some netinst builds
+# close to a release transition fail choose-mirror's live check otherwise,
+# because udeb/suite still defaults to that codename while the mirror's
+# Release file already reports Suite: stable.
+# @end
+debian_lb_vm_mirror_suite: stable
+
 # @section Installation source
 
-# @var debian_lb_vm_install_tree:description: >
-# URL of the Debian network installer tree (used as `location` by virt-install).
-# Must match debian_lb_vm_osinfo's release (e.g. a bookworm tree for debian12).
+# @var debian_lb_vm_iso_src:description: >
+# Path to the Debian netinst ISO on debian_lb_vm_target_host. Required - must
+# already exist there (e.g. staged with the kvm_image role); this role never
+# downloads it itself. Used as virt-install's `location` - read locally, no
+# network access needed from the KVM host at VM-creation time.
 # @end
-debian_lb_vm_install_tree: "http://ftp.fr.debian.org/debian/dists/stable/main/installer-amd64/"
+debian_lb_vm_iso_src: ""
 
 # @var debian_lb_vm_osinfo:description: OS variant identifier passed to virt-install (--os-variant).
 debian_lb_vm_osinfo: debian12

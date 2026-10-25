@@ -14,9 +14,12 @@ d-i netcfg/get_hostname string {{ debian_lb_vm_name }}
 d-i netcfg/get_domain string {{ debian_lb_vm_domain }}
 d-i netcfg/hostname string {{ debian_lb_vm_name }}
 d-i mirror/country string manual
-d-i mirror/http/hostname string ftp.fr.debian.org
-d-i mirror/http/directory string /debian
-d-i mirror/http/proxy string
+d-i mirror/protocol string {{ debian_lb_vm_mirror_protocol }}
+d-i mirror/{{ debian_lb_vm_mirror_protocol }}/hostname string {{ debian_lb_vm_mirror_hostname }}
+d-i mirror/{{ debian_lb_vm_mirror_protocol }}/directory string {{ debian_lb_vm_mirror_directory }}
+d-i mirror/{{ debian_lb_vm_mirror_protocol }}/proxy string
+d-i mirror/suite string {{ debian_lb_vm_mirror_suite }}
+d-i mirror/udeb/suite string {{ debian_lb_vm_mirror_suite }}
 d-i passwd/root-login boolean true
 d-i passwd/root-password-crypted password {{ _debian_lb_vm_pass_hash }}
 d-i passwd/user-fullname string {{ debian_lb_vm_user_account }}

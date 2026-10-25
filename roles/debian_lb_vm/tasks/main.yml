@@ -27,6 +27,10 @@
     state: present
   delegate_to: "{{ debian_lb_vm_target_host }}"
 
+# debian_lb_vm_iso_src must already exist on debian_lb_vm_target_host (see
+# pre_tasks.yml) - e.g. staged there by the kvm_image role. `location` points
+# to that local file: virt-install only reads it (no network access needed
+# at this task's execution time), and extracts kernel/initrd from it itself.
 - name: Create KVM virtual machine
   become: true
   community.libvirt.virt_install:
@@ -51,7 +55,7 @@
           type: "virtio"
         mac:
           address: "{{ debian_lb_vm_mac }}"
-    location: "{{ debian_lb_vm_install_tree }}"
+    location: "{{ debian_lb_vm_iso_src }}"
     extra_args: "auto=true priority=critical"
     initrd_inject: "{{ debian_lb_vm_work_dir }}/preseed.cfg"
   delegate_to: "{{ debian_lb_vm_target_host }}"
