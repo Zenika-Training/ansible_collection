@@ -48,6 +48,8 @@
   delegate_to: "{{ libvirt_kvm_target_host }}"
   register: _libvirt_kvm_install
 
+# Both SNO (bootstrap-in-place) and compact (`iso customize --dest-device`)
+# install to disk and power off - an explicit restart is needed either way.
 - name: Wait for first-boot installation to complete (VM shuts off) # noqa: no-handler
   become: true
   community.libvirt.virt:
