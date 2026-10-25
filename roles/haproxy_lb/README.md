@@ -25,7 +25,6 @@ Configure HAProxy as the external API/MCS/ingress load balancer for a compact (3
 ## Requirements
 
 - Minimum Ansible version: `2.14`
-- Target host: Debian (or any OS where the `haproxy` package is available via `ansible.builtin.package`)
 
 ## Default Variables
 
@@ -88,15 +87,6 @@ and mastersSchedulable is true on a compact (3-master, 0-worker) cluster.
 
 ```YAML
 haproxy_lb_control_plane_hosts: []
-```
-
-#### Example
-
-```YAML
-haproxy_lb_control_plane_hosts:
-  - { name: master0, ip: 192.168.100.11 }
-  - { name: master1, ip: 192.168.100.12 }
-  - { name: master2, ip: 192.168.100.13 }
 ```
 
 ### haproxy_lb_http_port

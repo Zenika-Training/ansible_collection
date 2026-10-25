@@ -1,7 +1,6 @@
 # oc_coreos
 
-Prepare RHCOS live ISO(s) with embedded ignition config, for a SNO (Single Node
-OpenShift) cluster or a compact (3 control-plane, 0 compute) cluster
+Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition config
 
 ## Table of contents
 
@@ -70,10 +69,14 @@ oc_coreos_cilium_bpf_host_legacy_routing: true
 ### oc_coreos_cilium_bpf_masquerade
 
 Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-Must be set to false when running Istio in Ambient mode: bpf.masquerade=true causes
-non-functional pod health checks (Istio uses link-local IPs incompatible with eBPF NAT).
-Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Masquerade.
-https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+Must be set to false when running Istio in Ambient mode alone: bpf.masquerade=true
+causes non-functional pod health checks (Istio uses link-local IPs incompatible with
+eBPF NAT). Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF
+Masquerade. https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+Different scenario, different value: when also running Cilium Egress Gateway alongside
+Istio ambient, Isovalent instead recommends bpf.masquerade=true (confirmed compatible,
+scope limited to mTLS east-west on enrolled pods and SNAT'ed north-south via the Egress
+Gateway). Neither value has been validated by a cluster test in this collection yet.
 
 #### Default value
 

@@ -38,23 +38,20 @@ ocp_inventory_bridge: br0
 ### ocp_inventory_clusters
 
 List of cluster definitions. Each entry is a dict with:
-
-- `name` (required): cluster name (install-config/DNS name, and Ansible inventory
-  hostname for a "sno" cluster)
-- `topology` (optional): `sno` (default) or `compact`
-- `cni` (optional): `ovn` (default) or `cilium`
-
-SNO only:
-- `ip`, `mac`: node identity (host_vars)
-- `metallb_ip_ranges`: optional, list of ranges (host_vars)
-
-Compact only:
-- `control_plane_count`: optional, defaults to the length of `masters`
-- `memory`, `vcpus`: optional, default 16384 MiB / 4 vCPU per node
-- `bootstrap`: `{ip, mac}` - temporary bootstrap node
-- `masters`: list of `{name, ip, mac}` - 3 by convention
-- `loadbalancer`: `{name, ip, mac, root_password}` - external LB VM
-- `metallb_ip_ranges`: optional, list of ranges
+name (required) : cluster name (install-config/DNS name, and Ansible
+inventory hostname for a "sno" cluster)
+topology (optional) : "sno" (default) or "compact"
+cni (optional) : "ovn" (default) or "cilium"
+--- sno only ---
+ip, mac : node identity (host_vars)
+metallb_ip_ranges : optional, list of ranges (host_vars)
+--- compact only ---
+control_plane_count : optional, defaults to the length of `masters`
+memory, vcpus : optional, default 16384 MiB / 4 vCPU per node
+bootstrap : {ip, mac} - temporary bootstrap node
+masters : list of {name, ip, mac} - 3 by convention
+loadbalancer : {name, ip, mac, root_password} - external LB VM
+metallb_ip_ranges : optional, list of ranges
 
 #### Default value
 
@@ -62,7 +59,7 @@ Compact only:
 ocp_inventory_clusters: []
 ```
 
-#### Example
+#### Example usage
 
 ```YAML
 ocp_inventory_clusters:
@@ -94,8 +91,9 @@ ocp_inventory_dir: "{{ lookup('env', 'PWD') }}"
 
 ### ocp_inventory_dns_server
 
-Default DNS resolver written to a compact cluster's load-balancer host_vars,
-when not set per-cluster. Left as a placeholder to fill in if empty.
+Default DNS resolver written to a compact cluster's load-balancer
+host_vars, when not set per-cluster. Left as a placeholder to fill in if
+empty.
 
 #### Default value
 
@@ -113,8 +111,8 @@ ocp_inventory_domain: lab.example.com
 
 ### ocp_inventory_gateway
 
-Default gateway written to a compact cluster's load-balancer host_vars, when
-not set per-cluster. Left as a placeholder to fill in if empty.
+Default gateway written to a compact cluster's load-balancer host_vars,
+when not set per-cluster. Left as a placeholder to fill in if empty.
 
 #### Default value
 
