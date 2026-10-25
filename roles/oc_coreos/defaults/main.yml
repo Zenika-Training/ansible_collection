@@ -1,4 +1,22 @@
 ---
+# @section Topology
+
+# @var oc_coreos_topology:description: >
+# Cluster topology: "sno" (default - single node, bootstrap-in-place, one
+# VM) or "compact" (3 control-plane nodes, 0 compute, mastersSchedulable -
+# one temporary bootstrap VM + oc_coreos_control_plane_count master VMs,
+# behind an external load balancer for api/api-int/*.apps). Selects the
+# install-config template and ignition generation flow; left at its default
+# "sno", nothing here changes.
+# @end
+oc_coreos_topology: sno
+
+# @var oc_coreos_control_plane_count:description: >
+# Number of control-plane (master) nodes. Only used when oc_coreos_topology
+# is "compact" - written to install-config.yaml's controlPlane.replicas.
+# @end
+oc_coreos_control_plane_count: 3
+
 # @section Cluster identity
 
 # @var oc_coreos_ocp_name:description: >

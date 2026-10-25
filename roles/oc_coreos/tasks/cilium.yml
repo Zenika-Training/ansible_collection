@@ -1,8 +1,10 @@
 ---
+# Skipped for compact: compact.yml already ran `create manifests` itself.
 - name: Cilium - generate manifests
   ansible.builtin.command:
     cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create manifests"
   changed_when: true
+  when: oc_coreos_topology == 'sno'
 
 - name: Cilium - download manifests archive
   ansible.builtin.get_url:

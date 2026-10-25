@@ -1,6 +1,7 @@
 # oc_coreos
 
-Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition config
+Prepare RHCOS live ISO(s) with embedded ignition config, for a SNO (Single Node
+OpenShift) cluster or a compact (3 control-plane, 0 compute) cluster
 
 ## Table of contents
 
@@ -17,6 +18,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
+  - [oc_coreos_control_plane_count](#oc_coreos_control_plane_count)
   - [oc_coreos_controller_host](#oc_coreos_controller_host)
   - [oc_coreos_install_disk](#oc_coreos_install_disk)
   - [oc_coreos_install_retries](#oc_coreos_install_retries)
@@ -28,6 +30,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_pull_secret_file](#oc_coreos_pull_secret_file)
   - [oc_coreos_service_network](#oc_coreos_service_network)
   - [oc_coreos_ssh_key_file](#oc_coreos_ssh_key_file)
+  - [oc_coreos_topology](#oc_coreos_topology)
   - [oc_coreos_work_dir](#oc_coreos_work_dir)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -204,6 +207,17 @@ Per-node subnet size allocated within oc_coreos_cluster_network_cidr.
 oc_coreos_cluster_network_prefix: 23
 ```
 
+### oc_coreos_control_plane_count
+
+Number of control-plane (master) nodes. Only used when oc_coreos_topology
+is "compact" - written to install-config.yaml's controlPlane.replicas.
+
+#### Default value
+
+```YAML
+oc_coreos_control_plane_count: 3
+```
+
 ### oc_coreos_controller_host
 
 Host where openshift-install runs (must hold the work directory and the binary).
@@ -338,6 +352,21 @@ The key is injected into CoreOS via ignition to allow SSH access after first boo
 
 ```YAML
 oc_coreos_ssh_key_file: ~/.ssh/id_rsa.pub
+```
+
+### oc_coreos_topology
+
+Cluster topology: "sno" (default - single node, bootstrap-in-place, one
+VM) or "compact" (3 control-plane nodes, 0 compute, mastersSchedulable -
+one temporary bootstrap VM + oc_coreos_control_plane_count master VMs,
+behind an external load balancer for api/api-int/*.apps). Selects the
+install-config template and ignition generation flow; left at its default
+"sno", nothing here changes.
+
+#### Default value
+
+```YAML
+oc_coreos_topology: sno
 ```
 
 ### oc_coreos_work_dir
