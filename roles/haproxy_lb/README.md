@@ -7,6 +7,7 @@ Configure HAProxy as the external API/MCS/ingress load balancer for a compact (3
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [haproxy_lb_api_port](#haproxy_lb_api_port)
+  - [haproxy_lb_bootstrap_enabled](#haproxy_lb_bootstrap_enabled)
   - [haproxy_lb_bootstrap_ip](#haproxy_lb_bootstrap_ip)
   - [haproxy_lb_bootstrap_name](#haproxy_lb_bootstrap_name)
   - [haproxy_lb_control_plane_hosts](#haproxy_lb_control_plane_hosts)
@@ -38,12 +39,26 @@ Kubernetes API server port, exposed on the control plane nodes (and bootstrap du
 haproxy_lb_api_port: 6443
 ```
 
+### haproxy_lb_bootstrap_enabled
+
+Whether the bootstrap node is added to the API server / Machine Config
+Server pools. Keep haproxy_lb_bootstrap_name/haproxy_lb_bootstrap_ip set
+permanently in the inventory (handy as a record of the bootstrap node's
+identity) and flip only this boolean - e.g. `-e haproxy_lb_bootstrap_enabled=true`
+for the initial install run, then plain (default false) once the bootstrap
+node is destroyed after bootstrap-complete, instead of editing the IP out
+of host_vars each time.
+
+#### Default value
+
+```YAML
+haproxy_lb_bootstrap_enabled: false
+```
+
 ### haproxy_lb_bootstrap_ip
 
-IP address of the temporary bootstrap node. Set during installation so that
-bootstrap joins the API server / Machine Config Server pools; unset (empty
-string) once the bootstrap node has been destroyed and re-run the role to
-remove it from the pools, as required once bootstrapping completes.
+IP address of the (temporary) bootstrap node. Only used when
+haproxy_lb_bootstrap_enabled is true.
 
 #### Default value
 
@@ -53,8 +68,8 @@ haproxy_lb_bootstrap_ip: ''
 
 ### haproxy_lb_bootstrap_name
 
-Name of the temporary bootstrap node. Only used while the bootstrap node is
-still up - see haproxy_lb_bootstrap_ip.
+Name of the (temporary) bootstrap node. Only used when
+haproxy_lb_bootstrap_enabled is true.
 
 #### Default value
 

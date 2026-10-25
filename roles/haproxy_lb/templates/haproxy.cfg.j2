@@ -1,4 +1,4 @@
-#jinja2: trim_blocks: "True"
+#jinja2: trim_blocks: True
 # Managed by Ansible (zenika.training.haproxy_lb) - do not edit by hand.
 global
     log /dev/log local0
@@ -31,7 +31,7 @@ frontend openshift-api-server
 backend openshift-api-server
     balance roundrobin
     option tcp-check
-{% if haproxy_lb_bootstrap_ip %}
+{% if haproxy_lb_bootstrap_enabled %}
     server {{ haproxy_lb_bootstrap_name }} {{ haproxy_lb_bootstrap_ip }}:{{ haproxy_lb_api_port }} check
 {% endif %}
 {% for host in haproxy_lb_control_plane_hosts %}
@@ -46,7 +46,7 @@ frontend machine-config-server
 backend machine-config-server
     balance roundrobin
     option tcp-check
-{% if haproxy_lb_bootstrap_ip %}
+{% if haproxy_lb_bootstrap_enabled %}
     server {{ haproxy_lb_bootstrap_name }} {{ haproxy_lb_bootstrap_ip }}:{{ haproxy_lb_machine_config_port }} check
 {% endif %}
 {% for host in haproxy_lb_control_plane_hosts %}

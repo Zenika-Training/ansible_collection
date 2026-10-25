@@ -14,3 +14,9 @@
   loop: "{{ haproxy_lb_control_plane_hosts }}"
   loop_control:
     label: "{{ item.name | default('?') }}"
+
+- name: Validate bootstrap IP is set when bootstrap is enabled
+  ansible.builtin.assert:
+    that: haproxy_lb_bootstrap_ip | length > 0
+    fail_msg: "haproxy_lb_bootstrap_ip must be set when haproxy_lb_bootstrap_enabled is true"
+  when: haproxy_lb_bootstrap_enabled
