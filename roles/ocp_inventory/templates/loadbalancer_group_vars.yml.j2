@@ -1,0 +1,18 @@
+---
+kvm_host: {{ ocp_inventory_kvm_host }}
+debian_lb_vm_target_host: "{% raw %}{{ kvm_host }}{% endraw %}"
+debian_lb_vm_bridge: {{ ocp_inventory_bridge }}
+debian_lb_vm_domain: {{ ocp_inventory_domain }}
+debian_lb_vm_gateway: {{ ocp_inventory_gateway | default('# RENSEIGNER ICI') }}
+debian_lb_vm_dns: {{ ocp_inventory_dns_server | default('# RENSEIGNER ICI') }}
+debian_lb_vm_authorized_keys:
+  - "{% raw %}{{ lookup('file', '~/.ssh/id_ed25519.pub') }}{% endraw %}"
+
+# Already staged on the KVM host? Point debian_lb_vm_iso_src there directly
+# and skip kvm_image_url/kvm_image_checksum (kvm_image only downloads what's
+# missing). Pin kvm_image_url/checksum to a specific build (not a "current"
+# alias) for a reproducible download on a fresh host - see
+# https://cdimage.debian.org/cdimage/archive/<version>/amd64/iso-cd/SHA256SUMS
+debian_lb_vm_iso_src: /var/lib/libvirt/images/debian-13-netinst.iso  # RENSEIGNER ICI
+kvm_image_url: ""  # RENSEIGNER ICI
+kvm_image_checksum: ""  # RENSEIGNER ICI (sha256:...)

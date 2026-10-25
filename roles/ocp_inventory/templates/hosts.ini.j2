@@ -1,0 +1,43 @@
+{% set _ovn = _ocp_inventory_sno | rejectattr('cni', 'equalto', 'cilium') | list %}
+{% set _cilium = _ocp_inventory_sno | selectattr('cni', 'equalto', 'cilium') | list %}
+{% if _ovn %}
+[ovn]
+{% for c in _ovn %}
+{{ c.name }}
+{% endfor %}
+
+{% endif %}
+{% if _cilium %}
+[cilium]
+{% for c in _cilium %}
+{{ c.name }}
+{% endfor %}
+
+{% endif %}
+{% if _ocp_inventory_sno %}
+[sno:children]
+{% if _ovn %}
+ovn
+{% endif %}
+{% if _cilium %}
+cilium
+{% endif %}
+
+{% endif %}
+{% for c in _ocp_inventory_compact %}
+[{{ c.name }}]
+{{ c.name }}-bootstrap
+{% for m in c.masters %}
+{{ m.name }}
+{% endfor %}
+
+{% endfor %}
+{% if _ocp_inventory_compact %}
+[loadbalancer]
+{% for c in _ocp_inventory_compact %}
+{{ c.loadbalancer.name }}
+{% endfor %}
+
+{% endif %}
+[kvm_hosts]
+{{ ocp_inventory_kvm_host }} ansible_user={{ ocp_inventory_kvm_user }}
