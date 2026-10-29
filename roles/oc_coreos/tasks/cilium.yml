@@ -1,8 +1,10 @@
 ---
+# Skipped for compact: compact.yml already ran `create manifests` itself.
 - name: Cilium - generate manifests
   ansible.builtin.command:
     cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create manifests"
   changed_when: true
+  when: oc_coreos_topology == 'sno'
 
 - name: Cilium - download manifests archive
   ansible.builtin.get_url:
@@ -117,3 +119,10 @@
          | to_nice_yaml(indent=2) }}
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/ciliumconfig.yaml"
     mode: "0644"
+
+# The dns-default-all-egress NetworkPolicy workaround is applied post-install (wait_install.yml),
+# not here: bootkube.service applies every manifests/*.yaml file as one atomic batch during the
+# first-boot bootstrap-in-place phase and retries forever if any of them fails - it never
+# progresses to render the release payload that creates the openshift-dns namespace in the first
+# place. Shipping this NetworkPolicy as a Day-1 manifest therefore deadlocks the bootstrap: the
+# node never shuts down to reboot from disk (reproduced on a lab cluster, 2026-10-19).

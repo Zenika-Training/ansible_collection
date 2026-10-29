@@ -33,7 +33,11 @@
   ansible.builtin.assert:
     that: oc_coreos_ocp_ip | length > 0
     fail_msg: "oc_coreos_ocp_ip must be set"
+  when: oc_coreos_topology == 'sno'
 
+# A compact cluster has no single node IP (4 VMs behind an external load
+# balancer): see compact.yml for its own DNS check (api/api-int/*.apps must
+# resolve, but not necessarily to one fixed address).
 - name: Check DNS records
   ansible.builtin.assert:
     that: lookup('community.general.dig', item.query) not in ['', 'NXDOMAIN']
@@ -49,6 +53,7 @@
       label: "*.apps.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
   loop_control:
     label: "{{ item.label }}"
+  when: oc_coreos_topology == 'sno'
 
 - name: Load pull secret from file
   ansible.builtin.set_fact:

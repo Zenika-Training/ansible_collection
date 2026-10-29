@@ -1,4 +1,44 @@
 ---
+# The DNS/apiserver egress bug workaround must be applied here, once the real (second-boot)
+# cluster is reachable, not as a Day-1 manifest (see cilium.yml): openshift-dns is created by the
+# DNS operator once the control plane renders the release payload, which happens only after
+# bootkube's own manifest batch (including any Day-1 extras) has fully succeeded. Applying it
+# through a normal Kubernetes client here tolerates "not found yet" by retrying, unlike bootkube's
+# all-or-nothing apply loop.
+- name: "Cilium - wait for openshift-dns namespace and apply DNS/apiserver egress workaround"
+  when: oc_coreos_ocp_network == 'Cilium' and oc_coreos_cilium_dns_default_all_egress_workaround
+  delegate_to: "{{ oc_coreos_controller_host }}"
+  block:
+    - name: Wait for the openshift-dns namespace to exist
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeconfig"
+        api_version: v1
+        kind: Namespace
+        name: openshift-dns
+      register: _oc_coreos_dns_ns
+      until: _oc_coreos_dns_ns.resources is defined and _oc_coreos_dns_ns.resources | length > 0
+      retries: "{{ oc_coreos_cilium_dns_workaround_retries }}"
+      delay: "{{ oc_coreos_cilium_dns_workaround_delay }}"
+
+    - name: Apply the dns-default-all-egress NetworkPolicy
+      kubernetes.core.k8s:
+        kubeconfig: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeconfig"
+        state: present
+        definition:
+          apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: dns-default-all-egress
+            namespace: openshift-dns
+          spec:
+            egress:
+              - {}
+            podSelector:
+              matchLabels:
+                dns.operator.openshift.io/daemonset-dns: default
+            policyTypes:
+              - Egress
+
 - name: Wait for SNO installation to complete
   ansible.builtin.command:
     cmd: >-

@@ -1,0 +1,7 @@
+---
+oc_coreos_ocp_domain: "{{ ocp_inventory_domain }}"
+oc_coreos_ocp_subnet: "{{ ocp_inventory_subnet }}"
+libvirt_kvm_bridge: {{ ocp_inventory_bridge }}
+
+oc_coreos_pull_secret_file: "{% raw %}{{ inventory_dir }}{% endraw %}/../files/pull-secret"
+oc_coreos_ssh_key_file: "~/.ssh/id_rsa.pub"

@@ -1,0 +1,31 @@
+---
+# @section Image
+
+# @var kvm_image_url:description: >
+# URL of the image file to download. Required.
+# @end
+kvm_image_url: ""
+
+# @var kvm_image_dest:description: >
+# Destination path on kvm_image_target_host. Required.
+# If the file already exists there (e.g. pre-staged for an air-gapped KVM
+# host), it is left untouched and nothing is downloaded - this role only
+# fetches what is missing.
+# @end
+kvm_image_dest: ""
+
+# @var kvm_image_checksum:description: >
+# Expected checksum of the downloaded file, in get_url format (e.g.
+# "sha256:<hex digest>"). Strongly recommended. Left empty, no integrity
+# check is performed and a corrupted or pre-existing mismatched file at
+# kvm_image_dest is never caught.
+# @end
+kvm_image_checksum: ""
+
+# @section Target
+
+# @var kvm_image_target_host:description: >
+# Ansible inventory hostname of the KVM host. The download (if needed) runs
+# delegated to this host - never on the Ansible controller.
+# @end
+kvm_image_target_host: localhost

@@ -10,10 +10,14 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_bpf_host_legacy_routing](#oc_coreos_cilium_bpf_host_legacy_routing)
   - [oc_coreos_cilium_bpf_masquerade](#oc_coreos_cilium_bpf_masquerade)
   - [oc_coreos_cilium_cni_exclusive](#oc_coreos_cilium_cni_exclusive)
+  - [oc_coreos_cilium_dns_default_all_egress_workaround](#oc_coreos_cilium_dns_default_all_egress_workaround)
+  - [oc_coreos_cilium_dns_workaround_delay](#oc_coreos_cilium_dns_workaround_delay)
+  - [oc_coreos_cilium_dns_workaround_retries](#oc_coreos_cilium_dns_workaround_retries)
   - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
+  - [oc_coreos_control_plane_count](#oc_coreos_control_plane_count)
   - [oc_coreos_controller_host](#oc_coreos_controller_host)
   - [oc_coreos_install_disk](#oc_coreos_install_disk)
   - [oc_coreos_install_retries](#oc_coreos_install_retries)
@@ -25,6 +29,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_pull_secret_file](#oc_coreos_pull_secret_file)
   - [oc_coreos_service_network](#oc_coreos_service_network)
   - [oc_coreos_ssh_key_file](#oc_coreos_ssh_key_file)
+  - [oc_coreos_topology](#oc_coreos_topology)
   - [oc_coreos_work_dir](#oc_coreos_work_dir)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -64,10 +69,14 @@ oc_coreos_cilium_bpf_host_legacy_routing: true
 ### oc_coreos_cilium_bpf_masquerade
 
 Enable eBPF-based masquerading (NAT) in Cilium instead of iptables.
-Must be set to false when running Istio in Ambient mode: bpf.masquerade=true causes
-non-functional pod health checks (Istio uses link-local IPs incompatible with eBPF NAT).
-Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF Masquerade.
-https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+Must be set to false when running Istio in Ambient mode alone: bpf.masquerade=true
+causes non-functional pod health checks (Istio uses link-local IPs incompatible with
+eBPF NAT). Isovalent Engineering recommendation (ticket #5474, 2026-07): disable BPF
+Masquerade. https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
+Different scenario, different value: when also running Cilium Egress Gateway alongside
+Istio ambient, Isovalent instead recommends bpf.masquerade=true (confirmed compatible,
+scope limited to mTLS east-west on enrolled pods and SNAT'ed north-south via the Egress
+Gateway). Neither value has been validated by a cluster test in this collection yet.
 
 #### Default value
 
@@ -86,6 +95,67 @@ https://istio.io/latest/docs/ambient/install/platform-prerequisites/#cilium
 
 ```YAML
 oc_coreos_cilium_cni_exclusive: false
+```
+
+### oc_coreos_cilium_dns_default_all_egress_workaround
+
+Apply an extra "dns-default-all-egress" NetworkPolicy (egress: [{}]) for the
+dns-default DaemonSet pods, allowing unrestricted egress, once the real
+(second-boot) cluster is reachable (see wait_install.yml).
+Works around a Cilium Enterprise bug: the dns-default NetworkPolicy shipped
+by RHOCP 4.22 allows egress to the API server via an ipBlock CIDR
+(0.0.0.0/0), but Cilium does not match CIDR-based rules against the
+reserved:host identity used for traffic to a kube-proxy-replacement-
+translated ClusterIP that resolves to the node's own IP. CoreDNS can then
+never reach the API server, which cascades into dns/authentication/console/
+kube-controller-manager staying Degraded after install.
+Reproduced on a Cilium Enterprise 1.18.8-cee.2 lab cluster on 2026-10-16.
+Must NOT be shipped as a Day-1 manifest (manifests/*.yaml): bootkube.service
+applies that whole directory as one atomic batch during the first-boot
+bootstrap-in-place phase and retries forever on any failure, so it never
+gets to render the release payload that creates the openshift-dns namespace
+- the node then never shuts down to reboot from disk (reproduced 2026-10-19).
+Fixed natively by Isovalent starting with INK v1.19.6-cee.1/v1.18.12-cee.1/
+v1.17.18-cee.1 (the policy ships in the manifests archive itself): set this
+to false once oc_coreos_cilium_manifests_url points to one of those
+versions or later, to avoid a redundant duplicate NetworkPolicy.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_dns_default_all_egress_workaround: true
+```
+
+### oc_coreos_cilium_dns_workaround_delay
+
+Seconds between each openshift-dns namespace poll.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_dns_workaround_delay: 10
+```
+
+### oc_coreos_cilium_dns_workaround_retries
+
+Number of times to poll for the openshift-dns namespace to exist before
+applying oc_coreos_cilium_dns_default_all_egress_workaround. Each poll waits
+oc_coreos_cilium_dns_workaround_delay seconds.
+This namespace is a prerequisite for "Wait for SNO installation to
+complete" (CIL1: without the NetworkPolicy applied here, dns/
+authentication/console/kube-controller-manager stay Degraded forever and
+ClusterVersion never reaches Available, so that later wait cannot succeed
+either). Its budget must therefore be at least as generous as a single
+install-complete attempt (oc_coreos_install_retries' internal 40 min
+timeout), not shorter - a tight budget here defeats the patience given to
+the step it gates. On Cilium/CLiFE this namespace was repeatedly observed
+to take well over 10 minutes to appear (heavier install lifecycle than
+OVN-Kubernetes: extra CRDs, dedicated operator, OLM subscription).
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_dns_workaround_retries: 240
 ```
 
 ### oc_coreos_cilium_manifests_url
@@ -138,6 +208,17 @@ Per-node subnet size allocated within oc_coreos_cluster_network_cidr.
 
 ```YAML
 oc_coreos_cluster_network_prefix: 23
+```
+
+### oc_coreos_control_plane_count
+
+Number of control-plane (master) nodes. Only used when oc_coreos_topology
+is "compact" - written to install-config.yaml's controlPlane.replicas.
+
+#### Default value
+
+```YAML
+oc_coreos_control_plane_count: 3
 ```
 
 ### oc_coreos_controller_host
@@ -274,6 +355,21 @@ The key is injected into CoreOS via ignition to allow SSH access after first boo
 
 ```YAML
 oc_coreos_ssh_key_file: ~/.ssh/id_rsa.pub
+```
+
+### oc_coreos_topology
+
+Cluster topology: "sno" (default - single node, bootstrap-in-place, one
+VM) or "compact" (3 control-plane nodes, 0 compute, mastersSchedulable -
+one temporary bootstrap VM + oc_coreos_control_plane_count master VMs,
+behind an external load balancer for api/api-int/*.apps). Selects the
+install-config template and ignition generation flow; left at its default
+"sno", nothing here changes.
+
+#### Default value
+
+```YAML
+oc_coreos_topology: sno
 ```
 
 ### oc_coreos_work_dir

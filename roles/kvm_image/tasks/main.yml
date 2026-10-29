@@ -1,0 +1,27 @@
+---
+- name: Validate image URL is defined
+  ansible.builtin.assert:
+    that: kvm_image_url | length > 0
+    fail_msg: "kvm_image_url must be set"
+
+- name: Validate destination path is defined
+  ansible.builtin.assert:
+    that: kvm_image_dest | length > 0
+    fail_msg: "kvm_image_dest must be set"
+
+- name: Ensure destination directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ kvm_image_dest | dirname }}"
+    state: directory
+    mode: "0755"
+  delegate_to: "{{ kvm_image_target_host }}"
+
+- name: Download image if missing
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ kvm_image_url }}"
+    dest: "{{ kvm_image_dest }}"
+    checksum: "{{ kvm_image_checksum if kvm_image_checksum | length > 0 else omit }}"
+    mode: "0644"
+  delegate_to: "{{ kvm_image_target_host }}"

@@ -1,0 +1,144 @@
+---
+# Any cluster without an explicit topology defaults to "sno". selectattr/
+# rejectattr('topology', 'equalto', ...) errors outright on a dict missing
+# that key, so filter on 'defined' first.
+- name: Classify clusters by topology
+  ansible.builtin.set_fact:
+    _ocp_inventory_compact: "{{ ocp_inventory_clusters | selectattr('topology', 'defined') | selectattr('topology', 'equalto', 'compact') | list }}"
+    _ocp_inventory_sno_explicit: "{{ ocp_inventory_clusters | selectattr('topology', 'defined') | rejectattr('topology', 'equalto', 'compact') | list }}"
+    _ocp_inventory_sno_implicit: "{{ ocp_inventory_clusters | rejectattr('topology', 'defined') | list }}"
+
+- name: Merge explicit and implicit SNO clusters
+  ansible.builtin.set_fact:
+    _ocp_inventory_sno: "{{ _ocp_inventory_sno_implicit + _ocp_inventory_sno_explicit }}"
+
+- name: Create inventory directory structure
+  ansible.builtin.file:
+    path: "{{ ocp_inventory_dir }}/inventory/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - group_vars
+    - host_vars
+
+- name: Create files directory for secrets
+  ansible.builtin.file:
+    path: "{{ ocp_inventory_dir }}/files"
+    state: directory
+    mode: "0700"
+
+- name: Generate ansible.cfg
+  ansible.builtin.copy:
+    dest: "{{ ocp_inventory_dir }}/ansible.cfg"
+    content: |
+      [defaults]
+      inventory = inventory/
+    force: false
+    mode: "0644"
+
+- name: Generate hosts.ini
+  ansible.builtin.template:
+    src: hosts.ini.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/hosts.ini"
+    force: false
+    mode: "0644"
+
+- name: Generate group_vars/all.yml
+  ansible.builtin.template:
+    src: all.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/group_vars/all.yml"
+    force: false
+    mode: "0644"
+
+- name: Generate group_vars/sno.yml
+  ansible.builtin.template:
+    src: sno.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/group_vars/sno.yml"
+    force: false
+    mode: "0644"
+  when: _ocp_inventory_sno | length > 0
+
+- name: Generate group_vars/ovn.yml
+  ansible.builtin.copy:
+    dest: "{{ ocp_inventory_dir }}/inventory/group_vars/ovn.yml"
+    content: |
+      ---
+      oc_coreos_ocp_network: OVNKubernetes
+    force: false
+    mode: "0644"
+  when: _ocp_inventory_sno | rejectattr('cni', 'equalto', 'cilium') | list | length > 0
+
+- name: Generate group_vars/cilium.yml
+  ansible.builtin.copy:
+    dest: "{{ ocp_inventory_dir }}/inventory/group_vars/cilium.yml"
+    content: |
+      ---
+      oc_coreos_ocp_network: Cilium
+    force: false
+    mode: "0644"
+  when: _ocp_inventory_sno | selectattr('cni', 'equalto', 'cilium') | list | length > 0
+
+- name: Generate host_vars per SNO cluster
+  ansible.builtin.template:
+    src: host_vars_sno.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/host_vars/{{ _ocp_inventory_cluster.name }}.yml"
+    force: false
+    mode: "0644"
+  loop: "{{ _ocp_inventory_sno }}"
+  loop_control:
+    loop_var: _ocp_inventory_cluster
+    label: "{{ _ocp_inventory_cluster.name }}"
+
+- name: Generate group_vars/<cluster>.yml per compact cluster
+  ansible.builtin.template:
+    src: compact_group_vars.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/group_vars/{{ _ocp_inventory_cluster.name }}.yml"
+    force: false
+    mode: "0644"
+  loop: "{{ _ocp_inventory_compact }}"
+  loop_control:
+    loop_var: _ocp_inventory_cluster
+    label: "{{ _ocp_inventory_cluster.name }}"
+
+- name: Generate host_vars/<cluster>-bootstrap.yaml per compact cluster
+  ansible.builtin.template:
+    src: compact_host_vars_bootstrap.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/host_vars/{{ _ocp_inventory_cluster.name }}-bootstrap.yaml"
+    force: false
+    mode: "0644"
+  loop: "{{ _ocp_inventory_compact }}"
+  loop_control:
+    loop_var: _ocp_inventory_cluster
+    label: "{{ _ocp_inventory_cluster.name }}"
+
+- name: Generate host_vars/<master>.yaml per compact cluster master
+  ansible.builtin.template:
+    src: compact_host_vars_master.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/host_vars/{{ _ocp_inventory_master.name }}.yaml"
+    force: false
+    mode: "0644"
+  loop: "{{ _ocp_inventory_compact | subelements('masters') }}"
+  loop_control:
+    loop_var: _ocp_inventory_master_pair
+    label: "{{ _ocp_inventory_master_pair[1].name }}"
+  vars:
+    _ocp_inventory_master: "{{ _ocp_inventory_master_pair[1] }}"
+
+- name: Generate group_vars/loadbalancer.yml
+  ansible.builtin.template:
+    src: loadbalancer_group_vars.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/group_vars/loadbalancer.yml"
+    force: false
+    mode: "0644"
+  when: _ocp_inventory_compact | length > 0
+
+- name: Generate host_vars/<loadbalancer>.yaml per compact cluster
+  ansible.builtin.template:
+    src: compact_host_vars_loadbalancer.yml.j2
+    dest: "{{ ocp_inventory_dir }}/inventory/host_vars/{{ _ocp_inventory_cluster.loadbalancer.name }}.yaml"
+    force: false
+    mode: "0644"
+  loop: "{{ _ocp_inventory_compact }}"
+  loop_control:
+    loop_var: _ocp_inventory_cluster
+    label: "{{ _ocp_inventory_cluster.name }}"

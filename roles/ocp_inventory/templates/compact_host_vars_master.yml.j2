@@ -1,0 +1,4 @@
+---
+libvirt_kvm_mac: "{{ _ocp_inventory_master.mac | default('52:54:00:xx:xx:xx') }}"{% if _ocp_inventory_master.ip is defined %} # {{ _ocp_inventory_master.ip }} (DHCP static mapping){% endif %}
+
+{% raw %}libvirt_kvm_iso_src: "{{ oc_coreos_work_dir }}/rhcos-master.iso"{% endraw %}

@@ -1,0 +1,8 @@
+---
+- name: Initialize an OpenShift (SNO or compact) inventory skeleton
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: "Call ocp_inventory"
+      ansible.builtin.include_role:
+        name: "zenika.training.ocp_inventory"

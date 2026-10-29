@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: zenika
+  description: Generate an inventory skeleton for zenika.training SNO or compact cluster playbooks
+  license: Apache-2.0
+  min_ansible_version: "2.14"

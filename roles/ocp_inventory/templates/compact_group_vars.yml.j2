@@ -1,0 +1,34 @@
+---
+ansible_connection: local
+kvm_host: {{ ocp_inventory_kvm_host }}
+libvirt_kvm_target_host: "{% raw %}{{ kvm_host }}{% endraw %}"
+
+oc_coreos_topology: compact
+oc_coreos_ocp_name: {{ _ocp_inventory_cluster.name }}
+oc_coreos_ocp_network: {{ 'Cilium' if (_ocp_inventory_cluster.cni | default('ovn')) == 'cilium' else 'OVNKubernetes' }}
+oc_coreos_control_plane_count: {{ _ocp_inventory_cluster.control_plane_count | default(_ocp_inventory_cluster.masters | length) }}
+
+libvirt_kvm_memory: {{ _ocp_inventory_cluster.memory | default(16384) }}
+libvirt_kvm_vcpus: {{ _ocp_inventory_cluster.vcpus | default(4) }}
+{% raw %}
+
+oc_coreos_work_dir: "/tmp/openshift/{{ oc_coreos_ocp_name }}"
+
+# ocp_init/ocp_pki/metallb default these from inventory_hostname (SNO's "1
+# host = 1 cluster name"). In compact, inventory_hostname is master1/bootstrap
+# /etc, not the cluster name - override with oc_coreos_ocp_name.
+ocp_init_api_url: "https://api.{{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}:6443"
+ocp_init_kubeadmin_password_file: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeadmin-password"
+ocp_init_kubeconfig: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeconfig"
+ocp_pki_kubeconfig: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeconfig"
+ocp_pki_intermediate_dir: "{{ ocp_pki_root_ca_dir }}/{{ oc_coreos_ocp_name }}"
+ocp_pki_intermediate_cn: "{{ oc_coreos_ocp_name }} Intermediate CA"
+metallb_kubeconfig: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeconfig"
+{% endraw %}
+{% if _ocp_inventory_cluster.metallb_ip_ranges is defined %}
+
+metallb_ip_ranges:
+{% for range in _ocp_inventory_cluster.metallb_ip_ranges %}
+  - "{{ range }}"
+{% endfor %}
+{% endif %}

@@ -1,0 +1,47 @@
+---
+- name: Validate VM name is defined
+  ansible.builtin.assert:
+    that: debian_lb_vm_name | length > 0
+    fail_msg: "debian_lb_vm_name must be set"
+
+- name: Validate MAC address is defined
+  ansible.builtin.assert:
+    that: debian_lb_vm_mac | length > 0
+    fail_msg: "debian_lb_vm_mac must be set"
+
+- name: Validate network settings are defined
+  ansible.builtin.assert:
+    that: item.value | length > 0
+    fail_msg: "{{ item.name }} must be set"
+  loop:
+    - { name: debian_lb_vm_ip, value: "{{ debian_lb_vm_ip }}" }
+    - { name: debian_lb_vm_gateway, value: "{{ debian_lb_vm_gateway }}" }
+    - { name: debian_lb_vm_dns, value: "{{ debian_lb_vm_dns }}" }
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Validate root password is defined
+  ansible.builtin.assert:
+    that: debian_lb_vm_root_password | length > 0
+    fail_msg: "debian_lb_vm_root_password must be set (store it with ansible-vault)"
+
+- name: Validate ISO source is defined
+  ansible.builtin.assert:
+    that: debian_lb_vm_iso_src | length > 0
+    fail_msg: "debian_lb_vm_iso_src must be set"
+
+- name: Check ISO source exists on the KVM host
+  ansible.builtin.stat:
+    path: "{{ debian_lb_vm_iso_src }}"
+  register: _debian_lb_vm_iso_stat
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+
+- name: Assert ISO source file exists
+  ansible.builtin.assert:
+    that: _debian_lb_vm_iso_stat.stat.exists
+    fail_msg: "ISO source not found on {{ debian_lb_vm_target_host }}: {{ debian_lb_vm_iso_src }}"
+
+- name: Crypt root and user password
+  ansible.builtin.set_fact:
+    _debian_lb_vm_pass_hash: "{{ debian_lb_vm_root_password | password_hash('sha512') }}"
+  no_log: true

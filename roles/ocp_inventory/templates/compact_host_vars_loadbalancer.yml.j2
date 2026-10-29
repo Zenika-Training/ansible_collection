@@ -1,0 +1,20 @@
+---
+ansible_host: {{ _ocp_inventory_cluster.loadbalancer.ip | default('# RENSEIGNER ICI') }}
+debian_lb_vm_ip: {{ _ocp_inventory_cluster.loadbalancer.ip | default('# RENSEIGNER ICI') }}
+debian_lb_vm_mac: "{{ _ocp_inventory_cluster.loadbalancer.mac | default('52:54:00:xx:xx:xx') }}"
+
+# Set via ansible-vault, e.g.: ansible-vault encrypt_string '<password>' --name debian_lb_vm_root_password
+debian_lb_vm_root_password: "{{ _ocp_inventory_cluster.loadbalancer.root_password | default('') }}"
+
+ansible_user: linux
+
+# Kept permanently as a record of the bootstrap node's identity -
+# haproxy_lb_bootstrap_enabled (role default: false) controls whether it's
+# actually in the pools.
+haproxy_lb_bootstrap_name: {{ _ocp_inventory_cluster.name }}-bootstrap
+haproxy_lb_bootstrap_ip: {{ _ocp_inventory_cluster.bootstrap.ip | default('# RENSEIGNER ICI') }}
+
+haproxy_lb_control_plane_hosts:
+{% for m in _ocp_inventory_cluster.masters %}
+  - { name: {{ m.name }}, ip: {{ m.ip | default('# RENSEIGNER ICI') }} }
+{% endfor %}

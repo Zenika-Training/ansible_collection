@@ -1,0 +1,59 @@
+#_preseed_V1
+d-i debian-installer/locale string fr_FR.UTF-8
+d-i keyboard-configuration/xkb-keymap select fr(latin9)
+d-i netcfg/choose_interface select auto
+d-i netcfg/disable_autoconfig boolean true
+d-i netcfg/dhcp_failed note
+d-i netcfg/dhcp_options select Configure network manually
+d-i netcfg/get_ipaddress string {{ debian_lb_vm_ip }}
+d-i netcfg/get_netmask string {{ debian_lb_vm_netmask }}
+d-i netcfg/get_gateway string {{ debian_lb_vm_gateway }}
+d-i netcfg/get_nameservers string {{ debian_lb_vm_dns }}
+d-i netcfg/confirm_static boolean true
+d-i netcfg/get_hostname string {{ debian_lb_vm_name }}
+d-i netcfg/get_domain string {{ debian_lb_vm_domain }}
+d-i netcfg/hostname string {{ debian_lb_vm_name }}
+d-i mirror/country string manual
+d-i mirror/protocol string {{ debian_lb_vm_mirror_protocol }}
+d-i mirror/{{ debian_lb_vm_mirror_protocol }}/hostname string {{ debian_lb_vm_mirror_hostname }}
+d-i mirror/{{ debian_lb_vm_mirror_protocol }}/directory string {{ debian_lb_vm_mirror_directory }}
+d-i mirror/{{ debian_lb_vm_mirror_protocol }}/proxy string
+d-i mirror/suite string {{ debian_lb_vm_mirror_suite }}
+d-i mirror/udeb/suite string {{ debian_lb_vm_mirror_suite }}
+d-i passwd/root-login boolean true
+d-i passwd/root-password-crypted password {{ _debian_lb_vm_pass_hash }}
+d-i passwd/user-fullname string {{ debian_lb_vm_user_account }}
+d-i passwd/username string {{ debian_lb_vm_user_account }}
+d-i passwd/user-password-crypted password {{ _debian_lb_vm_pass_hash }}
+d-i user-setup/allow-password-weak boolean true
+d-i user-setup/encrypt-home boolean false
+d-i clock-setup/utc boolean true
+d-i time/zone string Europe/Paris
+d-i clock-setup/ntp boolean true
+d-i clock-setup/ntp-server string {{ debian_lb_vm_ntp_server }}
+d-i partman-auto/disk string /dev/vda
+d-i partman-auto/method string regular
+d-i partman-auto/choose_recipe select atomic
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i apt-setup/cdrom/set-first boolean false
+tasksel tasksel/first multiselect standard
+d-i pkgsel/include string openssh-server haproxy sudo qemu-guest-agent
+d-i pkgsel/upgrade select full-upgrade
+popularity-contest popularity-contest/participate boolean false
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean false
+d-i grub-installer/bootdev string /dev/vda
+d-i finish-install/reboot_in_progress note
+d-i preseed/late_command string \
+    in-target /bin/sh -c "echo '{{ debian_lb_vm_user_account }} ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/{{ debian_lb_vm_user_account }}" ; \
+    in-target chmod 440 /etc/sudoers.d/{{ debian_lb_vm_user_account }} ; \
+    in-target mkdir -p /home/{{ debian_lb_vm_user_account }}/.ssh; \
+    in-target chmod 700 /home/{{ debian_lb_vm_user_account }}/.ssh; \
+{% for item in debian_lb_vm_authorized_keys %}
+    in-target /bin/sh -c "echo '{{ item }}' >> /home/{{ debian_lb_vm_user_account }}/.ssh/authorized_keys"; \
+{% endfor %}
+    in-target chown {{ debian_lb_vm_user_account }}:{{ debian_lb_vm_user_account }} /home/{{ debian_lb_vm_user_account }}/.ssh; \
+    in-target apt-get clean;

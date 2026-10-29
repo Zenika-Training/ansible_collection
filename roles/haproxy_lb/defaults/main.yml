@@ -1,0 +1,55 @@
+---
+# @section Control plane pool
+
+# @var haproxy_lb_control_plane_hosts:description: >
+# List of the cluster's control-plane (master) nodes, each as {name, ip}.
+# Required - used as the backend pool for the API server, the Machine Config
+# Server, and the ingress (HTTP/HTTPS) traffic, since compute.replicas is 0
+# and mastersSchedulable is true on a compact (3-master, 0-worker) cluster.
+# @end
+haproxy_lb_control_plane_hosts: []
+
+# @var haproxy_lb_bootstrap_enabled:description: >
+# Whether the bootstrap node is added to the API server / Machine Config
+# Server pools. Keep haproxy_lb_bootstrap_name/haproxy_lb_bootstrap_ip set
+# permanently in the inventory (handy as a record of the bootstrap node's
+# identity) and flip only this boolean - e.g. `-e haproxy_lb_bootstrap_enabled=true`
+# for the initial install run, then plain (default false) once the bootstrap
+# node is destroyed after bootstrap-complete, instead of editing the IP out
+# of host_vars each time.
+# @end
+haproxy_lb_bootstrap_enabled: false
+
+# @var haproxy_lb_bootstrap_name:description: >
+# Name of the (temporary) bootstrap node. Only used when
+# haproxy_lb_bootstrap_enabled is true.
+# @end
+haproxy_lb_bootstrap_name: bootstrap
+
+# @var haproxy_lb_bootstrap_ip:description: >
+# IP address of the (temporary) bootstrap node. Only used when
+# haproxy_lb_bootstrap_enabled is true.
+# @end
+haproxy_lb_bootstrap_ip: ""
+
+# @section Ports
+
+# @var haproxy_lb_api_port:description: Kubernetes API server port, exposed on the control plane nodes (and bootstrap during install).
+haproxy_lb_api_port: 6443
+
+# @var haproxy_lb_machine_config_port:description: Machine Config Server port, exposed on the control plane nodes (and bootstrap during install).
+haproxy_lb_machine_config_port: 22623
+
+# @var haproxy_lb_http_port:description: Ingress HTTP port, exposed on the control plane nodes.
+haproxy_lb_http_port: 80
+
+# @var haproxy_lb_https_port:description: Ingress HTTPS port, exposed on the control plane nodes.
+haproxy_lb_https_port: 443
+
+# @section Stats
+
+# @var haproxy_lb_stats_enabled:description: Expose the HAProxy stats page.
+haproxy_lb_stats_enabled: true
+
+# @var haproxy_lb_stats_port:description: Port of the HAProxy stats page, when haproxy_lb_stats_enabled is true.
+haproxy_lb_stats_port: 8404

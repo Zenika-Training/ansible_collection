@@ -1,0 +1,14 @@
+---
+- name: Read kubeadmin password
+  ansible.builtin.slurp:
+    src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/auth/kubeadmin-password"
+  register: oc_coreos_kubeadmin_password
+
+- name: ISOs ready
+  ansible.builtin.debug:
+    msg:
+      - "Bootstrap ISO : {{ oc_coreos_work_dir }}/rhcos-bootstrap.iso (1 VM, destroy once bootstrap-complete)"
+      - "Master ISO    : {{ oc_coreos_work_dir }}/rhcos-master.iso (reuse for all {{ oc_coreos_control_plane_count }} control-plane VMs)"
+      - "Cluster       : {{ oc_coreos_ocp_name }}.{{ oc_coreos_ocp_domain }}"
+      - "Network       : {{ oc_coreos_ocp_network }}"
+      - "kubeadmin     : {{ oc_coreos_kubeadmin_password.content | b64decode | trim }}"

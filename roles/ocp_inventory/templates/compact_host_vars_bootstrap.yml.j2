@@ -1,0 +1,4 @@
+---
+libvirt_kvm_mac: "{{ _ocp_inventory_cluster.bootstrap.mac | default('52:54:00:xx:xx:xx') }}"{% if _ocp_inventory_cluster.bootstrap.ip is defined %} # {{ _ocp_inventory_cluster.bootstrap.ip }} (DHCP static mapping){% endif %}
+
+{% raw %}libvirt_kvm_iso_src: "{{ oc_coreos_work_dir }}/rhcos-bootstrap.iso"{% endraw %}

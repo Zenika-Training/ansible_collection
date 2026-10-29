@@ -1,0 +1,84 @@
+---
+- name: Pre-checks
+  ansible.builtin.include_tasks: pre_tasks.yml
+
+- name: Create working directory on the KVM host
+  become: true
+  ansible.builtin.file:
+    path: "{{ debian_lb_vm_work_dir }}"
+    state: directory
+    mode: "0700"
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+
+- name: Generate preseed file
+  become: true
+  ansible.builtin.template:
+    src: preseed.cfg.j2
+    dest: "{{ debian_lb_vm_work_dir }}/preseed.cfg"
+    mode: "0600"
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+
+- name: Create LVM volume for VM disk
+  become: true
+  community.general.lvol:
+    vg: "{{ debian_lb_vm_vg_pool }}"
+    lv: "vm_{{ debian_lb_vm_name }}"
+    size: "{{ debian_lb_vm_disk_size }}"
+    state: present
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+
+# debian_lb_vm_iso_src must already exist on debian_lb_vm_target_host (see
+# pre_tasks.yml) - e.g. staged there by the kvm_image role. `location` points
+# to that local file: virt-install only reads it (no network access needed
+# at this task's execution time), and extracts kernel/initrd from it itself.
+- name: Create KVM virtual machine
+  become: true
+  community.libvirt.virt_install:
+    name: "{{ debian_lb_vm_name }}"
+    osinfo:
+      name: "{{ debian_lb_vm_osinfo }}"
+    disks:
+      - path: "/dev/{{ debian_lb_vm_vg_pool }}/vm_{{ debian_lb_vm_name }}"
+        bus: virtio
+        format: raw
+    memory: "{{ debian_lb_vm_memory }}"
+    vcpus: "{{ debian_lb_vm_vcpus }}"
+    cpu:
+      model: "{{ debian_lb_vm_cpu_model }}"
+    autostart: true
+    graphics:
+      type: "{{ debian_lb_vm_graphics_type }}"
+      listen: "{{ debian_lb_vm_graphics_listen }}"
+    networks:
+      - bridge: "{{ debian_lb_vm_bridge }}"
+        model:
+          type: "virtio"
+        mac:
+          address: "{{ debian_lb_vm_mac }}"
+    location: "{{ debian_lb_vm_iso_src }}"
+    extra_args: "auto=true priority=critical"
+    initrd_inject: "{{ debian_lb_vm_work_dir }}/preseed.cfg"
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+  register: _debian_lb_vm_install
+
+- name: Wait for first-boot installation to complete (VM shuts off) # noqa: no-handler
+  become: true
+  community.libvirt.virt:
+    command: status
+    name: "{{ debian_lb_vm_name }}"
+  until: _debian_lb_vm_domstate.status == 'shutdown'
+  register: _debian_lb_vm_domstate
+  retries: "{{ debian_lb_vm_first_boot_retries }}"
+  delay: "{{ debian_lb_vm_first_boot_delay }}"
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+  when: _debian_lb_vm_install.changed
+
+- name: Start VM (second boot from disk)
+  become: true
+  community.libvirt.virt:
+    name: "{{ debian_lb_vm_name }}"
+    state: running
+  delegate_to: "{{ debian_lb_vm_target_host }}"
+
+- name: Post-tasks
+  ansible.builtin.include_tasks: post_tasks.yml

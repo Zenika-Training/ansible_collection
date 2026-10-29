@@ -1,0 +1,9 @@
+---
+- name: VM created
+  ansible.builtin.debug:
+    msg:
+      - "VM     : {{ debian_lb_vm_name }}"
+      - "vCPU   : {{ debian_lb_vm_vcpus }}"
+      - "RAM    : {{ debian_lb_vm_memory }} MiB"
+      - "Disk   : /dev/{{ debian_lb_vm_vg_pool }}/vm_{{ debian_lb_vm_name }} ({{ debian_lb_vm_disk_size }})"
+      - "Network: bridge={{ debian_lb_vm_bridge }} mac={{ debian_lb_vm_mac }} ip={{ debian_lb_vm_ip }}"
