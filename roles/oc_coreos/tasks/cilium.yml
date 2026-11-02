@@ -28,6 +28,12 @@
     remote_src: true
     extra_opts:
       - --strip-components=1
+      # The CLiFE archive bundles its own copy of the dns-default-all-egress NetworkPolicy as a
+      # Day-1 manifest (new in 1.19, absent from 1.18.x). Applying it at Day-1 reproduces the
+      # bootkube atomic-batch deadlock it is meant to work around (openshift-dns does not exist
+      # yet - see oc_coreos_cilium_dns_default_all_egress_workaround / wait_install.yml, which
+      # already (re)applies the equivalent policy safely post-install).
+      - --exclude=networkpolicy-dns.yaml
 
 - name: Cilium - validate registry credentials file path is set
   ansible.builtin.assert:
