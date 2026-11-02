@@ -126,6 +126,7 @@ oc_coreos_controller_host: localhost
 # (e.g. from the Isovalent customer portal) and point this variable at the local
 # copy. Update this path (and the version-named file you download) to change the
 # deployed Cilium version. See also oc_coreos_cilium_registry_creds_file.
+# Set in group_vars/all.yml.
 # @end
 oc_coreos_cilium_manifests_file: "~/clife-v1.19.9.tar.gz"
 
@@ -139,10 +140,11 @@ oc_coreos_cilium_manifests_file: "~/clife-v1.19.9.tar.gz"
 # deadlock described for oc_coreos_cilium_dns_default_all_egress_workaround.
 # Build this file from an Isovalent/Artifactory identity token, e.g.:
 #   podman login containers.isovalent.com -u <username> -p <identity-token> \
-#     --authfile ~/cilium-registry-creds.json
+#     --authfile <path-to-this-file>
 # (docker login works the same way, same --authfile flag)
 # This role wraps its content into a Day-1 Secret named "cilium-registry-creds"
 # in the "cilium" namespace - it does not generate or store the token itself.
+# Set in group_vars/all.yml.
 # @end
 oc_coreos_cilium_registry_creds_file: "~/cilium-registry-creds.json"
 
