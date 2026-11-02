@@ -31,9 +31,18 @@
       # The CLiFE archive bundles its own copy of the dns-default-all-egress NetworkPolicy as a
       # Day-1 manifest (new in 1.19, absent from 1.18.x). Applying it at Day-1 reproduces the
       # bootkube atomic-batch deadlock it is meant to work around (openshift-dns does not exist
-      # yet - see oc_coreos_cilium_dns_default_all_egress_workaround / wait_install.yml, which
-      # already (re)applies the equivalent policy safely post-install).
+      # yet). Excluded here and extracted separately below, to be applied post-install instead
+      # (see oc_coreos_cilium_dns_default_all_egress_workaround / wait_install.yml).
       - --exclude=networkpolicy-dns.yaml
+
+- name: Cilium - extract dns-default-all-egress NetworkPolicy for post-install application
+  ansible.builtin.unarchive:
+    src: "{{ oc_coreos_cilium_manifests_file }}"
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+      - networkpolicy-dns.yaml
 
 - name: Cilium - validate registry credentials file path is set
   ansible.builtin.assert:
