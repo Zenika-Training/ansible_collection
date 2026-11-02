@@ -30,6 +30,9 @@
       - path: "/dev/{{ libvirt_kvm_vg_pool }}/vm_{{ libvirt_kvm_name }}"
         bus: virtio
         format: raw
+        cache: "{{ libvirt_kvm_disk_cache }}"
+        driver:
+          io: "{{ libvirt_kvm_disk_io }}"
     cdrom: "{{ libvirt_kvm_iso_dest_dir }}/rhcos-{{ libvirt_kvm_name }}-live.iso"
     memory: "{{ libvirt_kvm_memory }}"
     vcpus: "{{ libvirt_kvm_vcpus }}"
