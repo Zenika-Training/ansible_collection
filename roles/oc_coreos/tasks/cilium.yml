@@ -6,19 +6,58 @@
   changed_when: true
   when: oc_coreos_topology == 'sno'
 
-- name: Cilium - download manifests archive
-  ansible.builtin.get_url:
-    url: "{{ oc_coreos_cilium_manifests_url }}"
-    dest: "{{ oc_coreos_work_dir }}/cilium-manifests.tar.gz"
-    mode: "0644"
+- name: Cilium - validate manifests archive file path is set
+  ansible.builtin.assert:
+    that: oc_coreos_cilium_manifests_file | length > 0
+    fail_msg: "oc_coreos_cilium_manifests_file must be set (download the CLiFE archive manually, see README)"
+
+- name: Cilium - check manifests archive file exists
+  ansible.builtin.stat:
+    path: "{{ oc_coreos_cilium_manifests_file }}"
+  register: _oc_coreos_cilium_manifests_stat
+
+- name: Cilium - assert manifests archive file exists
+  ansible.builtin.assert:
+    that: _oc_coreos_cilium_manifests_stat.stat.exists
+    fail_msg: "Cilium manifests archive file not found: {{ oc_coreos_cilium_manifests_file }}"
 
 - name: Cilium - extract manifests archive into ignition directory
   ansible.builtin.unarchive:
-    src: "{{ oc_coreos_work_dir }}/cilium-manifests.tar.gz"
+    src: "{{ oc_coreos_cilium_manifests_file }}"
     dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/"
     remote_src: true
     extra_opts:
       - --strip-components=1
+
+- name: Cilium - validate registry credentials file path is set
+  ansible.builtin.assert:
+    that: oc_coreos_cilium_registry_creds_file | length > 0
+    fail_msg: "oc_coreos_cilium_registry_creds_file must be set (see README: build a .dockerconfigjson for containers.isovalent.com)"
+
+- name: Cilium - check registry credentials file exists
+  ansible.builtin.stat:
+    path: "{{ oc_coreos_cilium_registry_creds_file }}"
+  register: _oc_coreos_cilium_registry_creds_stat
+
+- name: Cilium - assert registry credentials file exists
+  ansible.builtin.assert:
+    that: _oc_coreos_cilium_registry_creds_stat.stat.exists
+    fail_msg: "Cilium registry credentials file not found: {{ oc_coreos_cilium_registry_creds_file }}"
+
+- name: Cilium - write cilium-registry-creds Secret manifest
+  ansible.builtin.copy:
+    content: >-
+      {{ {
+           'apiVersion': 'v1',
+           'kind': 'Secret',
+           'metadata': {'name': 'cilium-registry-creds', 'namespace': 'cilium'},
+           'type': 'kubernetes.io/dockerconfigjson',
+           'data': {
+             '.dockerconfigjson': lookup('file', oc_coreos_cilium_registry_creds_file) | b64encode
+           }
+         } | to_nice_yaml(indent=2) }}
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/v1_secret_cilium-registry-creds.yaml"
+    mode: "0600"
 
 - name: Cilium - read cluster-network-02-config.yml
   ansible.builtin.slurp:

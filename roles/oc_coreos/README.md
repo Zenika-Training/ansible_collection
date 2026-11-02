@@ -13,7 +13,8 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cilium_dns_default_all_egress_workaround](#oc_coreos_cilium_dns_default_all_egress_workaround)
   - [oc_coreos_cilium_dns_workaround_delay](#oc_coreos_cilium_dns_workaround_delay)
   - [oc_coreos_cilium_dns_workaround_retries](#oc_coreos_cilium_dns_workaround_retries)
-  - [oc_coreos_cilium_manifests_url](#oc_coreos_cilium_manifests_url)
+  - [oc_coreos_cilium_manifests_file](#oc_coreos_cilium_manifests_file)
+  - [oc_coreos_cilium_registry_creds_file](#oc_coreos_cilium_registry_creds_file)
   - [oc_coreos_cilium_socket_lb_host_namespace_only](#oc_coreos_cilium_socket_lb_host_namespace_only)
   - [oc_coreos_cluster_network_cidr](#oc_coreos_cluster_network_cidr)
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
@@ -117,8 +118,8 @@ gets to render the release payload that creates the openshift-dns namespace
 - the node then never shuts down to reboot from disk (reproduced 2026-10-19).
 Fixed natively by Isovalent starting with INK v1.19.6-cee.1/v1.18.12-cee.1/
 v1.17.18-cee.1 (the policy ships in the manifests archive itself): set this
-to false once oc_coreos_cilium_manifests_url points to one of those
-versions or later, to avoid a redundant duplicate NetworkPolicy.
+to false once oc_coreos_cilium_manifests_file points to an archive of one of
+those versions or later, to avoid a redundant duplicate NetworkPolicy.
 
 #### Default value
 
@@ -158,16 +159,49 @@ OVN-Kubernetes: extra CRDs, dedicated operator, OLM subscription).
 oc_coreos_cilium_dns_workaround_retries: 240
 ```
 
-### oc_coreos_cilium_manifests_url
+### oc_coreos_cilium_manifests_file
 
-URL of the CLIFE archive (Cilium for OpenShift). Used only when
+Local path to the CLiFE archive (Cilium for OpenShift). Used only when
 oc_coreos_ocp_network == 'Cilium'.
-Update this URL to change the deployed Cilium version.
+Starting with Cilium Enterprise 1.19, the container images referenced by this
+archive are hosted on a private registry (containers.isovalent.com) and the
+archive itself requires an authenticated Isovalent/Cisco account to download -
+it can no longer be fetched automatically by this role. Download it manually
+(e.g. from the Isovalent customer portal) and point this variable at the local
+copy. Update this path (and the version-named file you download) to change the
+deployed Cilium version. See also oc_coreos_cilium_registry_creds_file.
 
 #### Default value
 
 ```YAML
-oc_coreos_cilium_manifests_url: https://docs.isovalent.com/v25.11/public/clife/clife-v1.18.8.tar.gz
+oc_coreos_cilium_manifests_file: ~/clife-v1.19.9.tar.gz
+```
+
+### oc_coreos_cilium_registry_creds_file
+
+Local path to a .dockerconfigjson file granting pull access to the private
+Cilium Enterprise registry (containers.isovalent.com). Used only when
+oc_coreos_ocp_network == 'Cilium'. Required starting with the CLiFE 1.19
+archive: its clife-controller-manager Deployment declares
+`imagePullSecrets: [cilium-registry-creds]`, and without it the very first
+image pull fails during bootstrap-in-place - the same atomic-manifest-batch
+deadlock described for oc_coreos_cilium_dns_default_all_egress_workaround.
+Build this file from an Isovalent/Artifactory identity token, e.g.:
+
+```sh
+podman login containers.isovalent.com -u <username> -p <identity-token> \
+  --authfile ~/cilium-registry-creds.json
+```
+
+(docker login works the same way, same --authfile flag)
+
+This role wraps its content into a Day-1 Secret named "cilium-registry-creds"
+in the "cilium" namespace - it does not generate or store the token itself.
+
+#### Default value
+
+```YAML
+oc_coreos_cilium_registry_creds_file: ~/cilium-registry-creds.json
 ```
 
 ### oc_coreos_cilium_socket_lb_host_namespace_only
