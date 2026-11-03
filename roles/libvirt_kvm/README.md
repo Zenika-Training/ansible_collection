@@ -8,6 +8,8 @@ Create a KVM libvirt VM for SNO OpenShift from an RHCOS live ISO
 - [Default Variables](#default-variables)
   - [libvirt_kvm_bridge](#libvirt_kvm_bridge)
   - [libvirt_kvm_cpu_model](#libvirt_kvm_cpu_model)
+  - [libvirt_kvm_disk_cache](#libvirt_kvm_disk_cache)
+  - [libvirt_kvm_disk_io](#libvirt_kvm_disk_io)
   - [libvirt_kvm_disk_size](#libvirt_kvm_disk_size)
   - [libvirt_kvm_first_boot_delay](#libvirt_kvm_first_boot_delay)
   - [libvirt_kvm_first_boot_retries](#libvirt_kvm_first_boot_retries)
@@ -53,6 +55,35 @@ CPU model passed to libvirt. host-model exposes all host CPU features.
 
 ```YAML
 libvirt_kvm_cpu_model: host-model
+```
+
+### libvirt_kvm_disk_cache
+
+libvirt disk cache mode (e.g. none, writeback, writethrough). "none" (O_DIRECT, no host page
+cache) is the safest default but makes the heavy sequential I/O of a CoreOS install
+(install-to-disk, then the machine-config-daemon OS rebase) significantly slower, especially on
+an LVM-backed disk under I/O contention. "writeback" uses the host page cache and is markedly
+faster for these training lab VMs, at the cost of possible data loss on a host crash/power loss -
+an acceptable trade-off for disposable lab clusters, not for anything meant to survive a host
+failure.
+
+#### Default value
+
+```YAML
+libvirt_kvm_disk_cache: writeback
+```
+
+### libvirt_kvm_disk_io
+
+libvirt disk I/O backend (native or threads). virt-install defaults virtio-blk disks to "native"
+(Linux AIO), which only works with cache=none or cache=directsync - it refuses to start with
+cache=writeback/writethrough. "threads" is required here to pair with libvirt_kvm_disk_cache's
+writeback default.
+
+#### Default value
+
+```YAML
+libvirt_kvm_disk_io: threads
 ```
 
 ### libvirt_kvm_disk_size

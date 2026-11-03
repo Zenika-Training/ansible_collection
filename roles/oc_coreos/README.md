@@ -170,6 +170,7 @@ it can no longer be fetched automatically by this role. Download it manually
 (e.g. from the Isovalent customer portal) and point this variable at the local
 copy. Update this path (and the version-named file you download) to change the
 deployed Cilium version. See also oc_coreos_cilium_registry_creds_file.
+Set in group_vars/all.yml.
 
 #### Default value
 
@@ -181,22 +182,18 @@ oc_coreos_cilium_manifests_file: ~/clife-v1.19.9.tar.gz
 
 Local path to a .dockerconfigjson file granting pull access to the private
 Cilium Enterprise registry (containers.isovalent.com). Used only when
-oc_coreos_ocp_network == 'Cilium'. Required starting with the CLiFE 1.19
-archive: its clife-controller-manager Deployment declares
-`imagePullSecrets: [cilium-registry-creds]`, and without it the very first
-image pull fails during bootstrap-in-place - the same atomic-manifest-batch
-deadlock described for oc_coreos_cilium_dns_default_all_egress_workaround.
+oc_coreos_ocp_network == 'Cilium'. The clife-controller-manager ServiceAccount
+and the CiliumConfig manifest both reference a "cilium-registry-creds" Secret
+built from this file - without it, image pulls fail and bootstrap-in-place
+deadlocks the same way as oc_coreos_cilium_dns_default_all_egress_workaround.
 Build this file from an Isovalent/Artifactory identity token, e.g.:
+podman login containers.isovalent.com -u <username> -p <identity-token>
 
-```sh
-podman login containers.isovalent.com -u <username> -p <identity-token> \
-  --authfile ~/cilium-registry-creds.json
-```
-
+--authfile <path-to-this-file>
 (docker login works the same way, same --authfile flag)
-
 This role wraps its content into a Day-1 Secret named "cilium-registry-creds"
 in the "cilium" namespace - it does not generate or store the token itself.
+Set in group_vars/all.yml.
 
 #### Default value
 

@@ -29,10 +29,9 @@
     extra_opts:
       - --strip-components=1
       # The CLiFE archive bundles its own copy of the dns-default-all-egress NetworkPolicy as a
-      # Day-1 manifest (new in 1.19, absent from 1.18.x). Applying it at Day-1 reproduces the
-      # bootkube atomic-batch deadlock it is meant to work around (openshift-dns does not exist
-      # yet). Excluded here and extracted separately below, to be applied post-install instead
-      # (see oc_coreos_cilium_dns_default_all_egress_workaround / wait_install.yml).
+      # Day-1 manifest. Applying it at Day-1 deadlocks bootstrap-in-place (openshift-dns does not
+      # exist yet). Excluded here and extracted separately below, to be applied post-install
+      # instead (see oc_coreos_cilium_dns_default_all_egress_workaround / wait_install.yml).
       - --exclude=networkpolicy-dns.yaml
 
 - name: Cilium - extract dns-default-all-egress NetworkPolicy for post-install application
@@ -43,8 +42,8 @@
     extra_opts:
       - --strip-components=1
       # The archive stores entries with a "./" prefix (e.g. "./networkpolicy-dns.yaml"); tar
-      # requires an exact member-name match for positional extraction (unlike --exclude above,
-      # which matches more loosely), so the "./" prefix must be given here too.
+      # requires an exact member-name match for positional extraction, unlike the looser
+      # --exclude match above.
       - ./networkpolicy-dns.yaml
 
 - name: Cilium - validate registry credentials file path is set
@@ -62,12 +61,10 @@
     that: _oc_coreos_cilium_registry_creds_stat.stat.exists
     fail_msg: "Cilium registry credentials file not found: {{ oc_coreos_cilium_registry_creds_file }}"
 
-# clife-controller-manager's own ServiceAccount (shipped in the archive) already references
-# imagePullSecrets: [cilium-registry-creds] by this exact name - it must be able to pull its own
-# image from this static Day-1 Secret before it can run at all, so a CRD-managed RegistryCredential
-# (which only clife-controller-manager itself can reconcile) cannot be the sole source of this
-# secret: chicken-and-egg, reproduced on a lab cluster, 2026-11-03 (clife-controller-manager stuck
-# in ImagePullBackOff forever with no other pull secret available).
+# clife-controller-manager's ServiceAccount (shipped in the archive) references
+# imagePullSecrets: [cilium-registry-creds] by this exact name, and must pull its own image from
+# this static Day-1 Secret before it can run - a CRD-managed RegistryCredential, which only
+# clife-controller-manager itself can reconcile, cannot be the sole source of this secret.
 - name: Cilium - write cilium-registry-creds Secret manifest
   ansible.builtin.copy:
     content: >-
@@ -152,9 +149,9 @@
   register: _oc_coreos_cilium_config_raw
 
 # Standard Helm chart value: without imagePullSecrets here, the rendered cilium/cilium-operator/
-# cilium-envoy pods have no imagePullSecrets at all and stay in ImagePullBackOff forever, even once
-# cilium-registry-creds holds a valid token (reproduced on a lab cluster, 2026-11-03). See
-# oc_coreos_cilium_registry_creds_file for how that secret is built.
+# cilium-envoy pods have no pull secret at all and stay in ImagePullBackOff, even with a valid
+# cilium-registry-creds Secret. See oc_coreos_cilium_registry_creds_file for how that secret is
+# built.
 - name: Cilium - patch CiliumConfig
   ansible.builtin.copy:
     content: >-
@@ -192,5 +189,5 @@
 # not here: bootkube.service applies every manifests/*.yaml file as one atomic batch during the
 # first-boot bootstrap-in-place phase and retries forever if any of them fails - it never
 # progresses to render the release payload that creates the openshift-dns namespace in the first
-# place. Shipping this NetworkPolicy as a Day-1 manifest therefore deadlocks the bootstrap: the
-# node never shuts down to reboot from disk (reproduced on a lab cluster, 2026-10-19).
+# place. Shipping this NetworkPolicy as a Day-1 manifest deadlocks the bootstrap: the node never
+# shuts down to reboot from disk.
