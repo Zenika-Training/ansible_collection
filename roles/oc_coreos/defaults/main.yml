@@ -134,11 +134,14 @@ oc_coreos_cilium_manifests_file: "~/clife-v1.19.9.tar.gz"
 # Local path to a .dockerconfigjson file granting pull access to the private
 # Cilium Enterprise registry (containers.isovalent.com). Used only when
 # oc_coreos_ocp_network == 'Cilium'. Required starting with the CLiFE 1.19
-# archive: its clife-controller-manager Deployment declares
-# `imagePullSecrets: [cilium-registry-creds]`, and without it the very first
-# image pull fails during bootstrap-in-place - the same atomic-manifest-batch
-# deadlock described for oc_coreos_cilium_dns_default_all_egress_workaround.
-# Build this file from an Isovalent/Artifactory identity token, e.g.:
+# archive: its clife-controller-manager ServiceAccount declares
+# `imagePullSecrets: [cilium-registry-creds]`, and CiliumConfig.spec must also
+# carry the same imagePullSecrets for the rendered cilium/cilium-operator/
+# cilium-envoy pods to inherit it - without either, image pulls fail with
+# "Authentication is required" and bootstrap-in-place deadlocks the same way as
+# oc_coreos_cilium_dns_default_all_egress_workaround (reproduced on a lab
+# cluster, 2026-11-03). Build this file from an Isovalent/Artifactory identity
+# token, e.g.:
 #   podman login containers.isovalent.com -u <username> -p <identity-token> \
 #     --authfile <path-to-this-file>
 # (docker login works the same way, same --authfile flag)

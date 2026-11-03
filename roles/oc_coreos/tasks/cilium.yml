@@ -62,6 +62,12 @@
     that: _oc_coreos_cilium_registry_creds_stat.stat.exists
     fail_msg: "Cilium registry credentials file not found: {{ oc_coreos_cilium_registry_creds_file }}"
 
+# clife-controller-manager's own ServiceAccount (shipped in the archive) already references
+# imagePullSecrets: [cilium-registry-creds] by this exact name - it must be able to pull its own
+# image from this static Day-1 Secret before it can run at all, so a CRD-managed RegistryCredential
+# (which only clife-controller-manager itself can reconcile) cannot be the sole source of this
+# secret: chicken-and-egg, reproduced on a lab cluster, 2026-11-03 (clife-controller-manager stuck
+# in ImagePullBackOff forever with no other pull secret available).
 - name: Cilium - write cilium-registry-creds Secret manifest
   ansible.builtin.copy:
     content: >-
@@ -145,6 +151,10 @@
     src: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/manifests/ciliumconfig.yaml"
   register: _oc_coreos_cilium_config_raw
 
+# Standard Helm chart value: without imagePullSecrets here, the rendered cilium/cilium-operator/
+# cilium-envoy pods have no imagePullSecrets at all and stay in ImagePullBackOff forever, even once
+# cilium-registry-creds holds a valid token (reproduced on a lab cluster, 2026-11-03). See
+# oc_coreos_cilium_registry_creds_file for how that secret is built.
 - name: Cilium - patch CiliumConfig
   ansible.builtin.copy:
     content: >-
@@ -165,7 +175,8 @@
                'bpf': {
                  'masquerade': oc_coreos_cilium_bpf_masquerade,
                  'hostLegacyRouting': oc_coreos_cilium_bpf_host_legacy_routing
-               }
+               },
+               'imagePullSecrets': [{'name': 'cilium-registry-creds'}]
              }
            }, recursive=True)
          | combine(
