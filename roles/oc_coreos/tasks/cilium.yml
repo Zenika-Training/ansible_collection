@@ -42,7 +42,10 @@
     remote_src: true
     extra_opts:
       - --strip-components=1
-      - networkpolicy-dns.yaml
+      # The archive stores entries with a "./" prefix (e.g. "./networkpolicy-dns.yaml"); tar
+      # requires an exact member-name match for positional extraction (unlike --exclude above,
+      # which matches more loosely), so the "./" prefix must be given here too.
+      - ./networkpolicy-dns.yaml
 
 - name: Cilium - validate registry credentials file path is set
   ansible.builtin.assert:
