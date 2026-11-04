@@ -19,4 +19,4 @@
   ansible.builtin.assert:
     that: haproxy_lb_bootstrap_ip | length > 0
     fail_msg: "haproxy_lb_bootstrap_ip must be set when haproxy_lb_bootstrap_enabled is true"
-  when: haproxy_lb_bootstrap_enabled
+  when: haproxy_lb_bootstrap_enabled | bool
