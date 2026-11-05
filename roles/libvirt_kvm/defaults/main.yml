@@ -36,6 +36,25 @@ libvirt_kvm_vg_pool: vg_guest
 # @var libvirt_kvm_disk_size:description: Size of the VM disk in virt-install format (e.g. 120g).
 libvirt_kvm_disk_size: 120g
 
+# @var libvirt_kvm_disk_cache:description: >
+# libvirt disk cache mode (e.g. none, writeback, writethrough). "none" (O_DIRECT, no host page
+# cache) is the safest default but makes the heavy sequential I/O of a CoreOS install
+# (install-to-disk, then the machine-config-daemon OS rebase) significantly slower, especially on
+# an LVM-backed disk under I/O contention. "writeback" uses the host page cache and is markedly
+# faster for these training lab VMs, at the cost of possible data loss on a host crash/power loss -
+# an acceptable trade-off for disposable lab clusters, not for anything meant to survive a host
+# failure.
+# @end
+libvirt_kvm_disk_cache: writeback
+
+# @var libvirt_kvm_disk_io:description: >
+# libvirt disk I/O backend (native or threads). virt-install defaults virtio-blk disks to "native"
+# (Linux AIO), which only works with cache=none or cache=directsync - it refuses to start with
+# cache=writeback/writethrough. "threads" is required here to pair with libvirt_kvm_disk_cache's
+# writeback default.
+# @end
+libvirt_kvm_disk_io: threads
+
 # @section Network
 
 # @var libvirt_kvm_bridge:description: Linux bridge interface on the KVM host used for the VM network.
