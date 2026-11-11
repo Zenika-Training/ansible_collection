@@ -51,6 +51,10 @@
   ansible.builtin.include_tasks: cilium.yml
   when: oc_coreos_ocp_network == 'Cilium'
 
+- name: OVN routing (Day-1 routingViaHost)
+  ansible.builtin.include_tasks: ovn_routing.yml
+  when: oc_coreos_ocp_network == 'OVNKubernetes'
+
 - name: Generate single-node ignition config
   ansible.builtin.command:
     cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create single-node-ignition-config"

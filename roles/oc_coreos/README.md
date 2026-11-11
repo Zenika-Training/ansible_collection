@@ -354,6 +354,26 @@ Used to compute the node default gateway in the ignition configuration.
 oc_coreos_ocp_subnet: 192.168.0.0/24
 ```
 
+### oc_coreos_ovn_routing_via_host
+
+Day-1 value of spec.defaultNetwork.ovnKubernetesConfig.gatewayConfig.routingViaHost, patched
+into the generated Network Day-1 manifest (manifests/cluster-network-03-config.yml) before
+ignition is produced. Only applies when oc_coreos_ocp_network is OVNKubernetes - the setting
+does not exist on Cilium. Default true: documented Red Hat prerequisite for Istio Ambient, and
+the fix for OSSM-9869 (with routingViaHost false, kubelet httpGet/tcpSocket probes on a pod
+enrolled in Ambient are lost - istio-cni's probe SNAT address falls inside OVN-Kubernetes'
+internal masquerade subnet, 🧪 reproduced on ocp1/ocp3, 2026-11-11). Applying it Day-1 here
+avoids the live rollout of ovnkube-node (brief per-node network outage) that the same change
+causes when patched Day-2 on an already-installed cluster (see ensure_routing_via_host() in
+training-openshift/scripts/mesh-shared-ca-setup.sh, used for clusters installed before this
+variable existed). Set to false only if a specific lab needs the default OVN-K behaviour.
+
+#### Default value
+
+```YAML
+oc_coreos_ovn_routing_via_host: true
+```
+
 ### oc_coreos_pull_secret_file
 
 Path to the Red Hat pull secret JSON file on the Ansible controller.
