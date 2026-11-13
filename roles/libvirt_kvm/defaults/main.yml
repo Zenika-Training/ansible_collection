@@ -55,6 +55,16 @@ libvirt_kvm_disk_cache: writeback
 # @end
 libvirt_kvm_disk_io: threads
 
+# @var libvirt_kvm_extra_disks:description: >
+# Additional raw block devices to attach to the VM beyond the main OS disk, each backed by its own
+# LVM logical volume (vm_<name>_<item.name>) in libvirt_kvm_vg_pool. The role only creates and
+# attaches the block device - it never partitions or formats it; populating it (e.g. a day-1 LVMS/
+# LVM Storage volume group) is out of scope for this role.
+# List of objects: name (suffix for the LV/device, e.g. "lvms") and size (virt-install/lvol format,
+# e.g. "10g"). Empty by default - no extra disk.
+# @end
+libvirt_kvm_extra_disks: []
+
 # @section Network
 
 # @var libvirt_kvm_bridge:description: Linux bridge interface on the KVM host used for the VM network.
@@ -65,6 +75,23 @@ libvirt_kvm_bridge: br0
 # Used to ensure a predictable static IP via DHCP or DNS.
 # @end
 libvirt_kvm_mac: ""
+
+# @var libvirt_kvm_extra_networks:description: >
+# Additional NICs to attach to the VM beyond the main libvirt_kvm_bridge interface, each on its own
+# libvirt virtual network (defined/started/autostarted by this role if not already present) instead
+# of the host bridge - kept separate from node/API traffic by construction. No <forward> element by
+# default (fully isolated, no path to the outside host network) - the safest default for a dedicated
+# inter-cluster link (Submariner/RHSI traffic) that firewall rules can discriminate from node/API
+# traffic on the same host, and that can be unplugged (virsh net-destroy on the KVM host) to simulate
+# a network cutoff without losing the primary NIC (API/SSH). Set forward_mode to "nat" or "route"
+# only if this network must also reach outside the host.
+# List of objects: name (libvirt network name, also used as its bridge name prefix), ip (gateway
+# address of the virtual network, e.g. "192.168.200.1"), netmask (e.g. "255.255.255.0"), mac (this
+# VM's NIC address on that network), forward_mode (optional, see above). Empty by default - no extra
+# NIC. Several VMs on the same KVM host share the same virtual network by listing the same name/ip/
+# netmask - defining it twice with identical values is idempotent.
+# @end
+libvirt_kvm_extra_networks: []
 
 # @var libvirt_kvm_iso_dest_dir:description: Directory on the KVM host where the ISO is copied before boot.
 libvirt_kvm_iso_dest_dir: /var/lib/libvirt/images
