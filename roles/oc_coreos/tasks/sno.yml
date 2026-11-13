@@ -99,5 +99,34 @@
     command: "iso ignition embed -fi {{ oc_coreos_ocp_name }}/bootstrap-in-place-for-live-iso.ign rhcos-live.iso"
   changed_when: true
 
+- name: Disabled-NIC network keyfiles (oc_coreos_disable_nic_macs)
+  ansible.builtin.include_tasks: disable_nics.yml
+  when: oc_coreos_disable_nic_macs | length > 0
+
+# `iso customize` only touches what is passed here - the ignition embedded just above is a
+# separate section of the ISO and is left untouched. -f because rhcos-live.iso was already
+# customized (ignition) earlier in this run.
+- name: Apply disabled-NIC network keyfiles to the live ISO
+  containers.podman.podman_container:
+    name: coreos-installer-network
+    image: quay.io/coreos/coreos-installer:release
+    state: started
+    detach: false
+    rm: true
+    privileged: true
+    volumes:
+      - /dev:/dev
+      - /run/udev:/run/udev
+      - "{{ oc_coreos_work_dir }}:/data"
+    workdir: /data
+    command: >-
+      iso customize -f
+      {% for mac in oc_coreos_disable_nic_macs %}
+      --network-keyfile {{ oc_coreos_ocp_name }}/network-keyfiles/disabled-{{ mac | regex_replace(':', '') }}.nmconnection
+      {% endfor %}
+      -o rhcos-live.iso rhcos-live.iso
+  changed_when: true
+  when: oc_coreos_disable_nic_macs | length > 0
+
 - name: Post-tasks
   ansible.builtin.include_tasks: post_tasks.yml

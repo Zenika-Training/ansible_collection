@@ -117,6 +117,10 @@
     - rhcos-bootstrap.iso
     - rhcos-master.iso
 
+- name: Disabled-NIC network keyfiles (oc_coreos_disable_nic_macs)
+  ansible.builtin.include_tasks: disable_nics.yml
+  when: oc_coreos_disable_nic_macs | length > 0
+
 # Two ISO variants from the same clean base (-o leaves rhcos-live.iso untouched):
 # rhcos-bootstrap.iso for the bootstrap VM, rhcos-master.iso reused for all masters.
 #
@@ -142,6 +146,9 @@
       iso customize
       --dest-ignition {{ oc_coreos_ocp_name }}/bootstrap.ign
       --dest-device {{ oc_coreos_install_disk }}
+      {% for mac in oc_coreos_disable_nic_macs %}
+      --network-keyfile {{ oc_coreos_ocp_name }}/network-keyfiles/disabled-{{ mac | regex_replace(':', '') }}.nmconnection
+      {% endfor %}
       -o rhcos-bootstrap.iso rhcos-live.iso
   changed_when: true
 
@@ -162,6 +169,9 @@
       iso customize
       --dest-ignition {{ oc_coreos_ocp_name }}/master.ign
       --dest-device {{ oc_coreos_install_disk }}
+      {% for mac in oc_coreos_disable_nic_macs %}
+      --network-keyfile {{ oc_coreos_ocp_name }}/network-keyfiles/disabled-{{ mac | regex_replace(':', '') }}.nmconnection
+      {% endfor %}
       -o rhcos-master.iso rhcos-live.iso
   changed_when: true
 

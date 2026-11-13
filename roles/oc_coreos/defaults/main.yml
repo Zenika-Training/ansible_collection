@@ -51,6 +51,19 @@ oc_coreos_ocp_ip: ""
 # @end
 oc_coreos_ocp_subnet: "192.168.0.0/24"
 
+# @var oc_coreos_disable_nic_macs:description: >
+# MAC addresses of NICs that must stay inactive (no DHCP attempt) during both the live boot and the
+# installed destination system - for a NIC intentionally on an isolated network with no DHCP server
+# (e.g. a dedicated inter-cluster link, see libvirt_kvm_extra_networks in the libvirt_kvm role).
+# Without this, NetworkManager auto-creates a DHCP connection for every detected NIC by default -
+# one with no DHCP server to answer can stall the boot waiting on the wrong network before the real
+# machine-network NIC is ready. Generates one NetworkManager keyfile per MAC
+# (autoconnect=false) and embeds it via coreos-installer's --network-keyfile. Empty by default - no
+# NIC disabled, no behaviour change. Not yet exercised end-to-end on a real install - to validate on
+# the first cluster rebuilt with a non-empty list.
+# @end
+oc_coreos_disable_nic_macs: []
+
 # @section CNI (Container Network Interface)
 
 # @var oc_coreos_ocp_network:description: >
