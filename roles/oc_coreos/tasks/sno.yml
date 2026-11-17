@@ -51,6 +51,10 @@
   ansible.builtin.include_tasks: cilium.yml
   when: oc_coreos_ocp_network == 'Cilium'
 
+- name: OVN routing (Day-1 routingViaHost)
+  ansible.builtin.include_tasks: ovn_routing.yml
+  when: oc_coreos_ocp_network == 'OVNKubernetes'
+
 - name: Generate single-node ignition config
   ansible.builtin.command:
     cmd: "/usr/local/bin/openshift-install --dir={{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }} create single-node-ignition-config"
@@ -79,7 +83,19 @@
     command: "iso ignition remove rhcos-live.iso"
   changed_when: false
 
-- name: Embed ignition config into RHCOS ISO
+- name: Disabled-NIC network keyfiles (oc_coreos_disable_nic_macs)
+  ansible.builtin.include_tasks: disable_nics.yml
+  when: oc_coreos_disable_nic_macs | length > 0
+
+# Single `iso customize` call for ignition + network keyfiles together - NOT two separate calls
+# (`iso ignition embed` then `iso customize --network-keyfile`). 🧪 Confirmed on ocp1, 2026-11-13:
+# `iso customize -f --network-keyfile ...` run AFTER a separate `iso ignition embed` silently wiped
+# the embedded ignition (`iso ignition show` then reported "No embedded Ignition config.", and the
+# VM booted to the live shell instead of self-installing) - -f overwrites the whole customizations
+# structure, not just the parts passed on that particular invocation. No -o: modifies rhcos-live.iso
+# in place - -o only ever writes to a NEW file and refuses to overwrite an existing one (also
+# confirmed the same day: "File exists (os error 17)" when given the same path for input/output).
+- name: Embed ignition config and disabled-NIC network keyfiles into RHCOS ISO
   containers.podman.podman_container:
     name: coreos-installer
     image: quay.io/coreos/coreos-installer:release
@@ -92,7 +108,13 @@
       - /run/udev:/run/udev
       - "{{ oc_coreos_work_dir }}:/data"
     workdir: /data
-    command: "iso ignition embed -fi {{ oc_coreos_ocp_name }}/bootstrap-in-place-for-live-iso.ign rhcos-live.iso"
+    command: >-
+      iso customize -f
+      --live-ignition {{ oc_coreos_ocp_name }}/bootstrap-in-place-for-live-iso.ign
+      {% for mac in oc_coreos_disable_nic_macs %}
+      --network-keyfile {{ oc_coreos_ocp_name }}/network-keyfiles/disabled-{{ mac | regex_replace(':', '') }}.nmconnection
+      {% endfor %}
+      rhcos-live.iso
   changed_when: true
 
 - name: Post-tasks

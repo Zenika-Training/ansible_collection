@@ -1,0 +1,21 @@
+---
+# One NetworkManager keyfile per MAC in oc_coreos_disable_nic_macs (autoconnect=false) - without
+# it, NetworkManager auto-creates a DHCP connection for every detected NIC, so a dedicated/isolated
+# NIC with no DHCP server (e.g. libvirt_kvm_extra_networks in the libvirt_kvm role) can stall the
+# boot waiting for a lease that never comes. NetworkManager refuses to load a keyfile that is group/
+# world-readable, hence mode 0600. Applied to the ISO via coreos-installer's --network-keyfile in
+# sno.yml/compact.yml, immediately after this include.
+- name: Create network keyfiles directory
+  ansible.builtin.file:
+    path: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/network-keyfiles"
+    state: directory
+    mode: "0700"
+
+- name: Write NetworkManager keyfiles to disable dedicated/isolated NICs
+  ansible.builtin.copy:
+    dest: "{{ oc_coreos_work_dir }}/{{ oc_coreos_ocp_name }}/network-keyfiles/disabled-{{ item | regex_replace(':', '') }}.nmconnection"
+    mode: "0600"
+    content: "{{ lookup('template', 'disabled-nic.nmconnection.j2') }}"
+  loop: "{{ oc_coreos_disable_nic_macs }}"
+  loop_control:
+    label: "{{ item }}"

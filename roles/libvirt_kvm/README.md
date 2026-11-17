@@ -11,6 +11,8 @@ Create a KVM libvirt VM for SNO OpenShift from an RHCOS live ISO
   - [libvirt_kvm_disk_cache](#libvirt_kvm_disk_cache)
   - [libvirt_kvm_disk_io](#libvirt_kvm_disk_io)
   - [libvirt_kvm_disk_size](#libvirt_kvm_disk_size)
+  - [libvirt_kvm_extra_disks](#libvirt_kvm_extra_disks)
+  - [libvirt_kvm_extra_networks](#libvirt_kvm_extra_networks)
   - [libvirt_kvm_first_boot_delay](#libvirt_kvm_first_boot_delay)
   - [libvirt_kvm_first_boot_retries](#libvirt_kvm_first_boot_retries)
   - [libvirt_kvm_graphics_listen](#libvirt_kvm_graphics_listen)
@@ -94,6 +96,43 @@ Size of the VM disk in virt-install format (e.g. 120g).
 
 ```YAML
 libvirt_kvm_disk_size: 120g
+```
+
+### libvirt_kvm_extra_disks
+
+Additional raw block devices to attach to the VM beyond the main OS disk, each backed by its own
+LVM logical volume (vm_<name>_<item.name>) in libvirt_kvm_vg_pool. The role only creates and
+attaches the block device - it never partitions or formats it; populating it (e.g. a day-1 LVMS/
+LVM Storage volume group) is out of scope for this role.
+List of objects: name (suffix for the LV/device, e.g. "lvms") and size (virt-install/lvol format,
+e.g. "10g"). Empty by default - no extra disk.
+
+#### Default value
+
+```YAML
+libvirt_kvm_extra_disks: []
+```
+
+### libvirt_kvm_extra_networks
+
+Additional NICs to attach to the VM beyond the main libvirt_kvm_bridge interface, each on its own
+libvirt virtual network (defined/started/autostarted by this role if not already present) instead
+of the host bridge - kept separate from node/API traffic by construction. No <forward> element by
+default (fully isolated, no path to the outside host network) - the safest default for a dedicated
+inter-cluster link (Submariner/RHSI traffic) that firewall rules can discriminate from node/API
+traffic on the same host, and that can be unplugged (virsh net-destroy on the KVM host) to simulate
+a network cutoff without losing the primary NIC (API/SSH). Set forward_mode to "nat" or "route"
+only if this network must also reach outside the host.
+List of objects: name (libvirt network name, also used as its bridge name prefix), ip (gateway
+address of the virtual network, e.g. "192.168.200.1"), netmask (e.g. "255.255.255.0"), mac (this
+VM's NIC address on that network), forward_mode (optional, see above). Empty by default - no extra
+NIC. Several VMs on the same KVM host share the same virtual network by listing the same name/ip/
+netmask - defining it twice with identical values is idempotent.
+
+#### Default value
+
+```YAML
+libvirt_kvm_extra_networks: []
 ```
 
 ### libvirt_kvm_first_boot_delay

@@ -1,0 +1,8 @@
+<network>
+  <name>{{ item.name }}</name>
+{% if item.forward_mode is defined and item.forward_mode %}
+  <forward mode="{{ item.forward_mode }}"/>
+{% endif %}
+  <bridge stp="on" delay="0"/>
+  <ip address="{{ item.ip }}" netmask="{{ item.netmask }}"/>
+</network>

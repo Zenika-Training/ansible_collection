@@ -20,6 +20,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_cluster_network_prefix](#oc_coreos_cluster_network_prefix)
   - [oc_coreos_control_plane_count](#oc_coreos_control_plane_count)
   - [oc_coreos_controller_host](#oc_coreos_controller_host)
+  - [oc_coreos_disable_nic_macs](#oc_coreos_disable_nic_macs)
   - [oc_coreos_install_disk](#oc_coreos_install_disk)
   - [oc_coreos_install_retries](#oc_coreos_install_retries)
   - [oc_coreos_ocp_domain](#oc_coreos_ocp_domain)
@@ -27,6 +28,7 @@ Prepare an RHCOS live ISO for SNO (Single Node OpenShift) with embedded ignition
   - [oc_coreos_ocp_name](#oc_coreos_ocp_name)
   - [oc_coreos_ocp_network](#oc_coreos_ocp_network)
   - [oc_coreos_ocp_subnet](#oc_coreos_ocp_subnet)
+  - [oc_coreos_ovn_routing_via_host](#oc_coreos_ovn_routing_via_host)
   - [oc_coreos_pull_secret_file](#oc_coreos_pull_secret_file)
   - [oc_coreos_service_network](#oc_coreos_service_network)
   - [oc_coreos_ssh_key_file](#oc_coreos_ssh_key_file)
@@ -267,6 +269,24 @@ unless overridden in the inventory.
 oc_coreos_controller_host: localhost
 ```
 
+### oc_coreos_disable_nic_macs
+
+MAC addresses of NICs that must stay inactive (no DHCP attempt) during both the live boot and the
+installed destination system - for a NIC intentionally on an isolated network with no DHCP server
+(e.g. a dedicated inter-cluster link, see libvirt_kvm_extra_networks in the libvirt_kvm role).
+Without this, NetworkManager auto-creates a DHCP connection for every detected NIC by default -
+one with no DHCP server to answer can stall the boot waiting on the wrong network before the real
+machine-network NIC is ready. Generates one NetworkManager keyfile per MAC
+(autoconnect=false) and embeds it via coreos-installer's --network-keyfile. Empty by default - no
+NIC disabled, no behaviour change. Not yet exercised end-to-end on a real install - to validate on
+the first cluster rebuilt with a non-empty list.
+
+#### Default value
+
+```YAML
+oc_coreos_disable_nic_macs: []
+```
+
 ### oc_coreos_install_disk
 
 Target disk in the VM for the CoreOS installation.
@@ -352,6 +372,26 @@ Used to compute the node default gateway in the ignition configuration.
 
 ```YAML
 oc_coreos_ocp_subnet: 192.168.0.0/24
+```
+
+### oc_coreos_ovn_routing_via_host
+
+Day-1 value of spec.defaultNetwork.ovnKubernetesConfig.gatewayConfig.routingViaHost, patched
+into the generated Network Day-1 manifest (manifests/cluster-network-03-config.yml) before
+ignition is produced. Only applies when oc_coreos_ocp_network is OVNKubernetes - the setting
+does not exist on Cilium. Default true: documented Red Hat prerequisite for Istio Ambient, and
+the fix for OSSM-9869 (with routingViaHost false, kubelet httpGet/tcpSocket probes on a pod
+enrolled in Ambient are lost - istio-cni's probe SNAT address falls inside OVN-Kubernetes'
+internal masquerade subnet, 🧪 reproduced on ocp1/ocp3, 2026-11-11). Applying it Day-1 here
+avoids the live rollout of ovnkube-node (brief per-node network outage) that the same change
+causes when patched Day-2 on an already-installed cluster (see ensure_routing_via_host() in
+training-openshift/scripts/mesh-shared-ca-setup.sh, used for clusters installed before this
+variable existed). Set to false only if a specific lab needs the default OVN-K behaviour.
+
+#### Default value
+
+```YAML
+oc_coreos_ovn_routing_via_host: true
 ```
 
 ### oc_coreos_pull_secret_file

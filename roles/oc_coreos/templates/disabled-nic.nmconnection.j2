@@ -1,0 +1,7 @@
+[connection]
+id=disabled-{{ item | regex_replace(':', '') }}
+type=ethernet
+autoconnect=false
+
+[ethernet]
+mac-address={{ item }}
