@@ -1,3 +1,12 @@
 ---
 # @var oc_command_version:description: OpenShift client version to install (must match the cluster version).
 oc_command_version: 4.22.22
+
+# @var oc_command_istioctl_enabled:description: Also install istioctl, the Red Hat build distributed with OpenShift Service Mesh 3.
+oc_command_istioctl_enabled: true
+
+# @var oc_command_istioctl_version:description: >
+# istioctl version to install. Must match the Istio version run by the mesh (`oc get istio -o jsonpath='{.items[*].spec.version}'`),
+# not the OpenShift version: 1.31.1 is the Istio version of OpenShift Service Mesh 3.5.0.
+# @end
+oc_command_istioctl_version: 1.31.1
