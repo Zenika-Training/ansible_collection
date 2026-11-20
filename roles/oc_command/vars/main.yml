@@ -4,3 +4,9 @@ oc_command_client: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{
 
 # @var oc_command_install:description: Download URL for the openshift-install binary tarball.
 oc_command_install: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ oc_command_version }}/openshift-install-linux.tar.gz"
+
+# @var oc_command_istioctl:description: >
+# Download URL for the istioctl tarball (Red Hat build, same location as the "Download istioctl" link
+# of the OpenShift console Command Line Tools page). The binary sits in a sub-directory of the archive.
+# @end
+oc_command_istioctl: "https://mirror.openshift.com/pub/cgw/servicemesh/{{ oc_command_istioctl_version }}/istioctl-{{ oc_command_istioctl_version }}-linux-amd64.tar.gz"

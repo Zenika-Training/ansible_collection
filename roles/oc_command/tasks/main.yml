@@ -3,10 +3,24 @@
   ansible.builtin.include_tasks: install_binary.yml
   loop_control:
     loop_var: oc_command_binary
-  loop:
-    - name: oc
-      url: "{{ oc_command_client }}"
-      version_arg: "version --client"
-    - name: openshift-install
-      url: "{{ oc_command_install }}"
-      version_arg: version
+    label: "{{ oc_command_binary.name }} {{ oc_command_binary.version }}"
+  loop: "{{ _oc_command_binaries + (_oc_command_istioctl if oc_command_istioctl_enabled | bool else []) }}"
+  vars:
+    _oc_command_binaries:
+      - name: oc
+        url: "{{ oc_command_client }}"
+        version: "{{ oc_command_version }}"
+        version_arg: "version --client"
+        extra_opts: []
+      - name: openshift-install
+        url: "{{ oc_command_install }}"
+        version: "{{ oc_command_version }}"
+        version_arg: version
+        extra_opts: []
+    _oc_command_istioctl:
+      - name: istioctl
+        url: "{{ oc_command_istioctl }}"
+        version: "{{ oc_command_istioctl_version }}"
+        version_arg: "version --remote=false"
+        # istioctl-linux-amd64/istioctl in the archive: drop the directory level.
+        extra_opts: ["--strip-components=1"]

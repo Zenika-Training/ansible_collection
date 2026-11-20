@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Yannick Sébastia
-  description: Install the OpenShift CLI (oc) and openshift-install binaries
+  description: Install the OpenShift CLI (oc), openshift-install and istioctl binaries
   company: Zenika
   license: GPL-3.0-only
   min_ansible_version: "2.14"
